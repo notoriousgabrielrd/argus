@@ -692,7 +692,7 @@ function focusExistingWindow(): void {
 }
 
 function requestDesktopActivation(argv: readonly string[] = []): void {
-  // Why: a duplicate `orca serve` must not drag a headless server into opening a desktop window (#11935).
+  // Why: a duplicate `argus serve` must not drag a headless server into opening a desktop window (#11935).
   if (!shouldActivateDesktopForSecondInstance(argv)) {
     return
   }
@@ -822,7 +822,7 @@ if (!hasSingleInstanceLock) {
 
 // Why: when another process holds the lock we've already exited; skip file-writing side effects so this transient process never touches userData.
 if (hasSingleInstanceLock) {
-  // Why: couple to dev-parent only for electron-vite desktop runs; `orca serve`'s parent (CLI shim/background shell) isn't the intended server lifetime.
+  // Why: couple to dev-parent only for electron-vite desktop runs; `argus serve`'s parent (CLI shim/background shell) isn't the intended server lifetime.
   const shouldCoupleToDevParent = is.dev && !isServeMode
   installDevParentDisconnectQuit(shouldCoupleToDevParent)
   installDevParentWatchdog(shouldCoupleToDevParent)
@@ -968,7 +968,7 @@ function startTerminalRuntimeStartupServices(): WindowsDesktopStartupServices {
       logStartupMilestone('startup-service-start', { service: 'agent-hook-server' })
       await agentHookServer.start({
         env: app.isPackaged ? 'production' : 'development',
-        // Why: hooks source this endpoint file at invocation time so old PTY env reaches the current process after restart; dev namespaces it (worktrees share `orca-dev`).
+        // Why: hooks source this endpoint file at invocation time so old PTY env reaches the current process after restart; dev namespaces it (worktrees share `argus-dev`).
         userDataPath: app.getPath('userData'),
         endpointNamespace: devAgentHookEndpointNamespace
       })
@@ -2736,7 +2736,7 @@ void app.whenReady().then(async () => {
       })
     }
   })
-  // Why: headless `orca serve` clients reach plugins through the runtime RPC
+  // Why: headless `argus serve` clients reach plugins through the runtime RPC
   // methods, which resolve the service via this module-level setter. Consent
   // over RPC uses the same hash-keyed write path as the desktop dialog.
   setPluginServiceForRpc(pluginService, {
@@ -2962,14 +2962,14 @@ void app.whenReady().then(async () => {
     userDataPath: getCanonicalUserDataPath(),
     enableWebSocket: true,
     // Why: STA-2370 — the desktop app binds the WS listener to loopback until the user pairs a device;
-    // `orca serve` is an explicit remote opt-in, and E2E keeps the wide bind its harness connects over.
+    // `argus serve` is an explicit remote opt-in, and E2E keeps the wide bind its harness connects over.
     exposeNetworkByDefault: Boolean(serveOptions) || isE2E,
     ...(isE2E ? { wsPort: e2eWsPort } : {}),
     ...(devWsPort !== undefined ? { wsPort: devWsPort } : {}),
     ...(serveOptions?.wsPort !== undefined
       ? {
           wsPort: serveOptions.wsPort,
-          // Why: only explicit `orca serve --port` overrides a stale STA-1511 fallback (issue #8535); default/dev stay fallback-first for pairing stability.
+          // Why: only explicit `argus serve --port` overrides a stale STA-1511 fallback (issue #8535); default/dev stay fallback-first for pairing stability.
           preferPinnedWsPort: true
         }
       : {}),
@@ -3069,19 +3069,19 @@ void app.whenReady().then(async () => {
         )
       }
     }
-    // Why: Linux CLI installs as `argus-ide`, but the Claude Team launcher invokes bare `orca`; drop a ~/.local/bin dispatcher (ahead of /usr/bin) so it resolves. Best-effort.
+    // Why: Linux CLI installs as `argus`, but the Claude Team launcher invokes bare `orca`; drop a ~/.local/bin dispatcher (ahead of /usr/bin) so it resolves. Best-effort.
     if (process.platform === 'linux' && app.isPackaged && process.resourcesPath) {
       try {
         const dispatcher = await installLinuxBareOrcaDispatcher({
           resourcesPath: process.resourcesPath
         })
         console.log(
-          `[serve] bare orca dispatcher ${dispatcher.state}: ${dispatcher.dispatcherPath}` +
+          `[serve] bare argus dispatcher ${dispatcher.state}: ${dispatcher.dispatcherPath}` +
             `${dispatcher.target ? ` -> ${dispatcher.target}` : ''}`
         )
       } catch (error) {
         console.warn(
-          '[serve] bare orca dispatcher install skipped:',
+          '[serve] bare argus dispatcher install skipped:',
           error instanceof Error ? error.message : String(error)
         )
       }

@@ -15,9 +15,9 @@ async function makeFixture(): Promise<{ homePath: string; resourcesPath: string 
   const root = await mkdtemp(join(tmpdir(), 'orca-bare-dispatcher-'))
   created.push(root)
   const resourcesPath = join(root, 'resources')
-  // The bundled argus-ide launcher must exist for the dispatcher to be written.
+  // The bundled argus launcher must exist for the dispatcher to be written.
   await mkdir(join(resourcesPath, 'bin'), { recursive: true })
-  await writeFile(join(resourcesPath, 'bin', 'argus-ide'), '#!/usr/bin/env bash\n', 'utf8')
+  await writeFile(join(resourcesPath, 'bin', 'argus'), '#!/usr/bin/env bash\n', 'utf8')
   return { homePath: join(root, 'home'), resourcesPath }
 }
 
@@ -26,7 +26,7 @@ afterEach(async () => {
 })
 
 describe('installLinuxBareOrcaDispatcher', () => {
-  it('writes an executable bare-orca dispatcher that execs the bundled argus-ide launcher', async () => {
+  it('writes an executable bare-orca dispatcher that execs the bundled argus launcher', async () => {
     const { homePath, resourcesPath } = await makeFixture()
 
     const result = await installLinuxBareOrcaDispatcher({
@@ -35,7 +35,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
       appImagePath: null
     })
 
-    const expectedTarget = join(resourcesPath, 'bin', 'argus-ide')
+    const expectedTarget = join(resourcesPath, 'bin', 'argus')
     expect(result.state).toBe('installed')
     expect(result.target).toBe(expectedTarget)
     expect(result.dispatcherPath).toBe(join(homePath, '.local', 'bin', 'orca'))
@@ -72,7 +72,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     created.push(root)
     const resourcesPath = join(root, 'App Support', 'resources')
     await mkdir(join(resourcesPath, 'bin'), { recursive: true })
-    await writeFile(join(resourcesPath, 'bin', 'argus-ide'), '#!/usr/bin/env bash\n', 'utf8')
+    await writeFile(join(resourcesPath, 'bin', 'argus'), '#!/usr/bin/env bash\n', 'utf8')
 
     const result = await installLinuxBareOrcaDispatcher({
       resourcesPath,
@@ -81,7 +81,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     })
 
     const content = await readFile(result.dispatcherPath, 'utf8')
-    expect(content).toContain(`exec '${join(resourcesPath, 'bin', 'argus-ide')}' "$@"`)
+    expect(content).toContain(`exec '${join(resourcesPath, 'bin', 'argus')}' "$@"`)
   })
 
   it('execs the stable AppImage (not the ephemeral mount) when running from an AppImage', async () => {
@@ -98,7 +98,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     expect(content).not.toContain(resourcesPath)
   })
 
-  it('skips (does not clobber) a user-owned orca already at ~/.local/bin', async () => {
+  it('skips (does not clobber) a user-owned argus already at ~/.local/bin', async () => {
     const { homePath, resourcesPath } = await makeFixture()
     const dispatcherPath = join(homePath, '.local', 'bin', 'orca')
     await mkdir(join(homePath, '.local', 'bin'), { recursive: true })
@@ -114,7 +114,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     expect(await readFile(dispatcherPath, 'utf8')).toBe('#!/bin/sh\necho my own orca\n')
   })
 
-  it('skips when the bundled argus-ide launcher is missing from the build', async () => {
+  it('skips when the bundled argus launcher is missing from the build', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-bare-dispatcher-nolauncher-'))
     created.push(root)
 

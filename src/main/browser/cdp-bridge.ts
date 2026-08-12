@@ -1351,7 +1351,7 @@ export class CdpBridge {
     if (!state.snapshotResult) {
       throw new BrowserError(
         'browser_stale_ref',
-        "No snapshot exists for this tab. Run 'orca snapshot' first."
+        "No snapshot exists for this tab. Run 'argus snapshot' first."
       )
     }
 
@@ -1359,7 +1359,7 @@ export class CdpBridge {
     if (!entry) {
       throw new BrowserError(
         'browser_ref_not_found',
-        `Element ref ${ref} was not found. Run 'orca snapshot' to see available refs.`
+        `Element ref ${ref} was not found. Run 'argus snapshot' to see available refs.`
       )
     }
 
@@ -1371,7 +1371,7 @@ export class CdpBridge {
         state.navigationId = null
         throw new BrowserError(
           'browser_stale_ref',
-          "The page has navigated since the last snapshot. Run 'orca snapshot' to get fresh refs."
+          "The page has navigated since the last snapshot. Run 'argus snapshot' to get fresh refs."
         )
       }
     }
@@ -1390,7 +1390,7 @@ export class CdpBridge {
       state.snapshotResult = null
       throw new BrowserError(
         'browser_stale_ref',
-        `Element ${ref} no longer exists in the DOM. Run 'orca snapshot' to get fresh refs.`
+        `Element ${ref} no longer exists in the DOM. Run 'argus snapshot' to get fresh refs.`
       )
     }
   }

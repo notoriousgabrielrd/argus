@@ -354,7 +354,7 @@ test('materializes a stopped terminal on reconnect from a headed paired host', a
   }
 })
 
-// Why fixme: this journey's fault injection cannot be set up on a headless `orca serve` host.
+// Why fixme: this journey's fault injection cannot be set up on a headless `argus serve` host.
 // `terminal.stopExact` keeps returning terminal_exact_stop_failed because stopAndWait's
 // keep-history verification window expires before the parked PTY is observed gone, so the pane
 // never reaches pending-handle and the reconnect behavior is never exercised. That precondition

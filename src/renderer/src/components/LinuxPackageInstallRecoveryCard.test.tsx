@@ -9,7 +9,8 @@ const RELEASE_URL = 'https://github.com/stablyai/orca/releases/tag/v1.4.200'
 const DIAGNOSTIC = 'pkexec: no polkit authentication agent found'
 const INSTALL_COMMAND = 'sudo apt-get install -y /tmp/orca-updates/orca_1.4.200_amd64.deb'
 const PACKAGE_FILE_NAME = 'orca_1.4.200_amd64.deb'
-const SUMMARY = 'Argus downloaded the update but could not install the system package automatically.'
+const SUMMARY =
+  'Argus downloaded the update but could not install the system package automatically.'
 const COPIED_NOTE =
   `Command copied. Run it in a system terminal to install ${PACKAGE_FILE_NAME}, ` +
   'then quit and reopen Argus.'

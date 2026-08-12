@@ -80,7 +80,7 @@ describe('SSH remote Argus CLI launcher', () => {
   })
 
   itWindows('preserves a multiline argument through the compiled remote launcher', () => {
-    const root = mkdtempSync(join(tmpdir(), 'orca remote cli '))
+    const root = mkdtempSync(join(tmpdir(), 'argus remote cli '))
     try {
       const binDir = join(root, 'bin').replaceAll('\\', '/')
       const relayDir = join(root, 'relay').replaceAll('\\', '/')
@@ -176,12 +176,12 @@ describe('SSH remote Argus CLI launcher', () => {
   })
 
   itWindows('preserves the existing orca.cmd when the compiler is missing', () => {
-    const root = mkdtempSync(join(tmpdir(), 'orca remote cli '))
+    const root = mkdtempSync(join(tmpdir(), 'argus remote cli '))
     try {
       const binDir = join(root, 'bin').replaceAll('\\', '/')
       mkdirSync(binDir, { recursive: true })
       const legacyShimPath = join(binDir, 'orca.cmd')
-      writeFileSync(legacyShimPath, '@echo legacy orca cli\r\n', 'utf8')
+      writeFileSync(legacyShimPath, '@echo legacy argus cli\r\n', 'utf8')
 
       const plan = createRemoteCliInstallPlan({
         binDir,

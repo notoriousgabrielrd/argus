@@ -28,7 +28,7 @@ const LINEAR_ITEM = {
   }
 }
 const PRODUCT_WORKFLOW_PHRASES = [
-  'orca linear',
+  'argus linear',
   'meta.partial',
   'install',
   'enable it from Argus Settings',

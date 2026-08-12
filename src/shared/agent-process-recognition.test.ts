@@ -298,15 +298,15 @@ describe('agent process recognition', () => {
   })
 
   it('recognizes only the agent subcommand of the generic Argus CLI', () => {
-    expect(recognizeAgentProcessFromCommandLine('orca claude-teams')).toEqual({
+    expect(recognizeAgentProcessFromCommandLine('argus claude-teams')).toEqual({
       agent: 'claude-agent-teams',
-      processName: 'orca'
+      processName: 'argus'
     })
-    expect(recognizeAgentProcessFromCommandLine('orca status')).toBeNull()
-    expect(recognizeAgentProcessFromCommandLine('orca-dev terminal list')).toBeNull()
-    expect(recognizeAgentProcessFromCommandLine('node /usr/local/bin/orca claude-teams')).toEqual({
+    expect(recognizeAgentProcessFromCommandLine('argus status')).toBeNull()
+    expect(recognizeAgentProcessFromCommandLine('argus-dev terminal list')).toBeNull()
+    expect(recognizeAgentProcessFromCommandLine('node /usr/local/bin/argus claude-teams')).toEqual({
       agent: 'claude-agent-teams',
-      processName: 'orca'
+      processName: 'argus'
     })
     expect(recognizeAgentProcessFromCommandLine('node /usr/local/bin/orca status')).toBeNull()
   })

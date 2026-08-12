@@ -13454,9 +13454,9 @@ describe('OrcaRuntimeService', () => {
   // platform (launchCmdByPlatform), so it is what proves resolution is
   // platform-aware rather than a fixed string.
   it.each([
-    { platform: 'win32' as const, expected: 'orca.cmd claude-teams' },
-    { platform: 'linux' as const, expected: 'argus-ide claude-teams' },
-    { platform: 'darwin' as const, expected: 'orca claude-teams' }
+    { platform: 'win32' as const, expected: 'argus.cmd claude-teams' },
+    { platform: 'linux' as const, expected: 'argus claude-teams' },
+    { platform: 'darwin' as const, expected: 'argus claude-teams' }
   ])(
     'resolves a startupAgent through the $platform launcher name',
     async ({ platform, expected }) => {
@@ -14492,7 +14492,7 @@ describe('OrcaRuntimeService', () => {
     )
   })
 
-  // Why (#10333): `orca serve` publishes a ready graph under
+  // Why (#10333): `argus serve` publishes a ready graph under
   // HEADLESS_RUNTIME_WINDOW_ID with no BrowserWindow behind it, so every
   // focus-requested create used to fall through to getAuthoritativeWindow().
   const wireHeadlessServeRuntime = (): OrcaRuntimeService => {
@@ -14528,7 +14528,7 @@ describe('OrcaRuntimeService', () => {
       getForegroundProcess: async () => null
     })
 
-    // `orca terminal create --worktree <wt> --command "echo test" --focus`
+    // `argus terminal create --worktree <wt> --command "echo test" --focus`
     await expect(
       runtime.createTerminal(`path:${TEST_WORKTREE_PATH}`, {
         command: 'echo test',
@@ -15226,7 +15226,7 @@ describe('OrcaRuntimeService', () => {
       })
       expect(created.warning).toContain('Renderer timed out')
       expect(created.warning).toContain('could not make it discoverable')
-      expect(created.warning).toContain(`orca terminal focus --terminal ${created.handle}`)
+      expect(created.warning).toContain(`argus terminal focus --terminal ${created.handle}`)
       const spawnCall = spawn.mock.calls[0]?.[0] as { env?: Record<string, string> } | undefined
       const spawnedEnv = spawnCall?.env ?? {}
       expectStablePaneKeyEnv(spawnedEnv)
@@ -15265,7 +15265,7 @@ describe('OrcaRuntimeService', () => {
       handle: expect.stringMatching(/^term_/)
     })
     expect(created.warning).toContain('could not make it discoverable')
-    expect(created.warning).toContain(`orca terminal focus --terminal ${created.handle}`)
+    expect(created.warning).toContain(`argus terminal focus --terminal ${created.handle}`)
   })
 
   it('does not warn when background presentation has no renderer notifier', async () => {
@@ -19305,7 +19305,7 @@ describe('OrcaRuntimeService', () => {
       await vi.advanceTimersByTimeAsync(500)
 
       const firstInjections = write.mock.calls.filter(
-        (c) => typeof c[1] === 'string' && c[1].includes('orca orchestration check')
+        (c) => typeof c[1] === 'string' && c[1].includes('argus orchestration check')
       ).length
       expect(firstInjections).toBe(1)
 
@@ -19314,7 +19314,7 @@ describe('OrcaRuntimeService', () => {
       await vi.advanceTimersByTimeAsync(500)
 
       const totalInjections = write.mock.calls.filter(
-        (c) => typeof c[1] === 'string' && c[1].includes('orca orchestration check')
+        (c) => typeof c[1] === 'string' && c[1].includes('argus orchestration check')
       ).length
       expect(totalInjections).toBe(1)
       db.close()
@@ -31015,7 +31015,7 @@ describe('OrcaRuntimeService', () => {
   })
 
   it('keeps the activated headless tab active across PTY republishes (serve focus-jump regression)', async () => {
-    // Why: in `orca serve`, focusTerminal has no renderer to persist the remote client's tab choice before PTY republishes.
+    // Why: in `argus serve`, focusTerminal has no renderer to persist the remote client's tab choice before PTY republishes.
     let nextPty = 0
     const spawn = vi.fn().mockImplementation(async () => ({ id: `headless-pty-${++nextPty}` }))
     const runtime = new OrcaRuntimeService(store)
@@ -34208,7 +34208,7 @@ describe('OrcaRuntimeService', () => {
       runtime.onPtyData('pty-1', '\x1b]0;Codex done\x07', 101)
       expect(write).toHaveBeenCalledWith(
         'pty-1',
-        '\nYou have 1 orchestration message. Run `orca orchestration check`.\n'
+        '\nYou have 1 orchestration message. Run `argus orchestration check`.\n'
       )
       expect(write).not.toHaveBeenCalledWith(
         'pty-1',
@@ -34224,7 +34224,7 @@ describe('OrcaRuntimeService', () => {
       expect(
         write.mock.calls.filter(
           ([, payload]) =>
-            typeof payload === 'string' && payload.includes('orca orchestration check')
+            typeof payload === 'string' && payload.includes('argus orchestration check')
         )
       ).toHaveLength(1)
       db.close()
@@ -34270,7 +34270,7 @@ describe('OrcaRuntimeService', () => {
     await vi.waitFor(() => {
       expect(write).toHaveBeenCalledWith(
         'pty-1',
-        '\nYou have 1 orchestration message. Run `orca orchestration check`.\n'
+        '\nYou have 1 orchestration message. Run `argus orchestration check`.\n'
       )
     })
     db.close()
@@ -34492,7 +34492,7 @@ describe('OrcaRuntimeService', () => {
         .map(([, data]) => data)
         .filter((data): data is string => typeof data === 'string')
       expect(payloads).toContain(
-        '\nYou have 1 orchestration message. Run `orca orchestration check`.\n'
+        '\nYou have 1 orchestration message. Run `argus orchestration check`.\n'
       )
       expect(payloads.some((data) => data.includes('reserved completion'))).toBe(false)
       expect(status.delivered_at).toBeNull()
@@ -34856,7 +34856,8 @@ describe('OrcaRuntimeService', () => {
       await Promise.resolve()
 
       const pointerWrites = write.mock.calls.filter(
-        ([, payload]) => typeof payload === 'string' && payload.includes('orca orchestration check')
+        ([, payload]) =>
+          typeof payload === 'string' && payload.includes('argus orchestration check')
       )
       expect(pointerWrites).toHaveLength(1)
 
@@ -34901,7 +34902,7 @@ describe('OrcaRuntimeService', () => {
       expect(
         write.mock.calls.filter(
           ([, payload]) =>
-            typeof payload === 'string' && payload.includes('orca orchestration check')
+            typeof payload === 'string' && payload.includes('argus orchestration check')
         )
       ).toHaveLength(1)
       expect(second.delivered_at).toBeNull()
@@ -34915,7 +34916,7 @@ describe('OrcaRuntimeService', () => {
       expect(
         write.mock.calls.filter(
           ([, payload]) =>
-            typeof payload === 'string' && payload.includes('orca orchestration check')
+            typeof payload === 'string' && payload.includes('argus orchestration check')
         )
       ).toHaveLength(2)
       expect(write).toHaveBeenCalledWith(
@@ -42697,7 +42698,7 @@ describe('OrcaRuntimeService', () => {
       startup: { command: 'claude' }
     })
 
-    // `orca worktree create --agent claude` without --activate: the agent tab is
+    // `argus worktree create --agent claude` without --activate: the agent tab is
     // adopted, but the sidebar must stay on whatever the user was reading.
     expect(activateWorktree).not.toHaveBeenCalled()
     expect(revealTerminalSession).toHaveBeenCalledWith(

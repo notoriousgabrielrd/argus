@@ -184,7 +184,11 @@ describe('Pi-compatible title detection', () => {
     ['\u280b π: tmp', 'omp', '\u280b OMP'],
     ['\u280b π - tmp', 'omp', '\u280b OMP'],
     ['\u280b OMP', 'pi', '\u280b Pi'],
-    ['lucky-echidna | \u283c π - Diagnose Argus terminal title flicker - test', 'omp', '\u280b OMP'],
+    [
+      'lucky-echidna | \u283c π - Diagnose Argus terminal title flicker - test',
+      'omp',
+      '\u280b OMP'
+    ],
     ['lucky-echidna | Pi ready', 'omp', 'OMP ready'],
     ['Codex | Pi ready', 'omp', 'OMP ready'],
     // Why: the wrapped whole reads as a braille Claude title, but the re-ownable

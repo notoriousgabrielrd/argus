@@ -1,25 +1,16 @@
-import type { ProjectExecutionRuntimeResolution } from '../../../shared/project-execution-runtime'
-import { isWslUncPath } from '../../../shared/wsl-paths'
-import { splitWorktreeIdForFilesystem } from '../../../shared/worktree-id'
+export type OrchestrationCliCommand = 'argus' | 'orca'
 
-export type OrchestrationCliCommand = 'orca' | 'argus-ide'
-
-export function resolveTerminalOrchestrationCliCommand(args: {
-  connectionId: string | null
-  isWsl: boolean | null | undefined
-  worktreeId: string
-  projectRuntime?: ProjectExecutionRuntimeResolution
-}): OrchestrationCliCommand {
-  if (args.connectionId) {
-    return 'orca'
-  }
-  if (args.isWsl !== null && args.isWsl !== undefined) {
-    return args.isWsl ? 'argus-ide' : 'orca'
-  }
-  if (args.projectRuntime?.status === 'resolved' && args.projectRuntime.runtime.kind === 'wsl') {
-    return 'argus-ide'
-  }
-
-  const worktreePath = splitWorktreeIdForFilesystem(args.worktreeId)?.worktreePath
-  return worktreePath && isWslUncPath(worktreePath) ? 'argus-ide' : 'orca'
+/**
+ * The CLI command name an orchestration terminal should type.
+ *
+ * Upstream branched here between `orca` and `orca-ide`: packaged Linux had to install as
+ * `orca-ide` because GNOME's Orca screen reader owns `/usr/bin/orca`. Argus has no such
+ * collision, so every platform — local, WSL, and SSH remote — ships the same `argus`
+ * command and the branching collapsed.
+ *
+ * `'orca'` stays in the type because it is a wire value: an older peer can still send it
+ * over RPC, and callers must keep accepting it.
+ */
+export function resolveTerminalOrchestrationCliCommand(): OrchestrationCliCommand {
+  return 'argus'
 }

@@ -1,7 +1,7 @@
 /**
  * E2E regression for #8459 — Resource Manager force-killed live daemon sessions as "orphans".
  *
- * The incident: a packaged `orca serve` still owned live AI terminals after the GUI quit. On
+ * The incident: a packaged `argus serve` still owned live AI terminals after the GUI quit. On
  * relaunch the renderer's binding map had not caught up, so those sessions rendered as unbound.
  * "Kill orphan terminals" then destroyed them with no confirmation dialog.
  *

@@ -167,7 +167,7 @@ export function configureDevUserDataPath(isDev: boolean): void {
     return
   }
   // Why: without a dev-only path, pnpm dev overwrites the packaged app's runtime pointer under userData and breaks the orca CLI.
-  app.setPath('userData', join(app.getPath('appData'), 'orca-dev'))
+  app.setPath('userData', join(app.getPath('appData'), 'argus-dev'))
 }
 
 function areSameE2EHomePath(left: string, right: string): boolean {

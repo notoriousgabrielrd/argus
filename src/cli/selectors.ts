@@ -144,7 +144,7 @@ export async function getBrowserWorktreeSelector(
 
 // Why: mirrors browser's implicit active-tab targeting. When --terminal is
 // omitted, resolve the active terminal in the current worktree so commands
-// like `orca terminal send --text "hello" --enter` Just Work.
+// like `argus terminal send --text "hello" --enter` Just Work.
 export async function getTerminalHandle(
   flags: Map<string, string | boolean>,
   cwd: string,
@@ -215,7 +215,7 @@ export async function getComputerCommandTarget(
 export type EmulatorCliTarget = {
   worktree?: string
   device?: string
-  emulator?: string // Orca id from list
+  emulator?: string // Argus id from list
 }
 
 export async function getEmulatorWorktreeSelector(

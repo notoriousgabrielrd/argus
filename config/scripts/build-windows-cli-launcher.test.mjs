@@ -38,11 +38,15 @@ function itWindows(name, test) {
 
 describe('Windows CLI launcher', () => {
   itCrossHost('fails closed when the Windows launcher cannot be compiled on this host', () => {
-    const outputRoot = mkdtempSync(join(tmpdir(), 'orca cross-host launcher '))
+    const outputRoot = mkdtempSync(join(tmpdir(), 'argus cross-host launcher '))
     try {
       const result = spawnSync(
         process.execPath,
-        ['config/scripts/build-windows-cli-launcher.mjs', '--output', join(outputRoot, 'orca.exe')],
+        [
+          'config/scripts/build-windows-cli-launcher.mjs',
+          '--output',
+          join(outputRoot, 'argus.exe')
+        ],
         { cwd: projectRoot, encoding: 'utf8' }
       )
 
@@ -58,7 +62,7 @@ describe('Windows CLI launcher', () => {
     // Why: both ProcessStartInfo env properties copy the process block into a case-insensitive
     // dictionary that throws when the inherited block holds PATH and Path (stablyai/orca#12046).
     const source = readFileSync(
-      join(projectRoot, 'native', 'windows-cli-launcher', 'OrcaCliLauncher.cs'),
+      join(projectRoot, 'native', 'windows-cli-launcher', 'ArgusCliLauncher.cs'),
       'utf8'
     )
     const code = source.replace(/^\s*\/\/.*$/gm, '')
@@ -69,10 +73,10 @@ describe('Windows CLI launcher', () => {
   })
 
   itWindows('preserves a multiline argument from PowerShell through the native launcher', () => {
-    const appRoot = mkdtempSync(join(tmpdir(), 'orca cli launcher '))
+    const appRoot = mkdtempSync(join(tmpdir(), 'argus cli launcher '))
     try {
       const resourcesPath = join(appRoot, 'resources')
-      const launcherPath = join(resourcesPath, 'bin', 'orca.exe')
+      const launcherPath = join(resourcesPath, 'bin', 'argus.exe')
       const cliPath = join(resourcesPath, 'app.asar.unpacked', 'out', 'cli', 'index.js')
       mkdirSync(join(resourcesPath, 'bin'), { recursive: true })
       mkdirSync(dirname(cliPath), { recursive: true })
@@ -128,10 +132,10 @@ describe('Windows CLI launcher', () => {
   })
 
   itWindows('survives an inherited environment block containing PATH and Path', () => {
-    const appRoot = mkdtempSync(join(tmpdir(), 'orca duplicate path launcher '))
+    const appRoot = mkdtempSync(join(tmpdir(), 'argus duplicate path launcher '))
     try {
       const resourcesPath = join(appRoot, 'resources')
-      const launcherPath = join(resourcesPath, 'bin', 'orca.exe')
+      const launcherPath = join(resourcesPath, 'bin', 'argus.exe')
       const cliPath = join(resourcesPath, 'app.asar.unpacked', 'out', 'cli', 'index.js')
       const outputPath = join(appRoot, 'child-result.json')
       const harnessSourcePath = join(

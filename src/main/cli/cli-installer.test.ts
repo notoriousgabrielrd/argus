@@ -112,12 +112,12 @@ describe('CliInstaller', () => {
     'creates a linux symlink under the requested path and warns when PATH is missing',
     async () => {
       const fixture = await makeFixture()
-      const installPath = join(fixture.root, '.local', 'bin', 'argus-ide')
+      const installPath = join(fixture.root, '.local', 'bin', 'argus')
       const installer = new CliInstaller({
         platform: 'linux',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/opt/Argus/argus-ide',
+        execPath: '/opt/Argus/argus',
         appPath: fixture.appPath,
         commandPathOverride: installPath,
         processPathEnv: '/usr/bin'
@@ -125,7 +125,7 @@ describe('CliInstaller', () => {
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
-      expect(installed.commandName).toBe('argus-ide')
+      expect(installed.commandName).toBe('argus')
       expect(installed.pathConfigured).toBe(false)
       expect(installed.detail).toContain('.local')
 
@@ -139,9 +139,9 @@ describe('CliInstaller', () => {
   )
 
   // Why: dev installs are useful for validation, but they must not replace the
-  // packaged `orca` / `argus-ide` commands developers rely on day to day.
+  // packaged `orca` / `argus` commands developers rely on day to day.
   it.skipIf(process.platform === 'win32')(
-    'uses a separate orca-dev command for default development installs',
+    'uses a separate argus-dev command for default development installs',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -150,7 +150,7 @@ describe('CliInstaller', () => {
         platform: 'linux',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/opt/Argus/argus-ide',
+        execPath: '/opt/Argus/argus',
         appPath: fixture.appPath,
         homePath,
         processPathEnv: commandDir
@@ -158,9 +158,9 @@ describe('CliInstaller', () => {
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
-      expect(installed.commandName).toBe('orca-dev')
-      expect(installed.commandPath).toBe(join(commandDir, 'orca-dev'))
-      expect(installed.launcherPath).toBe(join(fixture.userDataPath, 'cli', 'bin', 'orca-dev'))
+      expect(installed.commandName).toBe('argus-dev')
+      expect(installed.commandPath).toBe(join(commandDir, 'argus-dev'))
+      expect(installed.launcherPath).toBe(join(fixture.userDataPath, 'cli', 'bin', 'argus-dev'))
       await expect(readlink(installed.commandPath as string)).resolves.toBe(installed.launcherPath)
       await expect(
         readFile(join(fixture.userDataPath, 'cli', 'bin', 'orca'), 'utf8')
@@ -175,7 +175,7 @@ describe('CliInstaller', () => {
     async () => {
       const fixture = await makeFixture()
       const commandDir = join(fixture.root, '.local', 'bin')
-      const installPath = join(commandDir, 'argus-ide')
+      const installPath = join(commandDir, 'argus')
       const appImagePath = join(fixture.root, 'Argus.AppImage')
       await writeFile(appImagePath, '#!/usr/bin/env bash\n', {
         encoding: 'utf8',
@@ -200,7 +200,7 @@ describe('CliInstaller', () => {
       const installed = await installer.install()
       expect(installed).toMatchObject({
         state: 'installed',
-        commandName: 'argus-ide',
+        commandName: 'argus',
         installMethod: 'wrapper',
         launcherPath: appImagePath,
         currentTarget: appImagePath,
@@ -225,7 +225,7 @@ describe('CliInstaller', () => {
     async () => {
       const fixture = await makeFixture()
       const commandDir = join(fixture.root, '.local', 'bin')
-      const installPath = join(commandDir, 'argus-ide')
+      const installPath = join(commandDir, 'argus')
       const oldAppImagePath = join(fixture.root, 'Old-Orca.AppImage')
       const newAppImagePath = join(fixture.root, 'Argus.AppImage')
       await mkdir(commandDir, { recursive: true })
@@ -259,16 +259,16 @@ describe('CliInstaller', () => {
     }
   )
 
-  // Why: Linux renamed the public command to avoid shadowing GNOME Argus, so
+  // Why: Linux renamed the public command to avoid shadowing GNOME Orca, so
   // upgrading must clean up only the old symlink owned by prior Argus installs.
   it.skipIf(process.platform === 'win32')(
-    'removes the old managed linux orca symlink when installing argus-ide',
+    'removes the old managed linux argus symlink when installing argus',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
       const commandDir = join(homePath, '.local', 'bin')
       const resourcesPath = join(fixture.root, 'resources')
-      const launcherPath = join(resourcesPath, 'bin', 'argus-ide')
+      const launcherPath = join(resourcesPath, 'bin', 'argus')
       const oldLauncherPath = join(resourcesPath, 'bin', 'orca')
       const legacyCommandPath = join(commandDir, 'orca')
       await mkdir(commandDir, { recursive: true })
@@ -286,13 +286,13 @@ describe('CliInstaller', () => {
       })
 
       const installed = await installer.install()
-      expect(installed.commandPath).toBe(join(commandDir, 'argus-ide'))
+      expect(installed.commandPath).toBe(join(commandDir, 'argus'))
       await expect(lstat(legacyCommandPath)).rejects.toMatchObject({ code: 'ENOENT' })
     }
   )
 
   it.skipIf(process.platform === 'win32')(
-    'removes a legacy linux orca symlink when installing an AppImage wrapper',
+    'removes a legacy linux argus symlink when installing an AppImage wrapper',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -315,7 +315,7 @@ describe('CliInstaller', () => {
       })
 
       const installed = await installer.install()
-      expect(installed.commandPath).toBe(join(commandDir, 'argus-ide'))
+      expect(installed.commandPath).toBe(join(commandDir, 'argus'))
       await expect(lstat(legacyCommandPath)).rejects.toMatchObject({ code: 'ENOENT' })
     }
   )
@@ -712,7 +712,7 @@ describe('CliInstaller', () => {
     'replaces stale sibling dev launcher symlinks from packaged installs',
     async () => {
       const fixture = await makeFixture()
-      for (const devLauncherName of ['orca', 'orca-dev']) {
+      for (const devLauncherName of ['orca', 'argus-dev']) {
         const caseRoot = join(fixture.root, devLauncherName)
         const commandDir = join(caseRoot, 'bin')
         const installPath = join(commandDir, 'orca')
@@ -814,7 +814,7 @@ describe('CliInstaller', () => {
   // Why: users can have a managed Argus command in ~/.local/bin even when
   // /usr/local/bin exists; Settings must follow the shell-visible command.
   it.skipIf(process.platform === 'win32')(
-    'uses an existing managed macOS orca command from the shell PATH before /usr/local/bin',
+    'uses an existing managed macOS argus command from the shell PATH before /usr/local/bin',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -855,7 +855,7 @@ describe('CliInstaller', () => {
   // Why: POSIX command lookup skips broken symlinks and keeps searching PATH,
   // so a stale earlier artifact must not steal status from the install path.
   it.skipIf(process.platform === 'win32')(
-    'skips a broken managed macOS orca symlink before /usr/local/bin',
+    'skips a broken managed macOS argus symlink before /usr/local/bin',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -900,7 +900,7 @@ describe('CliInstaller', () => {
   // Why: PATH lookup stops at the first existing command; a later managed
   // ~/.local/bin/orca must not steal status from /usr/local/bin/orca.
   it.skipIf(process.platform === 'win32')(
-    'keeps the default macOS command when a managed orca appears later on PATH',
+    'keeps the default macOS command when a managed argus appears later on PATH',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -936,7 +936,7 @@ describe('CliInstaller', () => {
   // Why: shells skip missing PATH entries, so a managed command later in PATH
   // is still the shell-visible Argus command until the default path is installed.
   it.skipIf(process.platform === 'win32')(
-    'uses a later managed macOS orca command when the default command is missing',
+    'uses a later managed macOS argus command when the default command is missing',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -975,7 +975,7 @@ describe('CliInstaller', () => {
   // Why: bash/zsh skip non-executable PATH entries even at Argus's configured
   // install slot, then keep looking for a runnable command later in PATH.
   it.skipIf(process.platform === 'win32')(
-    'uses a later managed macOS orca command when the default command is not executable',
+    'uses a later managed macOS argus command when the default command is not executable',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -1059,7 +1059,7 @@ describe('CliInstaller', () => {
   // Why: an off-PATH ~/.local/bin/orca must not hijack CLI registration and
   // leave the shell-visible /usr/local/bin command missing.
   it.skipIf(process.platform === 'win32')(
-    'ignores managed macOS orca commands that are not visible on the shell PATH',
+    'ignores managed macOS argus commands that are not visible on the shell PATH',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -1099,7 +1099,7 @@ describe('CliInstaller', () => {
   )
 
   it.skipIf(process.platform === 'win32')(
-    'reports a conflict for an unmanaged macOS orca that shadows the install path',
+    'reports a conflict for an unmanaged macOS argus that shadows the install path',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -1139,7 +1139,7 @@ describe('CliInstaller', () => {
   // Why: bash/zsh skip non-executable PATH entries, so reporting them as a
   // conflict would block a valid later install path the shell would use.
   it.skipIf(process.platform === 'win32')(
-    'skips a non-executable unmanaged macOS orca before the install path',
+    'skips a non-executable unmanaged macOS argus before the install path',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -1178,9 +1178,9 @@ describe('CliInstaller', () => {
   )
 
   // Why: when macCommandPath falls back to ~/.local/bin/orca on arm64, commandName
-  // must still be 'orca' (not 'argus-ide' which is Linux-only).
+  // must still be 'orca' (not 'argus' which is Linux-only).
   it.skipIf(process.platform === 'win32')(
-    'reports commandName as orca (not argus-ide) when falling back to ~/.local/bin on macOS',
+    'reports commandName as argus (not argus) when falling back to ~/.local/bin on macOS',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')

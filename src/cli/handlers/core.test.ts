@@ -39,7 +39,7 @@ function mockClaudeChild(): { once: (event: string, cb: (...args: unknown[]) => 
   return child
 }
 
-describe('orca claude-teams CLI handler', () => {
+describe('argus claude-teams CLI handler', () => {
   const isWindows = process.platform === 'win32'
   let previousRunAsNode: string | undefined
   let previousPaneKey: string | undefined
@@ -71,7 +71,7 @@ describe('orca claude-teams CLI handler', () => {
     previousRunAsNode = process.env.ELECTRON_RUN_AS_NODE
     previousPaneKey = process.env.ORCA_PANE_KEY
     previousExitCode = process.exitCode
-    // The `orca` launcher runs Orca's Electron binary as Node, so the CLI process
+    // The `orca` launcher runs Argus's Electron binary as Node, so the CLI process
     // itself carries ELECTRON_RUN_AS_NODE=1. Reproduce that inherited flag here.
     process.env.ELECTRON_RUN_AS_NODE = '1'
     process.env.ORCA_PANE_KEY = 'tab-1:leaf-1'

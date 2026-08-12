@@ -124,7 +124,7 @@ const CheckParams = z
     ack: OptionalString,
     compatibilityAck: OptionalString,
     compatibilityQuestionAck: OptionalString,
-    compatibilityCliCommand: z.enum(['orca', 'argus-ide', 'orca-dev']).optional(),
+    compatibilityCliCommand: z.enum(['orca', 'argus', 'argus-dev']).optional(),
     run: OptionalString,
     wait: OptionalBoolean,
     timeoutMs: OptionalFiniteNumber
@@ -224,8 +224,8 @@ const AskParams = z
     timeoutMs: OptionalFiniteNumber,
     from: OptionalString,
     run: OptionalString,
-    compatibilityCliCommand: z.enum(['orca', 'argus-ide', 'orca-dev']).optional(),
-    compatibilityWindowsCommand: z.enum(['orca', 'argus-ide']).optional()
+    compatibilityCliCommand: z.enum(['orca', 'argus', 'argus-dev']).optional(),
+    compatibilityWindowsCommand: z.enum(['orca', 'argus']).optional()
   })
   .superRefine((params, ctx) => {
     if ((params.question ? 1 : 0) + (params.resume ? 1 : 0) !== 1) {

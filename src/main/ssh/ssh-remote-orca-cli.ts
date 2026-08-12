@@ -36,13 +36,13 @@ export type { RemoteOrcaCliRequest, RemoteOrcaCliResult } from './ssh-remote-cli
 // cannot host. Everything else routes through the full host CLI.
 const HOST_INTERACTIVE_COMMANDS: Record<string, string> = {
   serve:
-    'orca serve starts a foreground headless Argus server and cannot run through the SSH relay bridge. Run it directly on the machine that should host Argus.',
+    'argus serve starts a foreground headless Argus server and cannot run through the SSH relay bridge. Run it directly on the machine that should host Argus.',
   'claude-teams':
-    'orca claude-teams starts an interactive Claude Code session and cannot run through the SSH relay bridge. Run it in a terminal on the Argus host machine.',
+    'argus claude-teams starts an interactive Claude Code session and cannot run through the SSH relay bridge. Run it in a terminal on the Argus host machine.',
   'agent-teams-tmux':
-    'orca agent-teams-tmux is a tmux pane shim for the Argus host machine and cannot run through the SSH relay bridge.',
+    'argus agent-teams-tmux is a tmux pane shim for the Argus host machine and cannot run through the SSH relay bridge.',
   'account add':
-    'orca account add runs an interactive agent login and cannot run through the buffered SSH relay bridge. Run it directly in a terminal on the Argus host machine.'
+    'argus account add runs an interactive agent login and cannot run through the buffered SSH relay bridge. Run it directly in a terminal on the Argus host machine.'
 }
 
 export async function runRemoteOrcaCli(

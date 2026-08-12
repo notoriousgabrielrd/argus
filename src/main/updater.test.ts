@@ -39,7 +39,7 @@ function stageLinuxUpdateCache(): StagedLinuxPackages {
     return { path: packagePath, sha512: createHash('sha512').update(bytes).digest('base64') }
   }
   const deb = stagePackage('orca-ide_1.0.61_amd64.deb')
-  const rpm = stagePackage('argus-ide-1.0.61.x86_64.rpm')
+  const rpm = stagePackage('argus-1.0.61.x86_64.rpm')
   return {
     cacheRoot,
     debPath: deb.path,
@@ -3930,7 +3930,7 @@ describe('updater', () => {
     const rpmDownloadedEvent = (): Record<string, unknown> =>
       downloadedEvent({
         downloadedFile: staged.rpmPath,
-        files: [{ url: 'argus-ide-1.0.61.x86_64.rpm', sha512: staged.rpmSha512 }]
+        files: [{ url: 'argus-1.0.61.x86_64.rpm', sha512: staged.rpmSha512 }]
       })
 
     const startUpdater = async (

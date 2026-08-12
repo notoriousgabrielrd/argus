@@ -37,7 +37,7 @@ vi.mock('../runtime-client', () => {
 import { main } from '../index'
 import { okFixture, queueFixtures } from '../test-fixtures'
 
-describe('orca computer get-app-state formatting', () => {
+describe('argus computer get-app-state formatting', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     callMock.mockReset()

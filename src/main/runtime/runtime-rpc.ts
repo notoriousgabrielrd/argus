@@ -56,7 +56,7 @@ import {
 const DEFAULT_WS_PORT = 6768
 
 // Why: STA-2370 — the WS listener defaults to loopback so a desktop with no paired device is not
-// reachable from the LAN; it widens to all interfaces only on explicit pairing (or `orca serve`).
+// reachable from the LAN; it widens to all interfaces only on explicit pairing (or `argus serve`).
 const WS_BIND_HOST_LOOPBACK = '127.0.0.1'
 const WS_BIND_HOST_ALL_INTERFACES = '0.0.0.0'
 
@@ -67,10 +67,10 @@ type OrcaRuntimeRpcServerOptions = {
   platform?: NodeJS.Platform
   enableWebSocket?: boolean
   wsPort?: number
-  // Why: true when the caller pinned a port (`orca serve --port`) so bind order prefers it over a stale STA-1511 fallback (#8535).
+  // Why: true when the caller pinned a port (`argus serve --port`) so bind order prefers it over a stale STA-1511 fallback (#8535).
   preferPinnedWsPort?: boolean
   // Why: STA-2370 — bind the WS listener to all interfaces at startup instead of loopback-until-paired.
-  // Only `orca serve` (explicit remote opt-in) and E2E set this; the desktop app widens lazily on pairing.
+  // Only `argus serve` (explicit remote opt-in) and E2E set this; the desktop app widens lazily on pairing.
   exposeNetworkByDefault?: boolean
   webClientRoot?: string
   // Why: test-only overrides for the two constants below; production must not pass these (defaults set by §3.1).
@@ -1238,7 +1238,7 @@ export class OrcaRuntimeRpcServer {
   }
 
   // Why: STA-2370 — a desktop with no previously-connected device stays on loopback until the user
-  // explicitly pairs; `orca serve`/E2E (exposeNetworkByDefault) and a reconnecting paired device bind wide.
+  // explicitly pairs; `argus serve`/E2E (exposeNetworkByDefault) and a reconnecting paired device bind wide.
   // A grant minted for "This computer only" is excluded: its client is a browser on this machine, so
   // counting it would republish the runtime on every interface one restart after the user declined that.
   private resolveInitialWebSocketBindHost(): string {

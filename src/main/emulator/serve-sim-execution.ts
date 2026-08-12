@@ -209,7 +209,7 @@ export async function execServeSimCommand(
             reject(
               new EmulatorError(
                 'emulator_no_active',
-                'No active emulator for this worktree — use orca emulator list/attach or open the pane'
+                'No active emulator for this worktree — use argus emulator list/attach or open the pane'
               )
             )
             return

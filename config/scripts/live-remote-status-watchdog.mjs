@@ -1,6 +1,6 @@
 /**
  * Mid-storm host health samples for forever-freeze detection.
- * Polls `orca status --json` on an interval while a load storm runs.
+ * Polls `argus status --json` on an interval while a load storm runs.
  */
 import { spawn } from 'node:child_process'
 import { BoundedLiveFreezeHistory } from './live-freeze-bounded-history.mjs'

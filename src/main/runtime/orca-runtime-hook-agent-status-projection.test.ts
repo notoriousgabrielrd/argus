@@ -1,4 +1,4 @@
-// #11761: on a headless `orca serve` host the HTTP agent hook is the only carrier of
+// #11761: on a headless `argus serve` host the HTTP agent hook is the only carrier of
 // live agent state, so `session.tabs` must project the hook row's status fields — not
 // just its identity — while still refusing rows that only prove an agent once existed.
 import { describe, expect, it, vi } from 'vitest'

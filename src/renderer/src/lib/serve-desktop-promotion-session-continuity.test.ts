@@ -3,7 +3,7 @@
  * surviving daemon sessions + headless `serve` holding the single-instance lock
  * + a GUI activation attempt.
  *
- * The incident chain was: Cmd+Q leaves a packaged `orca serve` owning the
+ * The incident chain was: Cmd+Q leaves a packaged `argus serve` owning the
  * profile lock, a forced relaunch reaches that headless process, it mounts a
  * desktop renderer, and hydration cold-restores panes whose daemon PTYs are
  * still alive — launching duplicate `codex resume <session>` agents and
@@ -246,7 +246,7 @@ describe('#8457 headless serve promotion preserves surviving agent sessions', ()
     expect(serve.blockedReasons).toEqual([])
   })
 
-  it('ignores a duplicate `orca serve` launch instead of promoting the headless owner', () => {
+  it('ignores a duplicate `argus serve` launch instead of promoting the headless owner', () => {
     const serve = bootHeadlessServeOwner()
 
     serve.secondInstance(DUPLICATE_SERVE_ARGV)

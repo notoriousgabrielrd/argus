@@ -2346,7 +2346,7 @@ export class OrchestrationDb {
           'This adopted Run still has live legacy work. Its attested coordinator may rebind it, or a current coordinator may explicitly use run-use --takeover-legacy.',
           {
             effectsApplied: false,
-            recoveryCommand: `orca orchestration run-use --id ${params.runId} --takeover-legacy`
+            recoveryCommand: `argus orchestration run-use --id ${params.runId} --takeover-legacy`
           }
         )
       }

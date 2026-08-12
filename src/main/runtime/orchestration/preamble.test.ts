@@ -160,37 +160,41 @@ describe('buildDispatchPreamble', () => {
     expect(result).toContain('refactor the auth module')
   })
 
-  it('uses orca CLI by default when devMode is not set', () => {
+  it('uses argus CLI by default when devMode is not set', () => {
     const result = buildDispatchPreamble(baseParams())
-    expect(result).toContain('orca orchestration send')
-    expect(result).toContain('orca orchestration check')
-    expect(result).toContain('orca orchestration ask')
+    expect(result).toContain('argus orchestration send')
+    expect(result).toContain('argus orchestration check')
+    expect(result).toContain('argus orchestration ask')
   })
 
-  it('uses orca-dev CLI when devMode is true', () => {
-    const result = buildDispatchPreamble(baseParams({ devMode: true, cliCommand: 'argus-ide' }))
-    expect(result).toContain('orca-dev orchestration send')
-    expect(result).toContain('orca-dev orchestration check')
-    expect(result).toContain('orca-dev orchestration ask')
-    const fragments = result.split('orca-dev')
+  it('uses argus-dev CLI when devMode is true', () => {
+    const result = buildDispatchPreamble(baseParams({ devMode: true, cliCommand: 'argus' }))
+    expect(result).toContain('argus-dev orchestration send')
+    expect(result).toContain('argus-dev orchestration check')
+    expect(result).toContain('argus-dev orchestration ask')
+    const fragments = result.split('argus-dev')
     for (const fragment of fragments) {
       expect(fragment).not.toMatch(/orca orchestration/)
     }
   })
 
-  it('uses orca CLI when devMode is false', () => {
+  it('uses argus CLI when devMode is false', () => {
     const result = buildDispatchPreamble(baseParams({ devMode: false }))
-    expect(result).toContain('orca orchestration send')
-    expect(result).toContain('orca orchestration check')
+    expect(result).toContain('argus orchestration send')
+    expect(result).toContain('argus orchestration check')
   })
 
-  it('uses the exact argus-ide command for packaged WSL workers', () => {
-    const result = buildDispatchPreamble(baseParams({ cliCommand: 'argus-ide' }))
+  // Why this replaced a two-name comparison: upstream pinned `orca-ide` here to prove the
+  // scoped Linux name won over bare `orca`. Argus ships one name, so the behaviour left to
+  // pin is that an explicitly supplied command — e.g. a legacy name from an older peer —
+  // is still what the worker is told to type.
+  it('honors an explicitly pinned CLI command over the default', () => {
+    const result = buildDispatchPreamble(baseParams({ cliCommand: 'orca' }))
 
-    expect(result).toContain('argus-ide orchestration send')
-    expect(result).toContain('argus-ide orchestration check')
-    expect(result).toContain('argus-ide orchestration ask')
-    expect(result).not.toMatch(/(^|\s)orca orchestration/m)
+    expect(result).toContain('orca orchestration send')
+    expect(result).toContain('orca orchestration check')
+    expect(result).toContain('orca orchestration ask')
+    expect(result).not.toContain('argus orchestration')
   })
 
   it('appends a BASE DRIFT section when baseDrift.behind > 0', () => {

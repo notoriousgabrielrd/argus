@@ -7,7 +7,7 @@ import { afterAll, describe, expect, it } from 'vitest'
 import { SINGLE_INSTANCE_ALREADY_RUNNING_EXIT_CODE } from './single-instance-lock'
 
 // Why #11935: the lock-loss gate runs before Electron `ready`, where `app.quit()` is deferred, so a
-// duplicate headless `orca serve` kept executing the rest of startup, reached Linux Ozone/X11 init
+// duplicate headless `argus serve` kept executing the rest of startup, reached Linux Ozone/X11 init
 // with no display, died with SIGSEGV, and systemd restarted it until the leaked AppImage FUSE mounts
 // hit the kernel's 1000-mount ceiling. This runs the gate's own termination statement, lifted out of
 // `src/main/index.ts`, under the real Electron binary.

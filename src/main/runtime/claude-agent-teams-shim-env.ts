@@ -62,7 +62,7 @@ export function resolveClaudeAgentTeamsShimBin(
     return bundled
   }
   return (
-    findExecutableOnPath(process.platform === 'win32' ? 'orca-dev.cmd' : 'orca-dev', env.PATH) ??
+    findExecutableOnPath(process.platform === 'win32' ? 'argus-dev.cmd' : 'argus-dev', env.PATH) ??
     findExecutableOnPath(getOrcaCliCommandNameForPlatform(process.platform), env.PATH) ??
     getOrcaCliCommandNameForPlatform(process.platform)
   )
@@ -80,7 +80,7 @@ function bundledLauncherPath(): string | null {
     return join(process.resourcesPath, 'bin', 'orca')
   }
   if (process.platform === 'linux') {
-    return join(process.resourcesPath, 'bin', 'argus-ide')
+    return join(process.resourcesPath, 'bin', 'argus')
   }
   if (process.platform === 'win32') {
     return join(process.resourcesPath, 'bin', 'orca.exe')

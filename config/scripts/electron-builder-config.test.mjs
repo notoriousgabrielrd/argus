@@ -112,18 +112,18 @@ describe('electron-builder config', () => {
           to: 'computer-use-windows/runtime.ps1'
         }),
         expect.objectContaining({
-          from: 'native/windows-cli-launcher/.build/orca.exe',
-          to: 'bin/orca.exe'
+          from: 'native/windows-cli-launcher/.build/argus.exe',
+          to: 'bin/argus.exe'
         })
       ])
     )
   })
 
   // Why: the Windows CLI shim is delivered only via extraResources to
-  // resources/bin/orca.cmd (beside the native resources/bin/orca.exe). If the
+  // resources/bin/argus.cmd (beside the native resources/bin/argus.exe). If the
   // source tree is also packed into app.asar it gets extracted by
-  // asarUnpack:['resources/**'] to app.asar.unpacked/resources/win32/bin/orca.cmd,
-  // a duplicate with no adjacent orca.exe that fails to launch (#7351).
+  // asarUnpack:['resources/**'] to app.asar.unpacked/resources/win32/bin/argus.cmd,
+  // a duplicate with no adjacent argus.exe that fails to launch (#7351).
   it('keeps the Windows CLI shim source tree out of app.asar', () => {
     expect(electronBuilderConfig.files).toEqual(
       expect.arrayContaining(['!resources/win32{,/**/*}'])
@@ -132,8 +132,8 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.win.extraResources).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          from: 'resources/win32/bin/orca.cmd',
-          to: 'bin/orca.cmd'
+          from: 'resources/win32/bin/argus.cmd',
+          to: 'bin/argus.cmd'
         })
       ])
     )
@@ -208,16 +208,16 @@ describe('electron-builder config', () => {
   })
 
   it('matches the Linux desktop entry to Electron window class', () => {
-    expect(electronBuilderConfig.linux.desktop.entry.StartupWMClass).toBe('orca')
+    expect(electronBuilderConfig.linux.desktop.entry.StartupWMClass).toBe('argus')
   })
 
   it('uses AppImage and deb as local Linux targets without changing existing artifact names', () => {
     expect(electronBuilderConfig.linux.target).toEqual(['AppImage', 'deb'])
     expect(electronBuilderConfig.appImage.artifactName).toBe('argus-linux.${ext}')
-    expect(electronBuilderConfig.deb.artifactName).toBe('orca-ide_${version}_${arch}.${ext}')
+    expect(electronBuilderConfig.deb.artifactName).toBe('argus_${version}_${arch}.${ext}')
     expect(electronBuilderConfig.rpm).toMatchObject({
-      packageName: 'orca-ide',
-      artifactName: 'orca-ide-${version}.${arch}.${ext}'
+      packageName: 'argus',
+      artifactName: 'argus-${version}.${arch}.${ext}'
     })
   })
 
@@ -530,7 +530,7 @@ describe('electron-builder config', () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-electron-builder-config-'))
       try {
         const resourcesDir = join(root, 'linux-unpacked', 'resources')
-        const launcherPath = join(resourcesDir, 'bin', 'orca-ide')
+        const launcherPath = join(resourcesDir, 'bin', 'argus')
         await mkdir(join(resourcesDir, 'bin'), { recursive: true })
         await cp(
           join(process.cwd(), 'resources', 'plugins', 'launch'),

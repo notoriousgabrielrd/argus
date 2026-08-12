@@ -1,6 +1,6 @@
 import type { CliWorkspaceProvenance, TuiAgent } from './types'
 
-/** Client-supplied context for a `orca worktree create`. Descriptive only —
+/** Client-supplied context for a `argus worktree create`. Descriptive only —
  *  the host stamps `createdAt` so a skewed client clock can't affect sort order. */
 export type CliWorkspaceProvenanceRequest = {
   callerTerminalHandle?: string

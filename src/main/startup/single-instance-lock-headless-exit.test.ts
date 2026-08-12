@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { SINGLE_INSTANCE_ALREADY_RUNNING_EXIT_CODE } from './single-instance-lock'
 
-// Why #11935: a pre-`ready` graceful quit is deferred, so a lock-losing headless `orca serve`
+// Why #11935: a pre-`ready` graceful quit is deferred, so a lock-losing headless `argus serve`
 // kept booting into Linux Ozone/X11 init, died with SIGSEGV, and systemd restarted it forever
 // until the leaked AppImage FUSE mounts hit the kernel's 1000-mount ceiling.
 

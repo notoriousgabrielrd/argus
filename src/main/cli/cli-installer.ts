@@ -28,8 +28,8 @@ import {
 
 const execFileAsync = promisify(execFile)
 const DEFAULT_MAC_COMMAND_PATH = '/usr/local/bin/orca'
-const DEV_COMMAND_NAME = 'orca-dev'
-const LINUX_COMMAND_NAME = 'argus-ide'
+const DEV_COMMAND_NAME = 'argus-dev'
+const LINUX_COMMAND_NAME = 'argus'
 const LEGACY_LINUX_COMMAND_NAME = 'orca'
 const DEV_LAUNCHER_DIR = ['cli', 'bin']
 const WINDOWS_PATH_WRITE_TIMEOUT_MS = 5_000
@@ -87,7 +87,7 @@ export class CliInstaller {
       // Why: development builds must not claim the production shell command.
       return DEV_COMMAND_NAME
     }
-    // Why: packaged Linux uses `argus-ide` to avoid shadowing GNOME Argus's /usr/bin/orca.
+    // Why: packaged Linux uses `argus` to avoid shadowing GNOME Orca's /usr/bin/orca.
     return this.platform === 'linux' ? LINUX_COMMAND_NAME : 'orca'
   }
 
@@ -340,7 +340,13 @@ export class CliInstaller {
         return join(this.homePath, '.local', 'bin', DEV_COMMAND_NAME)
       }
       if (this.platform === 'win32') {
-        return join(this.localAppDataPath, 'Programs', 'Argus Dev', 'bin', `${DEV_COMMAND_NAME}.cmd`)
+        return join(
+          this.localAppDataPath,
+          'Programs',
+          'Argus Dev',
+          'bin',
+          `${DEV_COMMAND_NAME}.cmd`
+        )
       }
     }
 
@@ -350,7 +356,7 @@ export class CliInstaller {
 
     if (this.platform === 'linux') {
       // Why: Linux lacks a privileged global command flow; ~/.local/bin is the least-surprising user-scoped dir.
-      // Why `argus-ide`: GNOME Argus ships /usr/bin/orca, so avoid shadowing that screen reader.
+      // Why `argus`: GNOME Orca ships /usr/bin/orca, so avoid shadowing that screen reader.
       return join(this.homePath, '.local', 'bin', LINUX_COMMAND_NAME)
     }
 
@@ -440,7 +446,7 @@ export class CliInstaller {
         return
       }
 
-      // Why: after the Linux command rename, the old `orca` symlink would keep shadowing GNOME Argus.
+      // Why: after the Linux command rename, the old `orca` symlink would keep shadowing GNOME Orca.
       await unlink(legacyCommandPath)
     } catch (error) {
       if (isMissingError(error)) {

@@ -44,7 +44,7 @@ import {
 } from './helpers/orchestration-mail-store'
 import { waitForPtyShellEcho } from './terminal-pty-readiness'
 
-const POINTER_COMMAND = 'orca orchestration check'
+const POINTER_COMMAND = 'argus orchestration check'
 
 // Why generous: the push runs a microtask behind the send, may defer once more
 // behind a liveness probe, and submits Enter after a 500ms delay.

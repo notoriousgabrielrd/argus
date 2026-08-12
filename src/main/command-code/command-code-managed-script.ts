@@ -21,7 +21,7 @@ export function buildCommandCodeManagedScript(
       'exit /b 0',
       ':sourceEndpointByPort',
       'if not defined APPDATA exit /b 0',
-      'if exist "%APPDATA%\\orca-dev\\agent-hooks" for /r "%APPDATA%\\orca-dev\\agent-hooks" %%F in (endpoint.cmd) do call :maybeSourceEndpoint "%%~fF"',
+      'if exist "%APPDATA%\\argus-dev\\agent-hooks" for /r "%APPDATA%\\argus-dev\\agent-hooks" %%F in (endpoint.cmd) do call :maybeSourceEndpoint "%%~fF"',
       'if "%ORCA_AGENT_HOOK_TOKEN%"=="" if exist "%APPDATA%\\orca\\agent-hooks" for /r "%APPDATA%\\orca\\agent-hooks" %%F in (endpoint.cmd) do call :maybeSourceEndpoint "%%~fF"',
       'exit /b 0',
       ':maybeSourceEndpoint',

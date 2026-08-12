@@ -1842,7 +1842,7 @@ function createTerminalRevealWarning(handle: string, error?: unknown): string {
       : ''
   return [
     `Terminal ${handle} is running, but Argus could not make it discoverable.${reason}`,
-    `Run \`orca terminal focus --terminal ${handle}\` to reveal and focus it.`
+    `Run \`argus terminal focus --terminal ${handle}\` to reveal and focus it.`
   ].join(' ')
 }
 
@@ -2564,7 +2564,7 @@ class WorktreeIdRequiresFullPathError extends Error {
 
   constructor() {
     super(
-      'Worktree id selectors must use the full <repo-id>::<path> value. Use the id from `orca worktree list --json`, or target by path:<path>, branch:<branch>, or issue:<number>.'
+      'Worktree id selectors must use the full <repo-id>::<path> value. Use the id from `argus worktree list --json`, or target by path:<path>, branch:<branch>, or issue:<number>.'
     )
   }
 }
@@ -3314,7 +3314,7 @@ export class OrcaRuntimeService {
       canRecoverPersistentLocalPtys?: () => boolean
       // Why: codex-home paths for the Agent Session History scan must be sourced
       // here, not via the window-only registerCoreHandlers path — that path never
-      // runs under `orca serve`, so remote/SSH hosts would silently drop
+      // runs under `argus serve`, so remote/SSH hosts would silently drop
       // managed-Codex sessions. The runtime ctor runs in BOTH window and serve.
       getAdditionalAiVaultCodexHomePaths?: () => readonly string[]
       prepareAiVaultSessionResume?: (
@@ -3351,7 +3351,7 @@ export class OrcaRuntimeService {
     this.canRecoverPersistentLocalPtysFn = deps?.canRecoverPersistentLocalPtys ?? (() => true)
     // Why: configure the shared AiVault scan cache from a serve-mode-reachable
     // seam so the aiVault.listSessions RPC includes managed-Codex + WSL sessions
-    // even on headless `orca serve` hosts where registerCoreHandlers never runs.
+    // even on headless `argus serve` hosts where registerCoreHandlers never runs.
     if (deps?.getAdditionalAiVaultCodexHomePaths) {
       configureAiVaultSessionSources({
         getAdditionalCodexHomePaths: deps.getAdditionalAiVaultCodexHomePaths
@@ -4894,7 +4894,7 @@ export class OrcaRuntimeService {
       liveLeafCount: this.leaves.size,
       runtimeProtocolVersion: RUNTIME_PROTOCOL_VERSION,
       minCompatibleRuntimeClientVersion: MIN_COMPATIBLE_RUNTIME_CLIENT_VERSION,
-      // Why: headless orca serve cannot create/stream BrowserViews, so clients
+      // Why: headless argus serve cannot create/stream BrowserViews, so clients
       // must not treat browser panes as supported just because runtime RPC is up.
       capabilities,
       hostPlatform: process.platform,
@@ -12518,7 +12518,7 @@ export class OrcaRuntimeService {
       : undefined
   }
 
-  getTerminalOrchestrationCliCommand(handle: string): 'orca' | 'argus-ide' {
+  getTerminalOrchestrationCliCommand(handle: string): 'orca' | 'argus' {
     let pty: RuntimePtyWorktreeRecord | null = null
     try {
       const ptyId = this.resolveLeafForHandle(handle)?.ptyId
@@ -12529,14 +12529,7 @@ export class OrcaRuntimeService {
     if (!pty) {
       return 'orca'
     }
-    return resolveTerminalOrchestrationCliCommand({
-      connectionId: pty.connectionId,
-      isWsl: pty.isWsl,
-      worktreeId: pty.worktreeId,
-      projectRuntime: this.store
-        ? resolveLocalProjectRuntimeForWorktreeId(this.requireStore(), pty.worktreeId)
-        : undefined
-    })
+    return resolveTerminalOrchestrationCliCommand()
   }
 
   hasRecentTerminalOutputPath(handle: string, pathText: string, absolutePath: string): boolean {
@@ -13189,7 +13182,7 @@ export class OrcaRuntimeService {
   }
 
   // Why: register a managed Claude account from a CLAUDE_CONFIG_DIR the caller
-  // already logged into. Lets the `orca account add` CLI drive `claude login` in
+  // already logged into. Lets the `argus account add` CLI drive `claude login` in
   // the user's terminal on a headless host, then capture the credentials here —
   // the desktop GUI's interactive add flow is unreachable over a remote runtime.
   addClaudeAccountFromConfigDir(
@@ -13209,7 +13202,7 @@ export class OrcaRuntimeService {
 
   // Why: Codex counterpart of addClaudeAccountFromConfigDir — register a managed
   // Codex account from a CODEX_HOME the caller already logged into, so headless
-  // hosts can add accounts via `orca account add --agent codex`.
+  // hosts can add accounts via `argus account add --agent codex`.
   addCodexAccountFromHome(
     sourceHome: string,
     target?: { runtime?: 'host' | 'wsl'; wslDistro?: string | null }
@@ -18744,7 +18737,7 @@ export class OrcaRuntimeService {
     }
     if (!isAbsolute(path)) {
       // Why: remote clients may run in a different cwd than the server. Require
-      // server-side repo paths to be explicit so `orca serve` cwd is irrelevant.
+      // server-side repo paths to be explicit so `argus serve` cwd is irrelevant.
       throw new Error('Project path must be an absolute path')
     }
     if (kind === 'git') {
@@ -21169,7 +21162,7 @@ export class OrcaRuntimeService {
     worktreeId: string
     activated: boolean
     /** Mobile-scoped slept-agent wake outcome. `unsupported-headless` means no
-     *  renderer holds the sleeping records (headless `orca serve`), so nothing
+     *  renderer holds the sleeping records (headless `argus serve`), so nothing
      *  woke — clients must not present the worktree's agents as resumed. */
     sleepingAgentWake: 'requested' | 'unsupported-headless' | 'not-applicable'
   }> {
@@ -22683,7 +22676,7 @@ export class OrcaRuntimeService {
       try {
         // Why: automation startup must not depend on a renderer TerminalPane
         // mounting. Runtime-spawned PTYs run immediately and the UI adopts the
-        // session later, matching `orca terminal create` background semantics.
+        // session later, matching `argus terminal create` background semantics.
         const startupTrustAgent = effectiveDraftPaste?.agent ?? effectiveCreatedWithAgent
         if (startupTrustAgent) {
           this.markLocalWorkspaceTrustedForAgent(startupTrustAgent, worktreePath)
@@ -25507,7 +25500,7 @@ export class OrcaRuntimeService {
       worktreeSelector !== undefined &&
       (Boolean(opts.agentSessionClaim) ||
         (!requiresRendererFocus && opts.rendererBacked !== true) ||
-        // Why: `orca serve` exposes the local runtime without a renderer
+        // Why: `argus serve` exposes the local runtime without a renderer
         // window. Renderer-backed and focus-requested creates are preferred on
         // the renderer, but with no window a background spawn is the only
         // usable path — otherwise getAuthoritativeWindow() below throws and the
@@ -26416,7 +26409,7 @@ export class OrcaRuntimeService {
     }
     // Why: mobile may be iOS while the shell host is Windows/macOS/Linux or SSH Linux; quote for the host shell.
     const platform = this.getAgentLaunchPlatformForWorkspace(workspace)
-    // Why: SSH runs the CLI through the relay shim (plain `orca`), so the Linux-only `argus-ide` rename must not apply.
+    // Why: SSH runs the CLI through the relay shim (plain `orca`), so the Linux-only `argus` rename must not apply.
     const isRemote = workspace.repo ? repoIsRemote(workspace.repo) : repoIsRemote(workspace)
     const queuedShell = resolveLocalWindowsAgentStartupShell({
       platform,
@@ -33062,7 +33055,7 @@ export class OrcaRuntimeService {
             'Linear may have applied the state change, but Argus could not confirm it.',
             {
               nextSteps: [
-                `Run \`orca linear issue ${target.issue.identifier} --workspace ${target.workspaceId} --json\` and check the current state before retrying.`
+                `Run \`argus linear issue ${target.issue.identifier} --workspace ${target.workspaceId} --json\` and check the current state before retrying.`
               ],
               ...(cause ? { cause } : {})
             }
@@ -33110,7 +33103,7 @@ export class OrcaRuntimeService {
             'Linear may have applied the relation change, but Argus could not confirm it.',
             {
               nextSteps: [
-                `Run \`orca linear issue ${target.issue.identifier} --relations --workspace ${target.workspaceId} --json\` before retrying.`
+                `Run \`argus linear issue ${target.issue.identifier} --relations --workspace ${target.workspaceId} --json\` before retrying.`
               ],
               ...(cause ? { cause } : {})
             }
@@ -33189,7 +33182,7 @@ export class OrcaRuntimeService {
               'Linear may have applied the issue save, but Argus could not confirm it.',
               {
                 nextSteps: [
-                  `Run \`orca linear issue ${target.issue.identifier} --workspace ${target.workspaceId} --json\` before retrying.`
+                  `Run \`argus linear issue ${target.issue.identifier} --workspace ${target.workspaceId} --json\` before retrying.`
                 ],
                 ...(cause ? { cause } : {})
               }
@@ -33238,7 +33231,7 @@ export class OrcaRuntimeService {
             'Linear may have applied the task update, but Argus could not confirm it.',
             {
               nextSteps: [
-                `Run \`orca linear issue ${target.issue.identifier} --workspace ${target.workspaceId} --json\` and check the updated field before retrying.`
+                `Run \`argus linear issue ${target.issue.identifier} --workspace ${target.workspaceId} --json\` and check the updated field before retrying.`
               ],
               ...(cause ? { cause } : {})
             }
@@ -33901,7 +33894,7 @@ export class OrcaRuntimeService {
             name: project.name,
             teams: project.teams
           })),
-          nextSteps: ['Run `orca linear project list --query <name> --json` and retry by id.']
+          nextSteps: ['Run `argus linear project list --query <name> --json` and retry by id.']
         }
       )
     }
@@ -33914,7 +33907,7 @@ export class OrcaRuntimeService {
         name: project.name,
         teams: project.teams
       })),
-      nextSteps: ['Run `orca linear project list --query <name> --json` and retry by id.']
+      nextSteps: ['Run `argus linear project list --query <name> --json` and retry by id.']
     })
   }
 
@@ -34040,7 +34033,7 @@ export class OrcaRuntimeService {
           : `Multiple labels exactly matched "${input}".`,
         {
           labels: labels.map((label) => ({ id: label.id, name: label.name })),
-          nextSteps: ['Run `orca linear team labels --team <key-or-id> --json` and retry by id.']
+          nextSteps: ['Run `argus linear team labels --team <key-or-id> --json` and retry by id.']
         }
       )
     })
@@ -34176,7 +34169,9 @@ export class OrcaRuntimeService {
           'linear_invalid_parent',
           'The reply target is not a comment on this issue.',
           {
-            nextSteps: ['Run `orca linear issue <id> --comments --json` to list valid comment ids.']
+            nextSteps: [
+              'Run `argus linear issue <id> --comments --json` to list valid comment ids.'
+            ]
           }
         )
       }
@@ -34557,7 +34552,7 @@ export class OrcaRuntimeService {
     }
     if (!teamInput) {
       throw linearError('linear_team_required', 'Pass --team or create under a parent issue.', {
-        nextSteps: ['Run `orca linear create --team <key> ...` or use --parent-current.']
+        nextSteps: ['Run `argus linear create --team <key> ...` or use --parent-current.']
       })
     }
 
@@ -34743,7 +34738,7 @@ export class OrcaRuntimeService {
     const pinned =
       verb === 'create'
         ? [
-            'orca linear create',
+            'argus linear create',
             `--workspace=${this.commandToken(workspaceId, 'WORKSPACE_ID')}`,
             `--write-id=${this.commandToken(writeId, 'WRITE_ID')}`,
             '--title TITLE_HERE',
@@ -34757,7 +34752,7 @@ export class OrcaRuntimeService {
             ).concat(this.linearCreateFieldRetryTokens(extra.createFields))
           ].join(' ')
         : [
-            `orca linear ${verb === 'attach' ? 'attach' : 'comment add'}`,
+            `argus linear ${verb === 'attach' ? 'attach' : 'comment add'}`,
             this.commandToken(target?.issue.identifier ?? '', 'ISSUE_ID'),
             `--workspace=${this.commandToken(workspaceId, 'WORKSPACE_ID')}`,
             `--write-id=${this.commandToken(writeId, 'WRITE_ID')}`,

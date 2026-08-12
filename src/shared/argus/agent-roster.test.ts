@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { canMutateCode, findAgent, MUTATING_TOOLS, type ArgusProjectAgents } from './agent-roster'
 import { listHierarchyAgents, parseAgentHierarchyByProject } from './agent-hierarchy'
@@ -7,7 +8,7 @@ type ImportedRoster = ArgusProjectAgents & { hierarchy: Record<string, string[]>
 
 function readRoster(file: string): ImportedRoster {
   return JSON.parse(
-    readFileSync(new URL(`../../../resources/argus/${file}`, import.meta.url), 'utf8')
+    readFileSync(resolve(process.cwd(), 'resources/argus', file), 'utf8')
   ) as ImportedRoster
 }
 

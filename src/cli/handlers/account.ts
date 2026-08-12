@@ -79,7 +79,7 @@ function addAgentNodePaths(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 /**
  * Runs the real agent login attached to the user's terminal so the OAuth
  * URL/device-code prompt is visible and the code can be pasted back — the desktop
- * GUI flow drives this via a browser Orca can't reach on a headless host.
+ * GUI flow drives this via a browser Argus can't reach on a headless host.
  */
 async function runAgentLoginInTerminal(
   command: string,
@@ -275,12 +275,12 @@ async function assertAccountImportSupported({ client }: HandlerContext): Promise
   if (!status.result.capabilities?.includes(ACCOUNT_IMPORT_RUNTIME_CAPABILITY)) {
     throw new RuntimeClientError(
       'incompatible_runtime',
-      'The running Orca runtime is too old to add accounts from the CLI. Update or restart Orca and try again.'
+      'The running Argus runtime is too old to add accounts from the CLI. Update or restart Argus and try again.'
     )
   }
 }
 
-/** CLI handlers for `orca account add [--agent claude|codex]` and `orca account list`. */
+/** CLI handlers for `argus account add [--agent claude|codex]` and `argus account list`. */
 export const ACCOUNT_HANDLERS: Record<string, CommandHandler> = {
   'account add': async (ctx) => {
     const agentFlag = ctx.flags.get('agent')
@@ -299,14 +299,14 @@ export const ACCOUNT_HANDLERS: Record<string, CommandHandler> = {
         `Unsupported --agent "${agent}". Use "claude" or "codex".`
       )
     }
-    rejectRemoteSelectionFlags(ctx, 'orca account add')
+    rejectRemoteSelectionFlags(ctx, 'argus account add')
     // Why: fail on runtime version skew before burning a full OAuth round trip.
     await assertAccountImportSupported(ctx)
     await ctx.client.call('accounts.list', { refreshUsage: false })
     await (agent === 'claude' ? addClaudeAccount(ctx) : addCodexAccount(ctx))
   },
   'account list': async (ctx) => {
-    rejectRemoteSelectionFlags(ctx, 'orca account list')
+    rejectRemoteSelectionFlags(ctx, 'argus account list')
     const { client, json } = ctx
     // Why: this command renders no usage numbers, so skip the forced provider
     // refresh — it is one serial network round-trip per managed account.

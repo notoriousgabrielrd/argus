@@ -22,7 +22,7 @@ function rewriteAsIndexDoes(argv: string[]): string[] {
 }
 
 describe('serve argv rewrite vs AppImage CLI redirect ordering', () => {
-  const launchArgv = ['/opt/orca/argus-ide', '--no-sandbox', 'serve', '--port', '7777', '--json']
+  const launchArgv = ['/opt/orca/argus', '--no-sandbox', 'serve', '--port', '7777', '--json']
 
   it('hands the launch argv to the CLI when the redirect runs first', () => {
     expect(getAppImageCliArgs(launchArgv, MOUNTED_APPIMAGE_ENV, REDIRECT_OPTIONS)).toEqual([
@@ -40,7 +40,7 @@ describe('serve argv rewrite vs AppImage CLI redirect ordering', () => {
   })
 
   it('leaves non-serve CLI commands redirectable either way', () => {
-    const argv = ['/opt/orca/argus-ide', 'status']
+    const argv = ['/opt/orca/argus', 'status']
     expect(rewriteAsIndexDoes(argv)).toEqual(argv)
     expect(getAppImageCliArgs(argv, MOUNTED_APPIMAGE_ENV, REDIRECT_OPTIONS)).toEqual(['status'])
   })

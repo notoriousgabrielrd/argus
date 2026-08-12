@@ -64,7 +64,7 @@ function createWslRunner(
     interopReady?: boolean
   } = {}
 ) {
-  const commandPath = '/home/alice/.local/bin/argus-ide'
+  const commandPath = '/home/alice/.local/bin/argus'
   const legacyCommandPath = '/home/alice/.local/bin/orca'
   const bridgePath = '/home/alice/.local/share/orca/orca-wsl-bridge.ps1'
   const files = new Map<string, string>()
@@ -176,7 +176,7 @@ describe('WslCliInstaller', () => {
 
     await expect(installer.getStatus()).resolves.toMatchObject({
       state: 'not_installed',
-      commandPath: '/home/alice/.local/bin/argus-ide'
+      commandPath: '/home/alice/.local/bin/argus'
     })
 
     const installed = await installer.install()
@@ -223,12 +223,12 @@ describe('WslCliInstaller', () => {
     await expect(installer.getStatus()).resolves.toMatchObject({
       supported: true,
       state: 'not_installed',
-      commandPath: '/home/alice/.local/bin/argus-ide'
+      commandPath: '/home/alice/.local/bin/argus'
     })
   })
 
   it('derives the shared WSL bridge path for current and legacy command names', () => {
-    expect(_internals.getBridgePathFromCommandPath('/home/alice/.local/bin/argus-ide')).toBe(
+    expect(_internals.getBridgePathFromCommandPath('/home/alice/.local/bin/argus')).toBe(
       '/home/alice/.local/share/orca/orca-wsl-bridge.ps1'
     )
     expect(_internals.getBridgePathFromCommandPath('/home/alice/.local/bin/orca')).toBe(
@@ -391,7 +391,7 @@ describe('WslCliInstaller', () => {
 
     await expect(installer.getStatus()).resolves.toMatchObject({
       state: 'not_installed',
-      commandPath: '/home/alice/.local/bin/argus-ide'
+      commandPath: '/home/alice/.local/bin/argus'
     })
   })
 
@@ -567,7 +567,7 @@ describe('WslCliInstaller', () => {
     expect(wsl.getFile()).toBe(currentLauncher)
   })
 
-  it('moves a legacy-only managed registration to argus-ide without touching unmanaged names', async () => {
+  it('moves a legacy-only managed registration to argus without touching unmanaged names', async () => {
     const nativeLauncher = 'C:\\Argus\\resources\\bin\\orca.exe'
     const managedLegacy = createWslRunner(null, true, {
       initialBridge: _internals.buildWslBridgeScript(),
@@ -704,9 +704,9 @@ describe('WslCliInstaller', () => {
     expect(installCommand).toContain('committed=1')
     expect(installCommand).toContain('flock -x -w 30 9')
     // Why: the command replace must stay one atomic rename; a mv-based backup
-    // would leave a window where a concurrent shell finds no argus-ide at all.
+    // would leave a window where a concurrent shell finds no argus at all.
     expect(installCommand).not.toContain('command_backup')
-    expect(installCommand).not.toContain(`mv -f '/home/alice/.local/bin/argus-ide'`)
+    expect(installCommand).not.toContain(`mv -f '/home/alice/.local/bin/argus'`)
   })
 
   it.skipIf(process.platform === 'win32')(
@@ -714,7 +714,7 @@ describe('WslCliInstaller', () => {
     async () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-wsl-cli-rollback-'))
       const home = join(root, 'home with spaces')
-      const commandPath = join(home, '.local', 'bin', 'argus-ide')
+      const commandPath = join(home, '.local', 'bin', 'argus')
       const bridgePath = join(home, '.local', 'share', 'orca', 'orca-wsl-bridge.ps1')
       const bridge = _internals.buildWslBridgeScript()
       await mkdir(join(home, '.local', 'bin'), { recursive: true })
@@ -745,7 +745,8 @@ describe('WslCliInstaller', () => {
         platform: 'win32',
         distro: 'Ubuntu',
         hostInstaller: {
-          getStatus: async () => makeHostStatus('C:\\Program Files\\Argus\\resources\\bin\\orca.exe')
+          getStatus: async () =>
+            makeHostStatus('C:\\Program Files\\Argus\\resources\\bin\\orca.exe')
         },
         wslRunner: runner
       })
@@ -789,7 +790,9 @@ describe('WslCliInstaller', () => {
     await expect(installer.repairManagedRegistration()).resolves.toMatchObject({ changed: true })
     await expect(installer.repairManagedRegistration()).resolves.toMatchObject({ changed: false })
     expect(wsl.calls.filter((command) => command.includes('cat > "$command_tmp"'))).toHaveLength(1)
-    expect(wsl.getFile()).toContain("ORCA_WIN_LAUNCHER='D:\\Custom Argus\\resources\\bin\\orca.exe'")
+    expect(wsl.getFile()).toContain(
+      "ORCA_WIN_LAUNCHER='D:\\Custom Argus\\resources\\bin\\orca.exe'"
+    )
   })
 
   it('settles when wsl.exe never reports completion', async () => {

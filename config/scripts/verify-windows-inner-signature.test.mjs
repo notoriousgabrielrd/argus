@@ -183,7 +183,11 @@ describe('verify-windows-inner-signature', () => {
     )
 
     expect(() =>
-      getPowerShellSignatureJson('Argus.exe', () => ({ status: 0, stdout: '{}', stderr: 'warning' }))
+      getPowerShellSignatureJson('Argus.exe', () => ({
+        status: 0,
+        stdout: '{}',
+        stderr: 'warning'
+      }))
     ).toThrow(/stderr/)
     expect(() =>
       getPowerShellSignatureJson('Argus.exe', () => ({ status: 7, stdout: '', stderr: '' }))

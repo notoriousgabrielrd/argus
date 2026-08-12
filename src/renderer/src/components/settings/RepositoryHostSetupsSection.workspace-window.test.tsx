@@ -119,7 +119,7 @@ describe('RepositoryHostSetupsSection workspace window availability', () => {
   })
 
   it('keeps a graph-ready runtime owner Ready when it reports no desktop window', () => {
-    // Why: headless `orca serve` (#6844) owns a ready graph with an openable
+    // Why: headless `argus serve` (#6844) owns a ready graph with an openable
     // desktop window — the degraded check must not widen into a renderer requirement.
     renderWithOwnerStatus(makeStatus({ graphStatus: 'ready', desktopWindowStatus: 'openable' }))
 

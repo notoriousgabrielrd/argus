@@ -1250,7 +1250,7 @@ export class BrowserManager {
     this.annotationViewportBridgeOpsByTabId.delete(browserTabId)
   }
 
-  // Why: headless orca serve has no <webview> window; back pages with offscreen WebContents and skip the webview-only setup.
+  // Why: headless argus serve has no <webview> window; back pages with offscreen WebContents and skip the webview-only setup.
   registerOffscreenGuest({
     browserPageId,
     worktreeId,

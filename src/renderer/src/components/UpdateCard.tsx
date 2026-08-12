@@ -881,9 +881,13 @@ function DownloadingContent({
       <p className="text-sm text-muted-foreground">
         {release
           ? release.description
-          : translate('auto.components.UpdateCard.93794ea932', 'Argus v{{value0}} is downloading.', {
-              value0: version
-            })}
+          : translate(
+              'auto.components.UpdateCard.93794ea932',
+              'Argus v{{value0}} is downloading.',
+              {
+                value0: version
+              }
+            )}
       </p>
 
       {showReleaseNotes && (

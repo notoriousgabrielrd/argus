@@ -9,7 +9,7 @@
  * Scenarios:
  *   idle-backlog-open            — idle with flood, then human-paced sequential open
  *   idle-backlog-reconnect-open  — same + wake-like metadata refresh storm, then open
- *   restart-proxy                — idle, then orca open + status/list storm + open
+ *   restart-proxy                — idle, then argus open + status/list storm + open
  *                                  (does NOT kill the desktop; proxies restore work)
  *
  * Usage:
@@ -265,7 +265,7 @@ async function main() {
       maxJobMs: storm.maxJobMs
     })
   } else if (scenario === 'restart-proxy') {
-    console.log('[realistic-freeze] restart proxy: orca open + refresh storm (no process kill)')
+    console.log('[realistic-freeze] restart proxy: argus open + refresh storm (no process kill)')
     const restart = await runRestartProxy(notes)
     reconnectRefreshMs = Math.max(restart.wallMs, restart.storm.wallMs, restart.storm.maxJobMs)
     phases.push({

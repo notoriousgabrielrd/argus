@@ -46,7 +46,7 @@ describe('addOrcaWslInteropEnv', () => {
     const env: Record<string, string> = {
       ORCA_TERMINAL_HANDLE: 'term_wsl',
       ORCA_USER_DATA_PATH: 'C:\\Users\\jin\\AppData\\Roaming\\Argus',
-      ORCA_CLI_COMMAND: 'argus-ide',
+      ORCA_CLI_COMMAND: 'argus',
       ORCA_OMP_STATUS_EXTENSION: 'C:\\Users\\jin\\.omp\\agent\\extensions\\orca-agent-status.ts',
       ORCA_PRIME_AGENT_STATUS_EXTENSION: 'C:\\stale\\orca-agent-status.ts',
       ORCA_PANE_KEY: 'tab-1:leaf-1',

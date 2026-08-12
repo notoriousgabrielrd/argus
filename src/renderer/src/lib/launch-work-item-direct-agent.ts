@@ -38,7 +38,7 @@ export function buildDirectWorkItemAgentStartupPlan(args: {
   launchPlatform: NodeJS.Platform
   nativeChatTranscriptIsLocalReadable?: boolean
   /** Why: SSH remotes deploy the CLI shim as plain `orca`, so the Linux-only
-   * `argus-ide` rename must not be applied for remote launches. */
+   * `argus` rename must not be applied for remote launches. */
   isRemote?: boolean
 }): {
   startupPlan: AgentStartupPlan | null

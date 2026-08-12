@@ -95,7 +95,7 @@ export function parseJsonOutput<T>(stdout: string): T {
 
 async function getComputerE2eOrcaDevUserDataPath(): Promise<string> {
   if (!orcaDevUserDataPath) {
-    // Why: the shared orca-dev profile can keep an older runtime alive across
+    // Why: the shared argus-dev profile can keep an older runtime alive across
     // local test runs, making computer-use E2E exercise stale provider code.
     orcaDevUserDataPath = await mkdtemp(join(tmpdir(), 'orca-computer-runtime-'))
   }

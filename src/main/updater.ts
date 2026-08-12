@@ -666,12 +666,12 @@ function deferHeadlessServeInstall(phase: 'download' | 'install', version: strin
       { phase, version: version || null },
       {
         level: 'warn',
-        message: 'Update install deferred while hosting orca serve'
+        message: 'Update install deferred while hosting argus serve'
       }
     )
   }
   sendErrorStatus(
-    'This orca serve process was not started by an update-capable supervisor. Keep it running and update Argus through its service manager.',
+    'This argus serve process was not started by an update-capable supervisor. Keep it running and update Argus through its service manager.',
     true
   )
   return true

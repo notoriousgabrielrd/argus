@@ -79,7 +79,7 @@ describe('acquireSingleInstanceLock', () => {
 
 describe('shouldActivateDesktopForSecondInstance', () => {
   it('ignores a duplicate serve launch but still activates for a desktop launch', () => {
-    // Why: a supervisor respawning `orca serve` must not open a window on a display-less host (#11935).
+    // Why: a supervisor respawning `argus serve` must not open a window on a display-less host (#11935).
     const serveArgv = ['/opt/orca/argus-linux.AppImage', '--serve']
     expect(shouldActivateDesktopForSecondInstance(serveArgv)).toBe(false)
     expect(shouldActivateDesktopForSecondInstance(['/Applications/Argus.app/orca'])).toBe(true)
@@ -90,7 +90,7 @@ describe('shouldActivateDesktopForSecondInstance', () => {
     // start reaches Electron in that shape, so a flag-only check would open a window on the live server.
     expect(
       shouldActivateDesktopForSecondInstance([
-        '/opt/orca/squashfs-root/argus-ide',
+        '/opt/orca/squashfs-root/argus',
         'serve',
         '--port',
         '6768',
@@ -99,9 +99,9 @@ describe('shouldActivateDesktopForSecondInstance', () => {
       ])
     ).toBe(false)
     // A path argument that merely contains `serve` is still a desktop launch.
-    expect(
-      shouldActivateDesktopForSecondInstance(['/opt/orca/argus-ide', '/home/u/serve-repo'])
-    ).toBe(true)
+    expect(shouldActivateDesktopForSecondInstance(['/opt/orca/argus', '/home/u/serve-repo'])).toBe(
+      true
+    )
   })
 
   it('fails open when no argv is available', () => {

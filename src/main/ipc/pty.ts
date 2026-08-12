@@ -1855,8 +1855,8 @@ export function buildPtyHostEnv(
   // Why: WSL shells need the managed userData root for shell-ready wrappers; dev-mode terminals need the same export so `orca` targets the live dev instance.
   if (opts.isWsl) {
     baseEnv.ORCA_USER_DATA_PATH = opts.userDataPath
-    // Why: managed WSL registration uses `argus-ide`; exposing that literal scopes agent guidance to WSL without a bare-orca shim.
-    baseEnv.ORCA_CLI_COMMAND = opts.isPackaged ? 'argus-ide' : 'orca-dev'
+    // Why: managed WSL registration uses `argus`; exposing that literal scopes agent guidance to WSL without a bare-orca shim.
+    baseEnv.ORCA_CLI_COMMAND = opts.isPackaged ? 'argus' : 'argus-dev'
   } else {
     if (!opts.isPackaged) {
       baseEnv.ORCA_USER_DATA_PATH ??= opts.userDataPath
@@ -1872,7 +1872,7 @@ export function buildPtyHostEnv(
       ? `${devCliBin}${delimiter}${inheritedPath}`
       : devCliBin
   } else if (process.platform === 'linux') {
-    // Why: bare-`orca` shim scoped to Argus PTYs — Linux CLI installs as `argus-ide` to avoid shadowing GNOME's /usr/bin/orca screen reader (stablyai/orca#7904).
+    // Why: bare-`orca` shim scoped to Argus PTYs — Linux CLI installs as `argus` to avoid shadowing GNOME's /usr/bin/orca screen reader (stablyai/orca#7904).
     const shimDir = ensureLinuxTerminalOrcaCliShimDir({ userDataPath: opts.userDataPath })
     if (shimDir) {
       const inheritedEntries = readInheritedPath(baseEnv)
@@ -7779,7 +7779,7 @@ export function registerHeadlessPtyRuntime(
     onPtyExit?: (id: string, exitSequence: number) => void
   }
 ): void {
-  // Why: headless `orca serve` has no renderer window but still needs the same PTY handlers so remote clients can drive terminals.
+  // Why: headless `argus serve` has no renderer window but still needs the same PTY handlers so remote clients can drive terminals.
   const headlessWindow = {
     isDestroyed: () => true,
     webContents: {

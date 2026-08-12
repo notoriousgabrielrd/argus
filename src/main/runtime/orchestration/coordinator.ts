@@ -40,7 +40,7 @@ export type CoordinatorRuntime = {
     launchTokenHash: string | null
   } | null
   // Why: Windows can host native and WSL workers at once, so the worker pane (not the coordinator) picks the packaged CLI name.
-  getTerminalOrchestrationCliCommand?(handle: string): 'orca' | 'argus-ide'
+  getTerminalOrchestrationCliCommand?(handle: string): 'orca' | 'argus'
 }
 
 // Why (§3.1): 20 lets normal monorepo day-velocity pass but trips the 168-commit harm from ORCHESTRATOR_FEEDBACK.md (chosen in msg_eff3a646110d).
@@ -449,7 +449,7 @@ export class Coordinator {
       processIncarnation
     )
 
-    // Why: dispatched agents use orca-dev in dev mode to reach the dev runtime's socket, not production (Section 6.4).
+    // Why: dispatched agents use argus-dev in dev mode to reach the dev runtime's socket, not production (Section 6.4).
     const preamble = buildDispatchPreamble({
       taskId: task.id,
       dispatchId: dispatch.id,
@@ -457,7 +457,7 @@ export class Coordinator {
       taskSpec: strippedSpec,
       coordinatorHandle: this.opts.coordinatorHandle,
       workerHandle: targetHandle,
-      devMode: process.env.ORCA_USER_DATA_PATH?.includes('orca-dev'),
+      devMode: process.env.ORCA_USER_DATA_PATH?.includes('argus-dev'),
       ...(this.runtime.getTerminalOrchestrationCliCommand
         ? { cliCommand: this.runtime.getTerminalOrchestrationCliCommand(targetHandle) }
         : {}),

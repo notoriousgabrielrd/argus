@@ -156,7 +156,7 @@ describe('runtime RPC startup failure reporting', () => {
         title: 'Argus CLI unavailable',
         message: "Argus couldn't start its local command transport.",
         detail: expect.stringMatching(
-          /orca status.*orca terminal.*orchestration.*Cause: metadata write failed/s
+          /argus status.*argus terminal.*orchestration.*Cause: metadata write failed/s
         )
       })
     )

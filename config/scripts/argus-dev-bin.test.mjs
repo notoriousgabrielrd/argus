@@ -6,16 +6,16 @@ import { describe, expect, it } from 'vitest'
 
 const projectDir = path.resolve(import.meta.dirname, '../..')
 const packageJson = JSON.parse(readFileSync(path.join(projectDir, 'package.json'), 'utf8'))
-const wrapperPath = path.join(projectDir, 'config', 'scripts', 'orca-dev.mjs')
+const wrapperPath = path.join(projectDir, 'config', 'scripts', 'argus-dev.mjs')
 
-describe('orca-dev package bin', () => {
+describe('argus-dev package bin', () => {
   it('uses a Node entrypoint for cross-platform package installs', () => {
-    expect(packageJson.bin['orca-dev']).toBe('./config/scripts/orca-dev.mjs')
+    expect(packageJson.bin['argus-dev']).toBe('./config/scripts/argus-dev.mjs')
     expect(readFileSync(wrapperPath, 'utf8')).toMatch(/^#!\/usr\/bin\/env node\n/)
   })
 
   it('runs the dev CLI through Node without requiring Bash', () => {
-    const root = mkdtempSync(path.join(tmpdir(), 'orca-dev-bin-'))
+    const root = mkdtempSync(path.join(tmpdir(), 'argus-dev-bin-'))
     const cliEntry = path.join(root, 'cli-entry.cjs')
     const outputPath = path.join(root, 'output.json')
     writeFileSync(

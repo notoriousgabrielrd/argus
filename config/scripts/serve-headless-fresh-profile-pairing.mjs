@@ -8,7 +8,7 @@ import { createInterface } from 'node:readline'
 
 const scriptDir = import.meta.dirname
 const repoRoot = path.resolve(scriptDir, '..', '..')
-const orcaDevScript = path.join(scriptDir, 'orca-dev.mjs')
+const orcaDevScript = path.join(scriptDir, 'argus-dev.mjs')
 const ensureNativeRuntimeScript = path.join(scriptDir, 'ensure-native-runtime.mjs')
 const fixedProfileDir = process.env.ORCA_HEADLESS_PAIRING_PROFILE_DIR
 const parsed = parseArgs(process.argv.slice(2))
@@ -61,7 +61,9 @@ Object.assign(childEnv, {
 })
 
 console.error(`[headless-pairing] userData=${profileDir}`)
-console.error(`[headless-pairing] starting: orca-dev serve --json${formatForwardedArgs(serveArgs)}`)
+console.error(
+  `[headless-pairing] starting: argus-dev serve --json${formatForwardedArgs(serveArgs)}`
+)
 
 child = spawn(process.execPath, [orcaDevScript, 'serve', '--json', ...serveArgs], {
   cwd: repoRoot,
@@ -100,7 +102,7 @@ process.on('SIGINT', () => stopChild('SIGINT'))
 process.on('SIGTERM', () => stopChild('SIGTERM'))
 
 /**
- * Parses wrapper flags and forwards everything else to `orca serve`.
+ * Parses wrapper flags and forwards everything else to `argus serve`.
  */
 function parseArgs(args) {
   const serveArgs = []
@@ -124,9 +126,9 @@ function parseArgs(args) {
  * Prints script usage without touching the dev profile or starting the server.
  */
 function printHelp() {
-  console.log(`Usage: node config/scripts/serve-headless-fresh-profile-pairing.mjs [--keep] [orca serve flags]
+  console.log(`Usage: node config/scripts/serve-headless-fresh-profile-pairing.mjs [--keep] [argus serve flags]
 
-Starts orca-dev serve --json with a fresh isolated userData profile, ensures Electron's dev runtime is usable, and prints the pairing URL.
+Starts argus-dev serve --json with a fresh isolated userData profile, ensures Electron's dev runtime is usable, and prints the pairing URL.
 
 Wrapper flags:
   --keep        Keep the fresh profile after the server exits.
@@ -286,7 +288,7 @@ function stopChild(signal) {
   stopAttempts += 1
   const targetSignal = stopAttempts > 1 ? 'SIGKILL' : signal
   if (process.platform === 'win32' && child.pid) {
-    // Why: child.kill() only targets orca-dev on Windows; taskkill walks the
+    // Why: child.kill() only targets argus-dev on Windows; taskkill walks the
     // CLI/Electron descendants so the fresh profile is not left locked.
     const killer = spawn('taskkill', ['/pid', String(child.pid), '/t', '/f'], {
       stdio: 'ignore',
@@ -296,7 +298,7 @@ function stopChild(signal) {
     return
   }
   if (process.platform !== 'win32' && child.pid) {
-    // Why: orca-dev synchronously owns the CLI child, which owns Electron; kill
+    // Why: argus-dev synchronously owns the CLI child, which owns Electron; kill
     // the spawned process group so programmatic shutdown does not orphan serve.
     try {
       process.kill(-child.pid, targetSignal)

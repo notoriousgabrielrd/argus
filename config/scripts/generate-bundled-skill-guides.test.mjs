@@ -82,7 +82,7 @@ describe('bundled skill guide generator', () => {
 
     for (const [name, commands] of Object.entries(expectedFallbackCommands)) {
       const stub = await readFile(path.join(projectDir, 'skill-stubs', `${name}.md`), 'utf8')
-      const fallback = stub.split('## If an older Orca does not recognize `skills get`')[1]
+      const fallback = stub.split('## If an older Argus does not recognize `skills get`')[1]
 
       expect(fallback, name).toBeDefined()
       for (const command of commands) {
@@ -115,14 +115,14 @@ describe('bundled skill guide generator', () => {
       const source = await readFile(path.join(projectDir, 'skill-guides', `${name}.md`), 'utf8')
 
       expect(source).toContain('ORCA_CLI_COMMAND')
-      expect(source).toContain('orca-dev')
-      expect(source).toContain('orca-ide')
+      expect(source).toContain('argus-dev')
+      expect(source).toContain('argus')
       expect(source).toContain('PowerShell')
       expect(source).toContain('cmd.exe')
       expect(source).toMatch(/^ORCA .+--json$/mu)
       // Why: bare command lines can launch GNOME Orca, while shell variables make
       // the same guide unusable from PowerShell and cmd.exe.
-      expect(source).not.toMatch(/^orca /mu)
+      expect(source).not.toMatch(/^argus /mu)
       expect(source).not.toMatch(/\$ORCA(?:_|\b)/u)
     }
   })

@@ -44,7 +44,8 @@ export const KO_VALUE_OVERRIDES = {
   'Issue #{{value0}}': '이슈 #{{value0}}',
   'Linked issue #{{value0}}': '연결된 이슈 #{{value0}}',
   'Issue # or GitHub URL': '이슈 # 또는 GitHub URL',
-  'Add Argus attribution to commits, PRs, and issues.': '커밋, PR 및 이슈에 Argus 속성을 추가합니다.',
+  'Add Argus attribution to commits, PRs, and issues.':
+    '커밋, PR 및 이슈에 Argus 속성을 추가합니다.',
   'Paste an issue URL, or enter a number. Leave blank to remove the link.':
     '이슈 URL을 붙여넣거나 숫자를 입력하세요. 링크를 제거하려면 비워두세요.',
   'Connect Linear in Settings to search issues.': '이슈를 검색하려면 설정에서 Linear를 연결하세요.',

@@ -53,7 +53,7 @@ export function buildAgentStartupPlan(args: {
   sessionOptions?: Record<string, SessionOptionValue>
   sessionOptionsOverrideAgentArgs?: boolean
   /** Why: SSH remotes deploy the CLI shim as plain `orca`, so the Linux-only
-   * `argus-ide` rename must be skipped for remote launches. */
+   * `argus` rename must be skipped for remote launches. */
   isRemote?: boolean
 }): AgentStartupPlan | null {
   const { agent, prompt, cmdOverrides, platform, allowEmptyPromptLaunch = false } = args

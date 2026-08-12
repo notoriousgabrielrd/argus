@@ -279,7 +279,7 @@ describe('PreflightHandler', () => {
         return { stdout: 'C:\\Users\\test\\AppData\\Roaming\\npm\\claude.cmd\r\n' }
       }
       if (String(args[0]) === 'orca') {
-        return { stdout: 'C:\\Program Files\\Orca\\orca.cmd\r\n' }
+        return { stdout: 'C:\\Program Files\\Argus\\orca.cmd\r\n' }
       }
       throw new Error('not found')
     })

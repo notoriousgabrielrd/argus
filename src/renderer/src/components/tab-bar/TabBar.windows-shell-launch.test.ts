@@ -866,7 +866,7 @@ describe('TabBar PowerShell launch wiring', () => {
   })
 
   it('hides local Windows shell rows for a non-Windows serve runtime', async () => {
-    // Why: a Windows desktop client paired to a Linux `orca serve` runs its PTY on
+    // Why: a Windows desktop client paired to a Linux `argus serve` runs its PTY on
     // the serve host. The local Windows shell choices (PowerShell/CMD/WSL) are
     // meaningless there; the plain "New Terminal" already opens the serve's default
     // shell. Sibling tests above assert that a win32 remote host still shows the

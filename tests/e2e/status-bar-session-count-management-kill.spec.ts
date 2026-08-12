@@ -3,7 +3,7 @@
  *
  * `pty:management:killOne` tears a session down with `adapter.shutdown()`. The daemon only fans
  * `exit` to the clients attached to that session, so when the killed session belongs to *another*
- * daemon client (a previous app generation, `orca serve`, a second Argus client) this window's main
+ * daemon client (a previous app generation, `argus serve`, a second Argus client) this window's main
  * process never emits `pty:exit`. The status-bar chip is an event-sourced cache: with no lifecycle
  * event and no interval it kept painting the pre-kill count until the Resource Manager popover was
  * opened — and opening the popover refreshes, which is exactly why this spec never opens it.

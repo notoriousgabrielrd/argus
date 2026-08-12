@@ -59,7 +59,7 @@ function getInstallDescription(platform: string): string {
     return 'Register `orca` in /usr/local/bin.'
   }
   if (platform === 'linux') {
-    return 'Register `argus-ide` in ~/.local/bin.'
+    return 'Register `argus` in ~/.local/bin.'
   }
   if (platform === 'win32') {
     return 'Register `orca` in your user PATH.'
@@ -68,7 +68,7 @@ function getInstallDescription(platform: string): string {
 }
 
 function getFallbackCommandName(platform: string): string {
-  return platform === 'linux' ? 'argus-ide' : 'orca'
+  return platform === 'linux' ? 'argus' : 'orca'
 }
 
 export function CliSection({

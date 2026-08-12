@@ -5,7 +5,7 @@ import { RuntimeClientError, serveOrcaApp } from '../runtime-client'
 import { stripElectronRunAsNode } from '../runtime/launch'
 
 function envRecord(): Record<string, string> {
-  // Why: the `orca` launcher runs Orca's Electron binary as Node, so this CLI
+  // Why: the `orca` launcher runs Argus's Electron binary as Node, so this CLI
   // process carries ELECTRON_RUN_AS_NODE=1. Strip it before it reaches the
   // spawned `claude` (and any nested Electron it launches), which would
   // otherwise be forced into headless plain-Node mode.
@@ -69,7 +69,7 @@ export const CORE_HANDLERS: Record<string, CommandHandler> = {
     if (!paneKey) {
       throw new RuntimeClientError(
         'invalid_environment',
-        'orca claude-teams must be run inside an Orca terminal.'
+        'argus claude-teams must be run inside an Argus terminal.'
       )
     }
     const response = await client.call<{ launch: { env: Record<string, string> } }>(

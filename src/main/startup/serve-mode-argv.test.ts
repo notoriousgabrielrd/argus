@@ -66,12 +66,12 @@ describe('serve-mode-argv', () => {
       ['/Applications/Argus.app/Contents/MacOS/Argus', '-psn_0_123456'],
       ['C:\\Program Files\\Argus\\Argus.exe', '--squirrel-firstrun'],
       ['C:\\Program Files\\Argus\\Argus.exe', 'orca://worktree/serve'],
-      ['/opt/orca/argus-ide', '/home/u/serve'],
+      ['/opt/orca/argus', '/home/u/serve'],
       // `--pairing-code` takes the next token, so its value is never the subcommand.
-      ['/opt/orca/argus-ide', '--pairing-code', 'serve'],
-      ['/opt/orca/argus-ide', '--environment=serve'],
-      ['/opt/orca/argus-ide', '--', 'serve'],
-      ['/opt/orca/argus-ide', 'Serve']
+      ['/opt/orca/argus', '--pairing-code', 'serve'],
+      ['/opt/orca/argus', '--environment=serve'],
+      ['/opt/orca/argus', '--', 'serve'],
+      ['/opt/orca/argus', 'Serve']
     ]) {
       expect(argvRequestsServeMode(argv), argv.join(' ')).toBe(false)
       expect(normalizeServeModeArgv(argv)).toEqual(argv)
@@ -108,7 +108,7 @@ describe('serve-mode-argv', () => {
   })
 
   it('leaves already-normalized argv unchanged', () => {
-    // Why every value flag: the CLI's own `orca serve` spawns the app with exactly this shape
+    // Why every value flag: the CLI's own `argus serve` spawns the app with exactly this shape
     // (serveOrcaApp), and the rewrite now runs over it too — a bad mapping would drop the port here.
     const argv = [
       'orca',

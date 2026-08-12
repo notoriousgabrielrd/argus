@@ -1,4 +1,4 @@
-// Why: relay-side equivalent of Orca's local agent integration installers.
+// Why: relay-side equivalent of Argus's local agent integration installers.
 // OpenCode still needs a config overlay, while Pi/OMP now get Orca-managed
 // extension files installed into the remote agent homes. Host paths from the
 // renderer are meaningless on SSH targets, so the relay performs the remote
@@ -6,12 +6,12 @@
 //
 // Plugin source strings ship over the JSON-RPC channel at session-ready —
 // they are NOT bundled with the relay binary because the relay is versioned
-// independently from Orca and the plugin source changes frequently as new
+// independently from Argus and the plugin source changes frequently as new
 // agent events get added; bundling would make every such change a relay
 // redeploy, and an old relay would silently serve stale plugin code.
 //
 // We deliberately do not reuse OpenCodeHookService / PiTitlebarExtensionService
-// directly: those modules import `electron` and ride on Orca's userData
+// directly: those modules import `electron` and ride on Argus's userData
 // path. The relay's electron-free constraint forces a thin parallel
 // implementation rooted at $HOME/.orca-relay/ for OpenCode and at the remote
 // Pi/OMP homes for those agents.
@@ -67,7 +67,7 @@ const PI_AGENT_HOME_DIR_NAME: Record<PiAgentKind, string> = {
 
 function safeDirName(input: string): string {
   // Why: paneKey embeds tabId:paneId where tabId may itself contain
-  // filesystem-unsafe characters in some Orca builds. Hash to a fixed-width
+  // filesystem-unsafe characters in some Argus builds. Hash to a fixed-width
   // hex name so any input produces a portable directory name.
   return createHash('sha256').update(input).digest('hex').slice(0, 32)
 }
@@ -122,9 +122,9 @@ export class PluginOverlayManager {
     }
   }
 
-  /** Replace the cached source bodies. Called from relay.ts when Orca sends
+  /** Replace the cached source bodies. Called from relay.ts when Argus sends
    *  `agent_hook.installPlugins`. The first install enables the augmenter
-   *  output; subsequent installs (e.g. Orca version upgrade in flight) refresh
+   *  output; subsequent installs (e.g. Argus version upgrade in flight) refresh
    *  the cached source so future spawns see the new strings.
    *  Note: existing running agents keep whatever source they loaded at
    *  process start. Future PTYs pick up the refreshed source when the relay
@@ -229,7 +229,7 @@ export class PluginOverlayManager {
           return null
         }
         // Why: OPENCODE_CONFIG_DIR is a single config root. Mirror the user's
-        // remote root into the overlay before adding Orca's plugin so status
+        // remote root into the overlay before adding Argus's plugin so status
         // reporting does not hide their auth, models, keybinds, or plugins.
         this.mirrorOpenCodeConfig(existingConfigDir, dir)
       }

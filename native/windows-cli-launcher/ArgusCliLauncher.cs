@@ -3,16 +3,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-internal static class OrcaCliLauncher
+internal static class ArgusCliLauncher
 {
     private static int Main(string[] args)
     {
         try
         {
-            string launcherDirectory = Path.GetDirectoryName(typeof(OrcaCliLauncher).Assembly.Location);
+            string launcherDirectory = Path.GetDirectoryName(typeof(ArgusCliLauncher).Assembly.Location);
             string resourcesDirectory = Directory.GetParent(launcherDirectory).FullName;
             string appDirectory = Directory.GetParent(resourcesDirectory).FullName;
-            string electronPath = Path.Combine(appDirectory, "Orca.exe");
+            string electronPath = Path.Combine(appDirectory, "Argus.exe");
             string cliPath = Path.Combine(
                 resourcesDirectory,
                 "app.asar.unpacked",
@@ -23,13 +23,13 @@ internal static class OrcaCliLauncher
 
             if (!File.Exists(electronPath))
             {
-                Console.Error.WriteLine("Unable to locate Orca.exe next to \"{0}\"", resourcesDirectory);
+                Console.Error.WriteLine("Unable to locate Argus.exe next to \"{0}\"", resourcesDirectory);
                 return 1;
             }
 
             if (!File.Exists(cliPath))
             {
-                Console.Error.WriteLine("Unable to locate the Orca CLI entrypoint at \"{0}\"", cliPath);
+                Console.Error.WriteLine("Unable to locate the Argus CLI entrypoint at \"{0}\"", cliPath);
                 return 1;
             }
 
@@ -48,11 +48,9 @@ internal static class OrcaCliLauncher
             MoveEnvironmentVariable("NODE_REPL_EXTERNAL_MODULE", "ORCA_NODE_REPL_EXTERNAL_MODULE");
             Environment.SetEnvironmentVariable("ELECTRON_RUN_AS_NODE", "1");
             Environment.SetEnvironmentVariable("ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER", "1");
-            string requestedCliCommand = Environment.GetEnvironmentVariable("ORCA_CLI_COMMAND");
-            Environment.SetEnvironmentVariable(
-                "ORCA_CLI_COMMAND",
-                requestedCliCommand == "orca-ide" ? "orca-ide" : "orca"
-            );
+            // Why unconditional: upstream branched here between orca and orca-ide because
+            // GNOME's Orca screen reader owns /usr/bin/orca. Argus has one name everywhere.
+            Environment.SetEnvironmentVariable("ORCA_CLI_COMMAND", "argus");
 
             using (Process child = Process.Start(startInfo))
             {
@@ -62,7 +60,7 @@ internal static class OrcaCliLauncher
         }
         catch (Exception error)
         {
-            Console.Error.WriteLine("Unable to start the Orca CLI: {0}", error.Message);
+            Console.Error.WriteLine("Unable to start the Argus CLI: {0}", error.Message);
             return 1;
         }
     }

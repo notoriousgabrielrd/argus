@@ -363,7 +363,7 @@ function validationCliCommand() {
   if (process.env.ORCA_CLI_COMMAND) {
     return process.env.ORCA_CLI_COMMAND
   }
-  return process.platform === 'linux' ? 'argus-ide' : 'orca'
+  return process.platform === 'linux' ? 'argus' : 'orca'
 }
 
 async function probeTerminalEnvironment(terminalHandle, launchEnv) {

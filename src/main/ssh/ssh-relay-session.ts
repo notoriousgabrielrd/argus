@@ -997,7 +997,7 @@ export class SshRelaySession {
     } catch (error) {
       // Why: on MaxSessions=1 remotes the relay holds the only slot, so this raw-connection install can fail — don't fail the whole connection.
       console.warn(
-        `[ssh-relay-session] remote orca CLI launcher install failed for ${this.targetId}: ${
+        `[ssh-relay-session] remote argus CLI launcher install failed for ${this.targetId}: ${
           error instanceof Error ? error.message : String(error)
         }`
       )

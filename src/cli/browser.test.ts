@@ -38,7 +38,7 @@ import { main } from './index'
 import { RuntimeClientError } from './runtime-client'
 import { buildWorktree, okFixture, queueFixtures, worktreeListFixture } from './test-fixtures'
 
-describe('orca cli browser page targeting', () => {
+describe('argus cli browser page targeting', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -293,7 +293,7 @@ describe('orca cli browser page targeting', () => {
   })
 })
 
-describe('orca cli browser profile management', () => {
+describe('argus cli browser profile management', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -371,7 +371,7 @@ describe('orca cli browser profile management', () => {
   })
 })
 
-describe('orca cli browser tab profiles', () => {
+describe('argus cli browser tab profiles', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -566,7 +566,7 @@ describe('orca cli browser tab profiles', () => {
   })
 })
 
-describe('orca cli browser cookies', () => {
+describe('argus cli browser cookies', () => {
   beforeEach(() => {
     callMock.mockReset()
     process.exitCode = undefined
@@ -641,7 +641,7 @@ describe('orca cli browser cookies', () => {
   })
 })
 
-describe('orca cli browser waits and viewport flags', () => {
+describe('argus cli browser waits and viewport flags', () => {
   beforeEach(() => {
     callMock.mockReset()
     process.exitCode = undefined
@@ -701,18 +701,18 @@ describe('orca cli browser waits and viewport flags', () => {
     )
   })
 
-  it('does not tell users Orca is down for a generic runtime timeout', async () => {
+  it('does not tell users Argus is down for a generic runtime timeout', async () => {
     callMock.mockRejectedValueOnce(
       new RuntimeClientError(
         'runtime_timeout',
-        'Timed out waiting for the Orca runtime to respond.'
+        'Timed out waiting for the Argus runtime to respond.'
       )
     )
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await main(['wait', '--selector', '#ready', '--worktree', 'all'], '/tmp/not-an-orca-worktree')
 
-    expect(errorSpy).toHaveBeenCalledWith('Timed out waiting for the Orca runtime to respond.')
+    expect(errorSpy).toHaveBeenCalledWith('Timed out waiting for the Argus runtime to respond.')
   })
 
   it('passes the mobile viewport flag through to browser.viewport', async () => {

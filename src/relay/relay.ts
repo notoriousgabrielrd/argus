@@ -3,7 +3,7 @@
 
 /* eslint-disable max-lines -- Why: splitting the entrypoint's startup/reconnect/registration would hide the startup order, the key invariant here. */
 
-// Orca Relay — lightweight daemon deployed to remote hosts over SCP and launched via an SSH exec channel.
+// Argus Relay — lightweight daemon deployed to remote hosts over SCP and launched via an SSH exec channel.
 // Communicates over stdin/stdout using the framed JSON-RPC protocol.
 // On client disconnect it enters a grace period, keeping PTYs alive on a Unix domain socket; a later launch
 // reconnects via `relay.js --connect`, bridging the new SSH channel's stdio to the existing relay's socket.
@@ -780,7 +780,7 @@ async function main(): Promise<void> {
   )
 
   // ── Agent-hook server ─────────────────────────────────────────────
-  // Why: loopback HTTP receiver so remote-PTY agent CLIs post hook events to a local port (they can't reach Orca's host); the relay forwards them as agent.hook notifications.
+  // Why: loopback HTTP receiver so remote-PTY agent CLIs post hook events to a local port (they can't reach Argus's host); the relay forwards them as agent.hook notifications.
   const hookServer = new RelayAgentHookServer({
     // Why: scope endpoint.env/cmd by socket path so multiple relay daemons on one account can't overwrite each other's hook tokens.
     endpointDir: endpointDir ?? endpointDirForRelaySocket(sockPath),
@@ -817,7 +817,7 @@ async function main(): Promise<void> {
       }
     }
     if (pluginOverlay.hasPiSource()) {
-      // Why: install Orca's guarded extension into the launched agent's (Pi vs OMP) real remote dir without redirecting PI_CODING_AGENT_DIR.
+      // Why: install Argus's guarded extension into the launched agent's (Pi vs OMP) real remote dir without redirecting PI_CODING_AGENT_DIR.
       const launchCommandHint = resolveSetupAgentSequenceLaunchCommand(ctx.env, ctx.command)
       const explicitKind = isPiCompatibleAgentType(ctx.launchAgent)
         ? ctx.launchAgent
@@ -878,7 +878,7 @@ async function main(): Promise<void> {
     pluginOverlay.clearOverlay(paneKey ?? id)
   })
 
-  // Why: forward cached entries as notifications before returning, so the response trails every replay and Orca can't treat replay as done while frames are still in flight.
+  // Why: forward cached entries as notifications before returning, so the response trails every replay and Argus can't treat replay as done while frames are still in flight.
   dispatcher.onRequest(AGENT_HOOK_REQUEST_REPLAY_METHOD, async () => {
     const replayed = hookServer.replayCachedPayloadsForPanes()
     return { replayed }
@@ -887,8 +887,8 @@ async function main(): Promise<void> {
   // Why: relay-local installers collapse hundreds of SFTP request/response RTTs to one RPC.
   registerManagedHookInstaller(dispatcher)
 
-  // Why: plugin sources ship over the wire — the relay is versioned independently of Orca, so bundling them would make every agent-event change a relay redeploy.
-  // Why: bound per-source size so a buggy/hostile Orca can't OOM the relay by pushing a giant string.
+  // Why: plugin sources ship over the wire — the relay is versioned independently of Argus, so bundling them would make every agent-event change a relay redeploy.
+  // Why: bound per-source size so a buggy/hostile Argus can't OOM the relay by pushing a giant string.
   dispatcher.onRequest(AGENT_HOOK_INSTALL_PLUGINS_METHOD, async (params) => {
     const opencode = params.opencodePluginSource
     const pi = params.piExtensionSource

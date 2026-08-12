@@ -194,7 +194,7 @@ export async function submitFolderWorkspaceCreate({
       : name.trim() || linkedName || `${projectGroup.name} workspace`
   const launchPlatform = getFolderWorkspaceAgentLaunchPlatform(projectGroup)
   // Why: an SSH folder group runs the plain `orca` relay shim, so the Linux-only
-  // `argus-ide` rename must not be applied for remote launches.
+  // `argus` rename must not be applied for remote launches.
   const launchIsRemote = Boolean(projectGroup.connectionId)
   const launchShell = resolveLocalWindowsAgentStartupShell({
     platform: launchPlatform,

@@ -40,7 +40,7 @@ const RECIPE_JSON = JSON.stringify({
   }),
   projectRoot: '/workspace/repo'
 })
-const SERVE_INSTALL_STATUS = '[serve] orca CLI install: installed'
+const SERVE_INSTALL_STATUS = '[serve] argus CLI install: installed'
 const SSH_PRIVATE_KEY = 'TOP-SECRET-PRIVATE-KEY'
 const SSH_AUTHORIZATION = 'Bearer TOP-SECRET-AUTHORIZATION'
 const SSH_PASSPHRASE = 'TOP-SECRET-PASSPHRASE'
@@ -86,7 +86,7 @@ describe('serveOrcaApp', () => {
 
   beforeEach(() => {
     spawnMock.mockReset()
-    process.env.ORCA_APP_EXECUTABLE = '/Applications/Orca.app/Contents/MacOS/Orca'
+    process.env.ORCA_APP_EXECUTABLE = '/Applications/Argus.app/Contents/MacOS/Argus'
   })
 
   afterEach(() => {
@@ -105,8 +105,8 @@ describe('serveOrcaApp', () => {
     async () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-serve-update-'))
       temporaryDirectories.push(root)
-      const appPath = join(root, 'Orca.app')
-      const executable = join(appPath, 'Contents', 'MacOS', 'Orca')
+      const appPath = join(root, 'Argus.app')
+      const executable = join(appPath, 'Contents', 'MacOS', 'Argus')
       const infoPlistPath = join(appPath, 'Contents', 'Info.plist')
       const userDataPath = join(root, 'user-data')
       await mkdir(join(appPath, 'Contents', 'MacOS'), { recursive: true })
@@ -174,8 +174,8 @@ describe('serveOrcaApp', () => {
     async () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-serve-update-mismatch-'))
       temporaryDirectories.push(root)
-      const appPath = join(root, 'Orca.app')
-      const executable = join(appPath, 'Contents', 'MacOS', 'Orca')
+      const appPath = join(root, 'Argus.app')
+      const executable = join(appPath, 'Contents', 'MacOS', 'Argus')
       const userDataPath = join(root, 'user-data')
       await mkdir(join(appPath, 'Contents', 'MacOS'), { recursive: true })
       await mkdir(userDataPath, { recursive: true })
@@ -228,8 +228,8 @@ describe('serveOrcaApp', () => {
     async () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-serve-update-spawn-failure-'))
       temporaryDirectories.push(root)
-      const appPath = join(root, 'Orca.app')
-      const executable = join(appPath, 'Contents', 'MacOS', 'Orca')
+      const appPath = join(root, 'Argus.app')
+      const executable = join(appPath, 'Contents', 'MacOS', 'Argus')
       const userDataPath = join(root, 'user-data')
       await mkdir(join(appPath, 'Contents', 'MacOS'), { recursive: true })
       await mkdir(userDataPath, { recursive: true })
@@ -276,8 +276,8 @@ describe('serveOrcaApp', () => {
       vi.useFakeTimers()
       const root = await mkdtemp(join(tmpdir(), 'orca-serve-update-no-readiness-'))
       temporaryDirectories.push(root)
-      const appPath = join(root, 'Orca.app')
-      const executable = join(appPath, 'Contents', 'MacOS', 'Orca')
+      const appPath = join(root, 'Argus.app')
+      const executable = join(appPath, 'Contents', 'MacOS', 'Argus')
       const userDataPath = join(root, 'user-data')
       await mkdir(join(appPath, 'Contents', 'MacOS'), { recursive: true })
       await mkdir(userDataPath, { recursive: true })
@@ -343,7 +343,7 @@ describe('serveOrcaApp', () => {
     await expect(serveOrcaApp({ json: true })).resolves.toBe(0)
 
     expect(spawnMock).toHaveBeenCalledWith(
-      '/Applications/Orca.app/Contents/MacOS/Orca',
+      '/Applications/Argus.app/Contents/MacOS/Argus',
       ['--serve', '--serve-json'],
       expect.objectContaining({
         cwd: resolve(__dirname, '../../..')
@@ -375,7 +375,7 @@ describe('serveOrcaApp', () => {
     ).resolves.toBe(0)
 
     expect(spawnMock).toHaveBeenCalledWith(
-      '/Applications/Orca.app/Contents/MacOS/Orca',
+      '/Applications/Argus.app/Contents/MacOS/Argus',
       [
         '--serve',
         '--serve-json',
@@ -409,7 +409,7 @@ describe('serveOrcaApp', () => {
     await expect(serveOrcaApp({ json: true })).resolves.toBe(0)
 
     expect(spawnMock).toHaveBeenCalledWith(
-      '/Applications/Orca.app/Contents/MacOS/Orca',
+      '/Applications/Argus.app/Contents/MacOS/Argus',
       ['--no-sandbox', '--serve', '--serve-json'],
       expect.any(Object)
     )
@@ -461,7 +461,7 @@ describe('serveOrcaApp', () => {
     await expect(result).resolves.toBe(0)
 
     expect(spawnMock).toHaveBeenCalledWith(
-      '/Applications/Orca.app/Contents/MacOS/Orca',
+      '/Applications/Argus.app/Contents/MacOS/Argus',
       [
         '--serve',
         '--serve-pairing-address',
@@ -537,7 +537,7 @@ describe('serveOrcaApp', () => {
 
     await expect(result).rejects.toMatchObject({
       code: 'runtime_serve_failed',
-      message: 'Orca serve exited before printing valid recipe JSON with code 0.'
+      message: 'Argus serve exited before printing valid recipe JSON with code 0.'
     })
     expect(stdoutSpy).not.toHaveBeenCalled()
     expect(stderrSpy).toHaveBeenCalledTimes(5)
@@ -608,7 +608,7 @@ describe('launchOrcaApp', () => {
   })
 
   it('handles asynchronous detached spawn errors without throwing', async () => {
-    process.env.ORCA_APP_EXECUTABLE = '/missing/Orca'
+    process.env.ORCA_APP_EXECUTABLE = '/missing/Argus'
     const child = new FakeChildProcess()
     spawnMock.mockReturnValue(child)
 

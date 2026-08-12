@@ -76,7 +76,7 @@ describe('CLI remote WebSocket transport', () => {
     )
   })
 
-  it('accepts a bare pairing payload as well as the orca URL wrapper', async () => {
+  it('accepts a bare pairing payload as well as the argus URL wrapper', async () => {
     const runtime = await startTestRuntime('runtime-ws-2', {
       appVersion: '1.5.0',
       remoteUpdateSupport: {

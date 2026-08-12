@@ -302,12 +302,12 @@ module.exports = {
       ...createPackagedRuntimeNodeModuleResources('win32'),
       winSpeechNativeResource,
       {
-        from: 'resources/win32/bin/orca.cmd',
-        to: 'bin/orca.cmd'
+        from: 'resources/win32/bin/argus.cmd',
+        to: 'bin/argus.cmd'
       },
       {
-        from: 'native/windows-cli-launcher/.build/orca.exe',
-        to: 'bin/orca.exe'
+        from: 'native/windows-cli-launcher/.build/argus.exe',
+        to: 'bin/argus.exe'
       },
       {
         from: 'node_modules/agent-browser/bin/agent-browser-win32-x64.exe',
@@ -373,8 +373,8 @@ module.exports = {
       ...createPackagedRuntimeNodeModuleResources('darwin'),
       macSpeechNativeResource,
       {
-        from: 'resources/darwin/bin/orca',
-        to: 'bin/orca'
+        from: 'resources/darwin/bin/argus',
+        to: 'bin/argus'
       },
       {
         from: 'node_modules/agent-browser/bin/agent-browser-darwin-${arch}',
@@ -421,7 +421,7 @@ module.exports = {
   linux: {
     // Why: Ubuntu desktop ships GNOME Argus as the `orca` package and /usr/bin/orca.
     // The Linux installer should not claim those system package/file names.
-    executableName: 'orca-ide',
+    executableName: 'argus',
     // Why: the icns source lets electron-builder emit standard hicolor PNG
     // sizes; a single 1024px PNG is ignored by some Linux docks/launchers.
     icon: 'resources/build/icon.icns',
@@ -429,7 +429,7 @@ module.exports = {
       entry: {
         // Why: Electron reports WM_CLASS=orca for the visible Linux window;
         // GNOME docks need an exact match to group it with orca-ide.desktop.
-        StartupWMClass: 'orca'
+        StartupWMClass: 'argus'
       }
     },
     extraResources: [
@@ -437,8 +437,8 @@ module.exports = {
       ...createPackagedRuntimeNodeModuleResources('linux'),
       linuxSpeechNativeResource,
       {
-        from: 'resources/linux/bin/orca-ide',
-        to: 'bin/orca-ide'
+        from: 'resources/linux/bin/argus',
+        to: 'bin/argus'
       },
       {
         from: 'node_modules/agent-browser/bin/agent-browser-linux-${arch}',
@@ -458,9 +458,9 @@ module.exports = {
     artifactName: isLinuxArm64Release ? 'argus-linux-arm64.${ext}' : 'argus-linux.${ext}'
   },
   deb: {
-    packageName: 'orca-ide',
-    artifactName: 'orca-ide_${version}_${arch}.${ext}',
-    // Why: xvfb lets the bundled `orca serve` CLI run browser panes on a headless
+    packageName: 'argus',
+    artifactName: 'argus_${version}_${arch}.${ext}',
+    // Why: xvfb lets the bundled `argus serve` CLI run browser panes on a headless
     // Linux host — Chromium needs a display server even for offscreen rendering,
     // and serve starts Xvfb itself when present (see ensure-virtual-display.ts).
     depends: [
@@ -472,7 +472,7 @@ module.exports = {
       'xclip',
       'xvfb'
     ],
-    // Why: symlink the bundled CLI onto PATH at install time so `orca-ide serve`
+    // Why: symlink the bundled CLI onto PATH at install time so `argus serve`
     // works on a headless host. The in-app CLI registration (CliInstaller) is
     // GUI-triggered and can never run on a server, so without this the CLI is
     // unreachable from the shell on exactly the hosts that need it.
@@ -480,8 +480,8 @@ module.exports = {
     afterRemove: 'resources/linux/packaging/after-remove.sh'
   },
   rpm: {
-    packageName: 'orca-ide',
-    artifactName: 'orca-ide-${version}.${arch}.${ext}',
+    packageName: 'argus',
+    artifactName: 'argus-${version}.${arch}.${ext}',
     // Why: see deb depends. RPM distros ship Xvfb as xorg-x11-server-Xvfb (there
     // is no `xvfb` package), so the name differs from the deb here.
     depends: [
@@ -516,7 +516,7 @@ function chmodUnixCliLaunchers(resourcesDir, electronPlatformName) {
   if (electronPlatformName === 'win32') {
     return
   }
-  for (const launcherName of ['orca', 'orca-ide']) {
+  for (const launcherName of ['argus']) {
     const launcherPath = join(resourcesDir, 'bin', launcherName)
     if (!existsSync(launcherPath)) {
       continue

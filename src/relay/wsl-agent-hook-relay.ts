@@ -2,7 +2,7 @@
 // Guest-resident WSL agent-hook relay (STA-1515). Runs inside a WSL distro,
 // binds a loopback hook receiver on the very port the Windows host issued
 // (free under NAT — that port only exists Windows-side), and forwards every
-// parsed hook envelope to Orca over this process's own stdin/stdout using the
+// parsed hook envelope to Argus over this process's own stdin/stdout using the
 // framed JSON-RPC protocol the SSH relay already speaks. Also hosts the
 // home-scoped fs bridge the host uses to install hook configs into the guest.
 //

@@ -51,7 +51,7 @@ export const getMobileEmulatorSearchEntries = createLocalizedCatalog(() => [
       ),
       ...translateSearchKeyword(
         'auto.components.settings.mobile.emulator.search.9353854ff3',
-        'orca emulator'
+        'argus emulator'
       ),
       ...translateSearchKeyword(
         'auto.components.settings.mobile.emulator.search.ac0a985873',

@@ -30,7 +30,7 @@ describe.skipIf(process.platform === 'win32')('createInstallPluginsHandler (gues
         HOME: home,
         ORCA_WSL_HOOK_INSTANCE: 'inst1'
       } as NodeJS.ProcessEnv)
-      const source = '// orca opencode status plugin\nexport const Plugin = () => ({})\n'
+      const source = '// argus opencode status plugin\nexport const Plugin = () => ({})\n'
       const res = install({ opencodePluginSource: source })
 
       expect(res.installed.opencode).toBe(true)
@@ -107,7 +107,7 @@ describe.skipIf(process.platform === 'win32')('createInstallPluginsHandler (gues
         ORCA_WSL_HOOK_INSTANCE: 'inst1'
       } as NodeJS.ProcessEnv)
       install({ opencodePluginSource: '// v1\n' })
-      // Why: a mid-session Orca upgrade ships new plugin source; future spawns must see it.
+      // Why: a mid-session Argus upgrade ships new plugin source; future spawns must see it.
       const dir = install({ opencodePluginSource: '// v2\n' }).overlayDirs.opencode as string
       expect(readFileSync(join(dir, 'plugins', 'orca-opencode-status.js'), 'utf8')).toBe('// v2\n')
     })

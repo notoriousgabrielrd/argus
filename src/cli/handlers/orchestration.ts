@@ -110,25 +110,32 @@ type OrchestrationSendResult =
       lifecycle?: LifecycleSendResult
     }
 
-function resolveCompatibilityCliCommand(): 'orca' | 'orca-ide' | 'orca-dev' {
+function resolveCompatibilityCliCommand(): 'argus' | 'argus-dev' | 'orca' | 'orca-ide' {
   const configured = process.env.ORCA_CLI_COMMAND
-  if (configured === 'orca' || configured === 'orca-ide' || configured === 'orca-dev') {
+  // Why the legacy values stay accepted: a shim installed before the rename still exports
+  // the old name, and rejecting it would strand that terminal mid-orchestration.
+  if (
+    configured === 'argus' ||
+    configured === 'argus-dev' ||
+    configured === 'orca' ||
+    configured === 'orca-ide'
+  ) {
     return configured
   }
-  return process.platform === 'linux' ? 'orca-ide' : 'orca'
+  return 'argus'
 }
 
-function resolvePackagedWindowsCompatibilityCommand(): 'orca' | 'orca-ide' | undefined {
+function resolvePackagedWindowsCompatibilityCommand(): 'argus' | 'orca' | undefined {
   if (process.env.ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER !== '1') {
     return undefined
   }
   const command = process.env.ORCA_CLI_COMMAND
-  if (command === 'orca' || command === 'orca-ide') {
+  if (command === 'argus' || command === 'orca') {
     return command
   }
   throw new RuntimeClientError(
     'invalid_argument',
-    'The packaged Orca launcher did not provide a valid resume command. No question was created.'
+    'The packaged Argus launcher did not provide a valid resume command. No question was created.'
   )
 }
 
@@ -348,13 +355,15 @@ function throwNoActiveSenderTerminal(): never {
   throw new RuntimeClientError(
     'no_active_sender_terminal',
     'Could not determine the sender terminal for this orchestration command. ' +
-      'Pass --from <terminal-handle> or run the command inside a live Orca terminal with ORCA_TERMINAL_HANDLE set.'
+      'Pass --from <terminal-handle> or run the command inside a live Argus terminal with ORCA_TERMINAL_HANDLE set.'
   )
 }
 
 function isDevCliInvocation(): boolean {
   return (
     process.env.ORCA_DEV_CLI_INVOCATION === '1' ||
+    // Why still `orca-dev`: the dev userData directory keeps its upstream name so the
+    // rename does not orphan existing dev profiles. Only the command was renamed.
     (process.env.ORCA_USER_DATA_PATH?.includes('orca-dev') ?? false)
   )
 }
@@ -862,7 +871,7 @@ export const ORCHESTRATION_HANDLERS: Record<string, CommandHandler> = {
       ) {
         throw new RuntimeClientError(
           'incompatible_runtime',
-          'The connected Orca runtime does not support worker model or effort overrides. Update or restart Orca and try again.'
+          'The connected Argus runtime does not support worker model or effort overrides. Update or restart Argus and try again.'
         )
       }
     }

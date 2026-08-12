@@ -496,7 +496,7 @@ describe('submitFolderWorkspaceCreate', () => {
     )
     expect(startup?.command).not.toContain('Distinctive folder Linear body.')
     expect(startup?.command).not.toContain('--- BEGIN LINKED WORK ITEM CONTEXT ---')
-    expect(startup?.command).not.toContain('orca linear')
+    expect(startup?.command).not.toContain('argus linear')
     expect(mocks.ensureAgentStartupInTerminal).not.toHaveBeenCalled()
   })
 

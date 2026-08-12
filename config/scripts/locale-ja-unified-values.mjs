@@ -241,6 +241,6 @@ export const JA_UNIFIED_VALUES = {
   '{{value0}} workspace{{value1}} connected':
     '{{value0}} ワークスペース{{value1}} が接続されました',
   Plugins: 'プラグイン',
-  'Argus will continue to work, but commands such as orca status, orca terminal, and orchestration are unavailable for this session.\n\n{{guidance}}\n\nCause: {{cause}}':
-    'Argus は引き続き使用できますが、このセッションでは orca status や orca terminal などのコマンドとオーケストレーションを利用できません。\n\n{{guidance}}\n\n原因: {{cause}}'
+  'Argus will continue to work, but commands such as argus status, argus terminal, and orchestration are unavailable for this session.\n\n{{guidance}}\n\nCause: {{cause}}':
+    'Argus は引き続き使用できますが、このセッションでは argus status や argus terminal などのコマンドとオーケストレーションを利用できません。\n\n{{guidance}}\n\n原因: {{cause}}'
 }

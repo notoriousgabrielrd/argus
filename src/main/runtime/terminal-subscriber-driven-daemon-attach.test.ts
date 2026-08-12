@@ -11,7 +11,7 @@
  * Harness: real OrcaRuntimeService + real TERMINAL_METHODS multiplex handler,
  * with an injected pty controller modeling a daemon provider whose data events
  * are deliverable ONLY after attach(id). No window is ever attached — every
- * assertion also holds for headless `orca serve`.
+ * assertion also holds for headless `argus serve`.
  */
 import { describe, expect, it, vi } from 'vitest'
 import { OrcaRuntimeService } from './orca-runtime'

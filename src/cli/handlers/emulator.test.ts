@@ -28,7 +28,7 @@ vi.mock('../runtime-client', async () => {
 import { main } from '../index'
 import { okFixture, queueFixtures } from '../test-fixtures'
 
-describe('orca emulator CLI handlers', () => {
+describe('argus emulator CLI handlers', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     callMock.mockReset()

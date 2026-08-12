@@ -107,7 +107,7 @@ function createRuntimeRpcStartupFailureDialogOptions(error: unknown): MessageBox
     ),
     detail: translateMain(
       'runtimeRpc.startupFailure.detail',
-      'Argus will continue to work, but commands such as orca status, orca terminal, and orchestration are unavailable for this session.\n\n{{guidance}}\n\nCause: {{cause}}',
+      'Argus will continue to work, but commands such as argus status, argus terminal, and orchestration are unavailable for this session.\n\n{{guidance}}\n\nCause: {{cause}}',
       { cause, guidance: translateMain(key, fallback) }
     )
   }

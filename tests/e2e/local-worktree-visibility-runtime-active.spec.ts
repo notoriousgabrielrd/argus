@@ -1,5 +1,5 @@
 /**
- * Regression: a worktree created via the CLI (`orca worktree
+ * Regression: a worktree created via the CLI (`argus worktree
  * create`) must appear in the sidebar even while a remote runtime is active.
  *
  * The faithful trigger is the real CLI path — the RuntimeClient connects to the
@@ -41,7 +41,7 @@ test.describe('worktree visibility with a remote runtime active', () => {
     })
 
     // The CLI talks to the running app over the socket recorded in its userData
-    // dir — exactly what `orca worktree create` does from a terminal.
+    // dir — exactly what `argus worktree create` does from a terminal.
     const userDataDir = await electronApp.evaluate(({ app }) => app.getPath('userData'))
     const client = new RuntimeClient(userDataDir, 30_000, null, null)
     const createViaCli = async (name: string): Promise<string> => {

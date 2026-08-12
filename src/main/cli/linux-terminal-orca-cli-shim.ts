@@ -17,7 +17,7 @@ export type LinuxTerminalOrcaCliShimOptions = {
   appImagePath?: string | null
 }
 
-// Why: on Linux the CLI installs as `argus-ide` so it never shadows the GNOME
+// Why: on Linux the CLI installs as `argus` so it never shadows the GNOME
 // Argus screen reader at /usr/bin/orca — but agent-facing surfaces (skills,
 // dispatch preambles, CLI hints) all invoke bare `orca`, so on stock Ubuntu an
 // agent inside an Argus terminal would launch the screen reader instead

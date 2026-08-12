@@ -139,7 +139,9 @@ describe('captureLinuxPackageArtifact', () => {
 
   it('accepts an uppercase extension', () => {
     capture({ downloadedFile: path.join(downloadDir, 'Argus.DEB') })
-    expect(recovery.getTrackedLinuxPackageArtifact()?.path).toBe(path.join(downloadDir, 'Argus.DEB'))
+    expect(recovery.getTrackedLinuxPackageArtifact()?.path).toBe(
+      path.join(downloadDir, 'Argus.DEB')
+    )
   })
 
   it('requires a non-empty string version', () => {

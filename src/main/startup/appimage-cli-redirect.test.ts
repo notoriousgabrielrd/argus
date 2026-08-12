@@ -98,13 +98,13 @@ describe('AppImage CLI redirect', () => {
       platform: 'linux',
       isPackaged: true,
       resourcesPath: root,
-      execPath: '/opt/orca/argus-ide',
+      execPath: '/opt/orca/argus',
       commandNames,
       spawn: spawn as never
     })
 
     expect(result).toEqual({ redirected: true, status: 0 })
-    expect(spawn).toHaveBeenCalledWith('/opt/orca/argus-ide', [cliEntryPath, 'status', '--json'], {
+    expect(spawn).toHaveBeenCalledWith('/opt/orca/argus', [cliEntryPath, 'status', '--json'], {
       env: expect.objectContaining({
         APPIMAGE: '/opt/orca/argus-linux.AppImage',
         ELECTRON_RUN_AS_NODE: '1',
@@ -131,13 +131,13 @@ describe('AppImage CLI redirect', () => {
       platform: 'linux',
       isPackaged: true,
       resourcesPath: root,
-      execPath: '/opt/orca/argus-ide',
+      execPath: '/opt/orca/argus',
       commandNames,
       spawn: spawn as never
     })
 
     expect(spawn).toHaveBeenCalledWith(
-      '/opt/orca/argus-ide',
+      '/opt/orca/argus',
       [cliEntryPath, 'serve'],
       expect.objectContaining({
         env: expect.objectContaining({ ORCA_APPIMAGE_NO_SANDBOX: '1' })

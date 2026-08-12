@@ -53,8 +53,8 @@ describe('getRequiredReleaseAssetNames', () => {
         'argus-linux-arm64.AppImage',
         'orca-ide_1.4.27_amd64.deb',
         'orca-ide_1.4.27_arm64.deb',
-        'argus-ide-1.4.27.x86_64.rpm',
-        'argus-ide-1.4.27.aarch64.rpm'
+        'argus-1.4.27.x86_64.rpm',
+        'argus-1.4.27.aarch64.rpm'
       ])
     )
   })

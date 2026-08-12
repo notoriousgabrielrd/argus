@@ -614,7 +614,7 @@ describe('runRemoteOrcaCli', () => {
     )
 
     expect(result.exitCode).toBe(1)
-    expect(result.stderr).toContain('orca serve')
+    expect(result.stderr).toContain('argus serve')
     expect(result.stderr).toContain('SSH relay bridge')
     expect(spawn).not.toHaveBeenCalled()
   })
@@ -671,11 +671,11 @@ describe('runRemoteOrcaCli', () => {
       }
     )
     await Promise.resolve()
-    child.stdout.emit('data', Buffer.from('Usage: orca account add\n'))
+    child.stdout.emit('data', Buffer.from('Usage: argus account add\n'))
     child.emit('close', 0)
 
     await expect(resultPromise).resolves.toEqual({
-      stdout: 'Usage: orca account add\n',
+      stdout: 'Usage: argus account add\n',
       stderr: '',
       exitCode: 0
     })

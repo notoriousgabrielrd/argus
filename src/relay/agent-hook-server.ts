@@ -2,7 +2,7 @@
 // Relay-side adapter for the shared agent-hook listener: hosts a loopback HTTP server and
 // forwards each parsed payload via a callback so `relay.ts` re-emits it as an `agent.hook`
 // JSON-RPC notification over the SSH channel. Replay cache is bounded one-entry-per-paneKey: a
-// reattaching Orca only needs each pane's current status, never its history, and the bound keeps a
+// reattaching Argus only needs each pane's current status, never its history, and the bound keeps a
 // long-lived relay from growing with every event.
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import { randomUUID } from 'node:crypto'

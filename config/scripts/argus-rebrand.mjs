@@ -7,8 +7,8 @@
 // Scope — display identity only. CamelCase identifiers, env vars, hyphenated
 // protocol tokens, and lowercase wire/binary names are intentionally untouched
 // (see the guards on each pattern below).
-// Deliberately out of scope (deferred): src/cli + src/relay (binary is still
-// `orca`; help text must match), mobile/, docs/, skills/, README.
+// Deliberately out of scope (deferred): mobile/, docs/, README, and the skill *topic*
+// names (orca-cli, orca-linear, …), which are identifiers with a compatibility ledger.
 
 import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
@@ -20,10 +20,15 @@ const SWEEP_DIRS = [
   'src/renderer',
   'src/shared',
   'src/preload',
+  'src/cli',
+  'src/relay',
   'tests',
   'config/scripts'
 ]
-const SWEEP_EXTS = new Set(['.ts', '.tsx', '.mts', '.mjs', '.cjs', '.json', '.html'])
+// Agent-facing instructions: an un-renamed command here makes an agent type a binary that
+// does not exist. Topic names (orca-cli, orca-linear, …) are identifiers and stay.
+const SWEEP_DOC_DIRS = ['skill-guides', 'skills', 'skill-stubs']
+const SWEEP_EXTS = new Set(['.ts', '.tsx', '.mts', '.mjs', '.cjs', '.json', '.html', '.md'])
 const SKIP_DIRS = new Set(['node_modules', 'dist', 'out', '.git'])
 
 // Why: these suites use the upstream name as sample *data* — repo slugs (`acme/orca`),
@@ -33,6 +38,16 @@ const SKIP_DIRS = new Set(['node_modules', 'dist', 'out', '.git'])
 // This file is skipped too: sweeping it would rewrite the patterns below into no-ops.
 const SKIP_FILES = new Set([
   'config/scripts/argus-rebrand.mjs',
+  // `orca-dev` here is a GitHub repo owner in sample data, not the dev CLI.
+  'src/renderer/src/components/terminal-pane/parked-terminal-byte-watcher.test.ts',
+  'src/renderer/src/components/terminal-pane/terminal-handle-links.test.ts',
+  // The generated hook script points at the userData directory, whose name must not
+  // move or every existing dev profile is orphaned.
+  'src/main/command-code/hook-service.test.ts',
+  // Pins the legacy CLI name on purpose, to prove an older peer's value is honored.
+  'src/main/runtime/orchestration/preamble.test.ts',
+  // Matches the dev userData directory, which deliberately keeps its upstream name.
+  'src/cli/handlers/orchestration.ts',
   'src/main/github/client.test.ts',
   'src/main/github/gh-utils.test.ts',
   'src/main/ipc/created-worktree-reconciliation.test.ts',
@@ -62,6 +77,20 @@ const WORD = new RegExp(`(?<![-\\w])${OLD}(?![-\\w])`, 'g')
 // in lockstep. Never the bare token (CLI binary, orca.yaml, onorca.dev, GitHub slug).
 const LOWER_PHRASE = /(?<![-\w])orca (runtime|cloud|relay)\b/g
 const BUNDLE_ID = /com\.stablyai\.orca/g
+// Why an explicit subcommand list: `orca` is also a config filename (orca.yaml), a URL
+// scheme (orca://), a userData directory, a GitHub slug, and the GNOME screen reader.
+// Renaming only where a real subcommand follows keeps every one of those intact.
+// Deliberately excludes the subcommands whose names are ordinary English words —
+// repo, project, file, agent, send, check, reply, ask, wait — because they also follow
+// `orca` in prose and fixtures ("orca repo", owner `orca-dev`), where renaming corrupts
+// sample data. Those invocations are renamed by hand where they are genuinely commands.
+const CLI_SUBCOMMANDS =
+  'status|open|serve|worktree|terminal|orchestration|browser|computer|linear|skills|' +
+  'automations|artifacts|account|emulator|vm|agent-context|diagnostics|claude-teams|' +
+  'dispatch|snapshot|screenshot|inbox'
+const CLI_INVOCATION = new RegExp(`(?<![-/\\w])orca (?=(?:${CLI_SUBCOMMANDS})\\b)`, 'g')
+// The dev shim, renamed in lockstep with the primary binary.
+const DEV_CLI = /(?<![-/\w])orca-dev\b/g
 // Why a second form: tests pin the bundle id inside a regex literal, where every dot is
 // backslash-escaped, so the plain-text rule above walks straight past it.
 const BUNDLE_ID_IN_REGEX = /com\\\.stablyai\\\.orca/g
@@ -105,6 +134,26 @@ for (const dir of SWEEP_DIRS) {
       .replace(BUNDLE_ID, 'dev.argus.desktop')
       .replace(BUNDLE_ID_IN_REGEX, 'dev\\.argus\\.desktop')
       .replace(ARTIFACT, 'argus-$1')
+      .replace(CLI_INVOCATION, 'argus ')
+      .replace(DEV_CLI, 'argus-dev')
+      .replace(/GNOME(’s|'s)? Argus/g, (_, poss) => `GNOME${poss ?? ''} Orca`)
+    if (after !== before) {
+      writeFileSync(file, after)
+      filesChanged += 1
+    }
+  }
+}
+
+// Skill docs are agent-facing instructions — an un-renamed command here makes an agent
+// type a binary that does not exist. Prose renames apply; topic names do not.
+for (const dir of SWEEP_DOC_DIRS) {
+  for (const file of walk(join(REPO, dir))) {
+    const before = readFileSync(file, 'utf8')
+    const after = before
+      .replace(WORD, 'Argus')
+      .replace(CLI_INVOCATION, 'argus ')
+      .replace(DEV_CLI, 'argus-dev')
+      .replace(/GNOME(’s|'s)? Argus/g, (_, poss) => `GNOME${poss ?? ''} Orca`)
     if (after !== before) {
       writeFileSync(file, after)
       filesChanged += 1

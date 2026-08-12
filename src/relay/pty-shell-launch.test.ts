@@ -51,7 +51,7 @@ function expectZdotdirSourceContext(content: string, fileName: '.zprofile' | '.z
 }
 
 function expectFinalZdotdirRestoreContext(content: string) {
-  expect(content).toContain("after Orca's last wrapper file has loaded")
+  expect(content).toContain("after Argus's last wrapper file has loaded")
   expect(content).toContain('export ZDOTDIR="$_orca_home"')
 }
 
@@ -237,7 +237,7 @@ describe('getRelayShellLaunchConfig', () => {
 
   // Why: RHEL-family /etc/bashrc prepends "history -a; " to PROMPT_COMMAND
   // outside its BASHRCSOURCED guard (repeated across re-sources), so the value
-  // Orca inherits ends in a ";"+whitespace separator. Prepend/append must not
+  // Argus inherits ends in a ";"+whitespace separator. Prepend/append must not
   // splice an empty command (";;") that breaks the prompt with a syntax error.
   itWithBash('normalizes an inherited PROMPT_COMMAND ending in a separator', () => {
     writeFileSync(

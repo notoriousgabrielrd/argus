@@ -96,7 +96,7 @@ describe('CommandCodeHookService', () => {
 
     if (process.platform === 'win32') {
       expect(script).toContain('sourceEndpointByPort')
-      expect(script).toContain('orca-dev\\agent-hooks')
+      expect(script).toContain('argus-dev\\agent-hooks')
       expect(script).toContain('set ORCA_AGENT_HOOK_PORT=')
     } else {
       expect(script).toContain('Command Code strips TOKEN-like env vars')

@@ -73,7 +73,7 @@ const AddCodexFromHomeParams = z.object({
   wslDistro: z.string().nullish()
 })
 
-// Why: `orca account list` prints only emails and the active ids, so it opts out
+// Why: `argus account list` prints only emails and the active ids, so it opts out
 // of the forced all-provider usage refresh below — that lane bypasses the poll
 // throttle and Retry-After gate and costs one serial round-trip per account.
 const ListAccountsParams = z.object({
@@ -93,7 +93,7 @@ const AccountsUnsubscribeParams = z.object({
 // / `codex login` PTYs that need a desktop browser, so they intentionally
 // remain desktop-only. `accounts.addClaudeFromConfigDir` is the exception: it
 // captures an already-authenticated CLAUDE_CONFIG_DIR (no PTY) so the local
-// `orca account add` CLI can register accounts on a headless host; it is gated
+// `argus account add` CLI can register accounts on a headless host; it is gated
 // to the local runtime connection, never a mobile device token. See #1438.
 export const ACCOUNT_METHODS: readonly RpcAnyMethod[] = [
   defineMethod({

@@ -203,9 +203,9 @@ try {
     ['orca (no args)', [], {}],
     ['unknown command', ['no-such-command'], {}],
     ['unknown flag', ['worktree', 'list', '--nope'], {}],
-    ['orca agent-context --json', ['agent-context', '--json'], {}],
-    ['orca status --json', ['status', '--json'], isolated],
-    ['orca worktree list --json', ['worktree', 'list', '--json'], isolated]
+    ['argus agent-context --json', ['agent-context', '--json'], {}],
+    ['argus status --json', ['status', '--json'], isolated],
+    ['argus worktree list --json', ['worktree', 'list', '--json'], isolated]
   ]
 
   // Why: a semantically broken arm that prints nothing would look fastest.

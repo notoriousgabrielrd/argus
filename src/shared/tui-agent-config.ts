@@ -57,13 +57,13 @@ export const TUI_AGENT_CONFIG: Record<TuiAgent, TuiAgentConfig> = {
   },
   'claude-agent-teams': {
     // Why: an Orca-provided launch mode, not a separate binary; detection follows the Argus CLI.
-    detectCmd: 'orca',
-    detectCmdAliases: ['orca-dev', 'argus-ide'],
+    detectCmd: 'argus',
+    detectCmdAliases: ['argus-dev', 'orca', 'orca-ide'],
     // Why: require Claude too so fresh installs (Argus shim always present) don't report Agent Teams without an agent CLI.
     detectRequiredCommands: ['claude'],
     // Why: Windows/WSL use Claude's in-process Agent Teams fallback, not this Argus native-pane/tmux-shim wrapper.
     detectUnsupportedRuntimes: ['win32', 'wsl'],
-    launchCmd: 'orca claude-teams',
+    launchCmd: 'argus claude-teams',
     launchCmdByPlatform: {
       linux: `${getOrcaCliCommandNameForPlatform('linux')} claude-teams`,
       win32: `${getOrcaCliCommandNameForPlatform('win32')} claude-teams`
@@ -343,7 +343,7 @@ export function getTuiAgentLaunchCommand(
   platform: NodeJS.Platform,
   opts?: { isRemote?: boolean }
 ): string {
-  // Why: local-only argus-ide rename (avoids GNOME Argus clash) must not leak to Linux remotes, whose relay shim is always `orca`.
+  // Why: local-only argus rename (avoids GNOME Orca clash) must not leak to Linux remotes, whose relay shim is always `orca`.
   if (opts?.isRemote && platform === 'linux') {
     return config.launchCmd
   }

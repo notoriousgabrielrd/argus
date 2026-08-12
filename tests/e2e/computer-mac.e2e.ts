@@ -66,7 +66,7 @@ describe.skipIf(!isMac || !e2eOptIn)('computer-use macOS e2e (TextEdit)', () => 
       String(textTarget)
     ])
 
-    const marker = `orca computer e2e ${Date.now()}`
+    const marker = `argus computer e2e ${Date.now()}`
     await runOrcaCli(['computer', 'type-text', '--app', 'TextEdit', '--text', marker])
 
     const after = parseJsonOutput<{ result: ComputerSnapshotResult }>(

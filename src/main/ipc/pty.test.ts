@@ -3143,7 +3143,9 @@ describe('registerPtyHandlers', () => {
       expect(env.ORCA_ENABLE_GIT_ATTRIBUTION).toBe('1')
       expect(env.ORCA_GIT_COMMIT_TRAILER).toBe('Co-authored-by: Argus <help@stably.ai>')
       expect(env.ORCA_GH_PR_FOOTER).toBe('Made with [Argus](https://github.com/stablyai/orca) 🐋')
-      expect(env.ORCA_GH_ISSUE_FOOTER).toBe('Made with [Argus](https://github.com/stablyai/orca) 🐋')
+      expect(env.ORCA_GH_ISSUE_FOOTER).toBe(
+        'Made with [Argus](https://github.com/stablyai/orca) 🐋'
+      )
       expect(env.PATH).toContain(expectedAttributionShimDir())
     })
 
@@ -11735,7 +11737,7 @@ describe('registerPtyHandlers', () => {
     expect(spawnCall[0]).toBe('wsl.exe')
     expect(env.ORCA_TERMINAL_HANDLE).toBe('term_wsl')
     expect(env.ORCA_USER_DATA_PATH).toBe('/tmp/orca-user-data')
-    expect(env.ORCA_CLI_COMMAND).toBe('argus-ide')
+    expect(env.ORCA_CLI_COMMAND).toBe('argus')
     expect(env.WSLENV?.split(':')).toEqual(
       expect.arrayContaining([
         'ORCA_TERMINAL_HANDLE/u',
@@ -18579,7 +18581,7 @@ describe('registerPtyHandlers', () => {
     })
   })
 
-  // Why windowless: `orca serve`/CLI runtime creation is the topology that most
+  // Why windowless: `argus serve`/CLI runtime creation is the topology that most
   // needs informative records — its controller.spawn path must seed them too.
   it('seeds restore records for a runtime-controller created terminal (headless reattach)', async () => {
     const worktreeId = 'repo-restore::/tmp/restore-records'

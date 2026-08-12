@@ -221,7 +221,7 @@ export const WORKTREE_HANDLERS: Record<string, CommandHandler> = {
     ) {
       try {
         // Why: agent shells can lose ORCA_TERMINAL_HANDLE while still running
-        // inside an Orca worktree. Cwd keeps CLI-created children nestable and
+        // inside an Argus worktree. Cwd keeps CLI-created children nestable and
         // lets create infer the repo for the common current-workspace case.
         cwdParentWorktree = await resolveCurrentWorktreeSelector(cwd, client)
       } catch {

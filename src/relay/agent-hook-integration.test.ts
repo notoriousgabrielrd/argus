@@ -1,7 +1,7 @@
 /**
  * End-to-end agent-status-over-SSH integration test.
  *
- * Wires Orca's main-side SshChannelMultiplexer to the relay-side
+ * Wires Argus's main-side SshChannelMultiplexer to the relay-side
  * RelayDispatcher through an in-memory pipe and starts a real
  * RelayAgentHookServer. POSTs a hook event to the relay's loopback HTTP
  * receiver and asserts the parsed payload arrives in `agentHookServer`'s

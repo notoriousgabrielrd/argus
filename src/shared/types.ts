@@ -562,7 +562,7 @@ export type Worktree = {
   cliProvenance?: CliWorkspaceProvenance
 } & GitWorktreeInfo
 
-/** Provenance for workspaces created through `orca worktree create`. Absent on
+/** Provenance for workspaces created through `argus worktree create`. Absent on
  *  workspaces created before this field existed and on every non-CLI create, so
  *  consumers must read "missing" as "not CLI-created". */
 export type CliWorkspaceProvenance = {
@@ -692,7 +692,7 @@ export type WorktreeMeta = {
   mobileDiffReview?: MobileDiffReviewState
   /** System-owned provenance for workspaces created by automation new-per-run dispatches. */
   automationProvenance?: AutomationWorkspaceProvenance
-  /** System-owned provenance for workspaces created via `orca worktree create`. */
+  /** System-owned provenance for workspaces created via `argus worktree create`. */
   cliProvenance?: CliWorkspaceProvenance
 }
 
@@ -3349,7 +3349,7 @@ export type WorktreeCardProperty =
   | 'jira-issue'
   | 'pr'
   | 'automation'
-  // Badge marking workspaces created through `orca worktree create`.
+  // Badge marking workspaces created through `argus worktree create`.
   | 'cli'
   | 'comment'
   | 'ports'
@@ -3464,7 +3464,7 @@ export type PersistedUIState = {
   hideDefaultBranchWorkspace: boolean
   /** Hide workspaces created by automation new-per-run dispatches. */
   hideAutomationGeneratedWorkspaces?: boolean
-  /** Hide workspaces created through `orca worktree create`. */
+  /** Hide workspaces created through `argus worktree create`. */
   hideCliCreatedWorkspaces?: boolean
   /** Hide workspaces sitting on a detached HEAD; folder workspaces (no head at all) are unaffected. */
   hideDetachedHeadWorkspaces?: boolean

@@ -115,7 +115,7 @@ export class ClaudeAccountService {
   /**
    * Adds a managed Claude account from an already-authenticated `CLAUDE_CONFIG_DIR`
    * instead of driving the interactive browser login here. Enables the
-   * `orca account add` CLI to run `claude login` in the user's own terminal on a
+   * `argus account add` CLI to run `claude login` in the user's own terminal on a
    * headless host, then register the captured credentials without a desktop GUI.
    */
   async addAccountFromConfigDir(
