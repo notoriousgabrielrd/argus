@@ -1,0 +1,37 @@
+{
+  "$comment": "Agent roster imported from the agent-cockpit (hierarchy.json + <project>/.claude/agents/*.md). Tools mirror each agent's `tools:` frontmatter; the .md definitions remain the source of truth and stay in the project repo.",
+  "projectId": "confetti",
+  "label": "Confetti",
+  "hierarchy": {
+    "VOCÊ": ["BOSS", "ENGINEER", "HUNTER", "AUDITOR"],
+    "BOSS": ["DESIGNER"]
+  },
+  "agents": [
+    {
+      "name": "BOSS",
+      "role": "Consultor de infraestrutura e plataforma — build nativo com Expo SDK 57 (CNG/prebuild), em postura de mentor.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "ENGINEER",
+      "role": "Engenheiro fullstack sênior — dono da implementação pesada de features, da concepção à entrega.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "HUNTER",
+      "role": "Caçador de bugs do app — Expo SDK 57 / RN 0.86 com New Architecture, Hermes e expo-router.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "DESIGNER",
+      "role": "Agente de UI — dono do design system, com obsessão declarada por bem-estar do usuário.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "AUDITOR",
+      "role": "Auditor de regras de negócio — verifica ponta a ponta se todas as regras seguem obedecidas a cada feature ou correção.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Write"],
+      "readOnly": true
+    }
+  ]
+}
