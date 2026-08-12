@@ -70,7 +70,7 @@ vi.mock('@/components/ui/dialog', async () => {
         unsubscribe()
       }
     }, [])
-    // Why: render while closed so the marker measures Orca's content gate, not Radix's portal gate.
+    // Why: render while closed so the marker measures Argus's content gate, not Radix's portal gate.
     return <div data-workspace-cleanup-heavy-content="true" />
   }
   return {

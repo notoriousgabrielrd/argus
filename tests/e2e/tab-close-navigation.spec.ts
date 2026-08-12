@@ -7,7 +7,7 @@
  *   fixed a regression where closing the active editor tab jumped to an
  *   arbitrary file. The existing `tabs.spec.ts` only covers terminal tab
  *   close; the editor/diff close path has no E2E guard today.
- * - PR #677 (`return to Orca landing screen after closing last terminal`)
+ * - PR #677 (`return to Argus landing screen after closing last terminal`)
  *   plus editor.ts's `shouldDeactivateWorktree` branch (also hardened in
  *   tabs.ts's `closeUnifiedTab`) require that when a worktree's last visible
  *   surface closes, the app clears `activeWorktreeId` instead of leaving a

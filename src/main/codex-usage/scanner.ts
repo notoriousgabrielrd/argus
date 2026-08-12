@@ -468,7 +468,7 @@ function isContainingPath(candidatePath: string, targetPath: string): boolean {
   // Why: on Windows, `path.relative('C:\\repo', 'D:\\other')` returns an
   // absolute `D:\\other` path instead of a `..`-prefixed relative. Treating
   // that as "contained" would attribute off-drive Codex usage to the wrong
-  // Orca worktree.
+  // Argus worktree.
   const isAbsoluteRelative = useWin32
     ? win32.isAbsolute(relativePath)
     : posix.isAbsolute(relativePath)

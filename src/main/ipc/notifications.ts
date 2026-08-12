@@ -35,7 +35,7 @@ const MAX_RECENT_NOTIFICATION_KEYS = 50
 const NOTIFICATION_DISPLAY_CONFIRMATION_TIMEOUT_MS = 2500
 const NOTIFICATION_RELEASE_FALLBACK_MS = 5 * 60 * 1000
 const MAX_NOTIFICATION_SOUND_BYTES = 10 * 1024 * 1024
-const MACOS_PACKAGED_BUNDLE_ID = 'com.stablyai.orca'
+const MACOS_PACKAGED_BUNDLE_ID = 'dev.argus.desktop'
 const MACOS_NOTIFICATION_SETTINGS_URL =
   'x-apple.systempreferences:com.apple.Notifications-Settings.extension'
 const NOTIFICATION_SOUND_MIME_BY_EXTENSION: ReadonlyMap<string, string> = new Map([
@@ -120,8 +120,8 @@ function probeNotificationDelivery(): Promise<NotificationDeliveryProbeResult> {
   permissionDialogTriggeredThisSession = true
 
   const probe = new Notification({
-    title: 'Orca notifications are on',
-    body: 'Orca will alert you when agents finish or terminals need attention.',
+    title: 'Argus notifications are on',
+    body: 'Argus will alert you when agents finish or terminals need attention.',
     silent: true
   })
   activeNotifications.add(probe)
@@ -645,8 +645,8 @@ export function triggerStartupNotificationRegistration(store: Store): void {
   store.updateUI({ notificationPermissionRequested: true })
 
   const notification = new Notification({
-    title: 'Orca is ready to notify you',
-    body: 'Allow notifications so Orca can alert you when agents finish or terminals need attention.'
+    title: 'Argus is ready to notify you',
+    body: 'Allow notifications so Argus can alert you when agents finish or terminals need attention.'
   })
 
   // Why: prevent GC from collecting the notification and its click handler while it's still visible.

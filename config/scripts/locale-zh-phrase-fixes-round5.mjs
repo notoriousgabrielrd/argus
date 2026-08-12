@@ -1,21 +1,21 @@
 // Chinese phrase fixes from high-visibility UI audit round 5.
 export const ZH_PHRASE_FIXES_ROUND5 = [
-  { pattern: /Orca集成开发环境/g, replacement: 'Orca IDE', whenEnIncludes: 'Orca IDE' },
-  { pattern: /Orca第一/g, replacement: 'Orca 优先', whenEnIncludes: 'Orca first' },
-  { pattern: /Orca移动/g, replacement: 'Orca Mobile', whenEnIncludes: 'Orca Mobile' },
-  { pattern: /Orca归属/g, replacement: 'Orca 归因', whenEnIncludes: 'Orca Attribution' },
-  { pattern: /Orca标志/g, replacement: 'Orca 标志', whenEnIncludes: 'Orca logo' },
-  { pattern: /喜欢Orca/g, replacement: '喜欢 Orca', whenEnIncludes: 'Enjoying Orca' },
-  { pattern: /认识Orca/g, replacement: '了解 Orca', whenEnIncludes: 'Get to know Orca' },
-  { pattern: /支持Orca/g, replacement: '支持 Orca', whenEnIncludes: 'Support Orca' },
-  { pattern: /展开Orca/g, replacement: '展开 Orca', whenEnIncludes: 'Expand Orca' },
-  { pattern: /来自Orca/g, replacement: '来自 Orca', whenEnIncludes: 'from Orca' },
+  { pattern: /Argus集成开发环境/g, replacement: 'Argus IDE', whenEnIncludes: 'Argus IDE' },
+  { pattern: /Argus第一/g, replacement: 'Argus 优先', whenEnIncludes: 'Argus first' },
+  { pattern: /Argus移动/g, replacement: 'Argus Mobile', whenEnIncludes: 'Argus Mobile' },
+  { pattern: /Argus归属/g, replacement: 'Argus 归因', whenEnIncludes: 'Argus Attribution' },
+  { pattern: /Argus标志/g, replacement: 'Argus 标志', whenEnIncludes: 'Argus logo' },
+  { pattern: /喜欢Argus/g, replacement: '喜欢 Argus', whenEnIncludes: 'Enjoying Argus' },
+  { pattern: /认识Argus/g, replacement: '了解 Argus', whenEnIncludes: 'Get to know Argus' },
+  { pattern: /支持Argus/g, replacement: '支持 Argus', whenEnIncludes: 'Support Argus' },
+  { pattern: /展开Argus/g, replacement: '展开 Argus', whenEnIncludes: 'Expand Argus' },
+  { pattern: /来自Argus/g, replacement: '来自 Argus', whenEnIncludes: 'from Argus' },
   {
-    pattern: /正在重新启动Orca/g,
-    replacement: '正在重启 Orca',
-    whenEnIncludes: 'Restarting Orca'
+    pattern: /正在重新启动Argus/g,
+    replacement: '正在重启 Argus',
+    whenEnIncludes: 'Restarting Argus'
   },
-  { pattern: /Orca([\u4e00-\u9fff])/g, replacement: 'Orca $1', whenEnIncludes: 'Orca' },
+  { pattern: /Argus([\u4e00-\u9fff])/g, replacement: 'Argus $1', whenEnIncludes: 'Argus' },
   { pattern: /Linear([\u4e00-\u9fff])/g, replacement: 'Linear $1', whenEnIncludes: 'Linear' },
   { pattern: /Codex([\u4e00-\u9fff])/g, replacement: 'Codex $1', whenEnIncludes: 'Codex' },
   { pattern: /Claude([\u4e00-\u9fff])/g, replacement: 'Claude $1', whenEnIncludes: 'Claude' },
@@ -50,8 +50,8 @@ export const ZH_PHRASE_FIXES_ROUND5 = [
     whenEnIncludes: 'actionable issues'
   },
   {
-    pattern: /显示 Orca 移动按钮/g,
-    replacement: '显示 Orca Mobile 按钮',
-    whenEnIncludes: 'Show Orca Mobile Button'
+    pattern: /显示 Argus 移动按钮/g,
+    replacement: '显示 Argus Mobile 按钮',
+    whenEnIncludes: 'Show Argus Mobile Button'
   }
 ]

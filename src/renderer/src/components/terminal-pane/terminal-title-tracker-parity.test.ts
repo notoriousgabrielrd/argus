@@ -243,7 +243,7 @@ describe('main title tracker parity with the renderer transport processor', () =
     feedBoth(paths, 'plain output arms the timer\r\n')
 
     vi.advanceTimersByTime(2_000)
-    // Why: a chunk that is ONLY an Orca status payload strips to empty
+    // Why: a chunk that is ONLY an Argus status payload strips to empty
     // cleanData; neither path may restart (or newly arm) the stale probe.
     feedBoth(paths, `${ESC}]9999;{"state":"working","agentType":"codex"}${BEL}`)
     vi.advanceTimersByTime(1_000)

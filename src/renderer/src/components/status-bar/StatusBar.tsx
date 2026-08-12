@@ -545,7 +545,7 @@ function getClaudeStatusAccountsFromSettings(
   }
 }
 
-// Why: with a Remote Orca Server, local GlobalSettings describe this desktop, not the owner — the server snapshot wins (#7973).
+// Why: with a Remote Argus Server, local GlobalSettings describe this desktop, not the owner — the server snapshot wins (#7973).
 export function resolveCodexStatusAccountState(
   settings: GlobalSettings | null | undefined,
   runtimeState: CodexRateLimitAccountsState
@@ -2054,7 +2054,7 @@ function StatusBarInner({ floatingTerminalOpen }: StatusBarProps): React.JSX.Ele
     }
     setIsRefreshing(true)
     try {
-      // Why: re-run PATH detection so a freshly-installed/removed CLI's bar appears/hides without restarting Orca.
+      // Why: re-run PATH detection so a freshly-installed/removed CLI's bar appears/hides without restarting Argus.
       await Promise.all([refreshRateLimits(), refreshDetectedAgents()])
     } finally {
       if (mountedRef.current) {
@@ -2385,7 +2385,7 @@ function StatusBarInner({ floatingTerminalOpen }: StatusBarProps): React.JSX.Ele
                 >
                   <PanelsTopLeft className="size-3.5" />
                   {showFloatingWorkspaceAttentionDot ? (
-                    // Why: amber = Orca's "needs attention" convention; ring matches the fill so the dot reads on the icon.
+                    // Why: amber = Argus's "needs attention" convention; ring matches the fill so the dot reads on the icon.
                     <span
                       aria-hidden
                       data-floating-terminal-attention

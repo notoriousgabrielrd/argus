@@ -128,7 +128,7 @@ export type AgentStatusSlice = {
   /** Durable agent sessions captured on sleep (not live rows); power the one-click CLI resume on wake. */
   sleepingAgentSessionsByPaneKey: Record<string, SleepingAgentSessionRecord>
 
-  /** Ephemeral launch snapshots keyed by pane; hook payloads lack Orca launch settings, so the renderer supplies them from startup. */
+  /** Ephemeral launch snapshots keyed by pane; hook payloads lack Argus launch settings, so the renderer supplies them from startup. */
   agentLaunchConfigByPaneKey: Record<string, AgentLaunchConfigRegistryEntry>
 
   /** Pane keys explicitly torn down, forbidden from re-retention on next disappearance; a one-shot suppressor consumed by the retention sync. */
@@ -2174,7 +2174,7 @@ export const createAgentStatusSlice: StateCreator<AppState, [], [], AgentStatusS
       queueMicrotask(() => freshness.schedule())
       if (completionRefreshWorktreeId) {
         const worktreeId = completionRefreshWorktreeId
-        // Why: agents can create a PR via `gh pr create`, bypassing Orca's flow and leaving a stale "no PR" cache entry in place.
+        // Why: agents can create a PR via `gh pr create`, bypassing Argus's flow and leaving a stale "no PR" cache entry in place.
         queueMicrotask(() => get().refreshGitHubForWorktreeIfStale(worktreeId))
       }
     },

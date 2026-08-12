@@ -179,7 +179,7 @@ describe('resolveWindowsShellLaunchArgs', () => {
 
   it('preserves complex PowerShell startup command text through EncodedCommand', () => {
     const startupCommand =
-      '& "C:\\Program Files\\Orca CLI\\orca.exe" "--label" "quoted value"; $env:ORCA_VALUE = "nested"'
+      '& "C:\\Program Files\\Argus CLI\\orca.exe" "--label" "quoted value"; $env:ORCA_VALUE = "nested"'
     const result = resolveWindowsShellLaunchArgs(
       'powershell.exe',
       'C:\\Users\\alice',
@@ -281,7 +281,7 @@ describe('resolveWindowsShellLaunchArgs', () => {
     expect(existsSync(join(userDataPath, 'shell-ready', 'zsh', '.zshenv'))).toBe(true)
 
     // Why: typed OMP keeps its existing shell integration, while typed Prime
-    // commands must reach the user's binary without Orca rewriting argv.
+    // commands must reach the user's binary without Argus rewriting argv.
     const bashRcfile = readFileSync(join(userDataPath, 'shell-ready', 'bash', 'rcfile'), 'utf8')
     const zshLogin = readFileSync(join(userDataPath, 'shell-ready', 'zsh', '.zlogin'), 'utf8')
     for (const wrapperFile of [bashRcfile, zshLogin]) {

@@ -19,7 +19,7 @@ export function resolveOrcaCliCommand({ env = process.env, platform = process.pl
   if (env.ORCA_DEV_REPO_ROOT) {
     return 'orca-dev'
   }
-  return platform === 'linux' ? 'orca-ide' : 'orca'
+  return platform === 'linux' ? 'argus-ide' : 'orca'
 }
 
 export function resolveOrcaCliInvocation({

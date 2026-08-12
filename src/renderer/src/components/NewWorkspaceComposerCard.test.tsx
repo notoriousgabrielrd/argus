@@ -143,7 +143,7 @@ const localReadyHostOption: ProjectHostSetupOption = {
   hostId: 'local',
   repoId: 'repo-a',
   label: 'Local Mac',
-  detail: 'Orca',
+  detail: 'Argus',
   path: '/Users/alice/orca'
 }
 
@@ -749,10 +749,10 @@ describe('NewWorkspaceComposerCard folder task source mode', () => {
     })
 
     expect(findRunTargetItem('Add SSH host')).toBeTruthy()
-    expect(findRunTargetItem('Add Remote Orca Server')).toBeTruthy()
+    expect(findRunTargetItem('Add Remote Argus Server')).toBeTruthy()
   })
 
-  it('opens the remote Orca server add dialog over the composer without leaving for Settings', () => {
+  it('opens the remote Argus server add dialog over the composer without leaving for Settings', () => {
     current = renderCard({
       projectHostSetupOptions: [localReadyHostOption, devboxNeedsSetupHostOption],
       selectedProjectHostSetupId: 'setup-local'
@@ -760,7 +760,7 @@ describe('NewWorkspaceComposerCard folder task source mode', () => {
 
     openRunTargetPicker(current.container)
     act(() => findRunTargetItem('Add host')?.click())
-    act(() => findRunTargetItem('Add Remote Orca Server')?.click())
+    act(() => findRunTargetItem('Add Remote Argus Server')?.click())
 
     const dialog = document.body.querySelector('[data-testid="add-remote-host-dialog"]')
     expect(dialog?.getAttribute('data-mode')).toBe('server')

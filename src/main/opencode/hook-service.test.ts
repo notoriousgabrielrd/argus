@@ -59,7 +59,7 @@ describe('OpenCode hook plugin source', () => {
   })
 
   it('resolves hook coords from the endpoint file before falling back to process.env', () => {
-    // Why: a forked session freezes the prior Orca's PORT/TOKEN in env; prefer the on-disk endpoint file or it posts to a dead port after restart.
+    // Why: a forked session freezes the prior Argus's PORT/TOKEN in env; prefer the on-disk endpoint file or it posts to a dead port after restart.
     const source = _internals.getOpenCodePluginSource()
 
     expect(source).toContain('function readEndpointFile()')
@@ -306,7 +306,7 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
     )
   }
 
-  it('builds an overlay under userData and exposes user config + Orca plugin together', () => {
+  it('builds an overlay under userData and exposes user config + Argus plugin together', () => {
     const service = new OpenCodeHookService()
     const env = service.buildPtyEnv(ptyId, userConfigDir)
 
@@ -326,7 +326,7 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
       'export default () => {}'
     )
 
-    // Orca's status plugin is a sibling, not a replacement.
+    // Argus's status plugin is a sibling, not a replacement.
     const orcaPluginPath = join(env.OPENCODE_CONFIG_DIR!, 'plugins', 'orca-opencode-status.js')
     expect(existsSync(orcaPluginPath)).toBe(true)
     expect(readFileSync(orcaPluginPath, 'utf8')).toContain('OrcaOpenCodeStatusPlugin')
@@ -337,14 +337,14 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
   it.skipIf(process.platform === 'win32')(
     'mirrors top-level entries via symlinks so plugins/ is a real directory',
     () => {
-      // Why: only plugins/ needs per-entry mirroring (Orca drops a sibling); other entries are single symlinks so user edits propagate live.
+      // Why: only plugins/ needs per-entry mirroring (Argus drops a sibling); other entries are single symlinks so user edits propagate live.
       const service = new OpenCodeHookService()
       const env = service.buildPtyEnv(ptyId, userConfigDir)
 
       const overlay = env.OPENCODE_CONFIG_DIR!
       expect(lstatSync(join(overlay, 'opencode.json')).isSymbolicLink()).toBe(true)
       expect(lstatSync(join(overlay, 'auth.json')).isSymbolicLink()).toBe(true)
-      // plugins/ must be a real dir in the overlay so Orca can drop its sibling plugin.
+      // plugins/ must be a real dir in the overlay so Argus can drop its sibling plugin.
       expect(lstatSync(join(overlay, 'plugins')).isDirectory()).toBe(true)
       expect(lstatSync(join(overlay, 'plugins')).isSymbolicLink()).toBe(false)
       // user-plugin.js inside plugins/ is mirrored entry-by-entry.
@@ -352,7 +352,7 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
     }
   )
 
-  it("does not overwrite a user plugin file with the same filename as Orca's plugin", () => {
+  it("does not overwrite a user plugin file with the same filename as Argus's plugin", () => {
     // Why: a user plugin named orca-opencode-status.js must not be symlinked into the overlay, or writeFileSync would clobber it.
     const userOrcaSentinel = 'USER OWNED ORCA-NAMED PLUGIN — DO NOT CLOBBER'
     writeFileSync(join(userConfigDir, 'plugins', 'orca-opencode-status.js'), userOrcaSentinel)
@@ -365,7 +365,7 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
       userOrcaSentinel
     )
 
-    // Overlay copy is Orca's real plugin source, not the user's file.
+    // Overlay copy is Argus's real plugin source, not the user's file.
     const overlayPlugin = readFileSync(
       join(env.OPENCODE_CONFIG_DIR!, 'plugins', 'orca-opencode-status.js'),
       'utf8'
@@ -378,7 +378,7 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
   it.skipIf(process.platform === 'win32')(
     'does not write through a symlinked plugins/ directory into the user filesystem',
     () => {
-      // Why: writing Orca's plugin through a symlinked plugins/ would leak into the user's fs (docs/opencode-config-dir-collision.md).
+      // Why: writing Argus's plugin through a symlinked plugins/ would leak into the user's fs (docs/opencode-config-dir-collision.md).
       const realPluginsDir = mkdtempSync(join(tmpdir(), 'orca-real-plugins-'))
       try {
         writeFileSync(join(realPluginsDir, 'real-plugin.js'), 'REAL USER PLUGIN')
@@ -390,11 +390,11 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
         const service = new OpenCodeHookService()
         const env = service.buildPtyEnv(ptyId, userConfigDir)
 
-        // The user's real filesystem must NOT receive Orca's status plugin.
+        // The user's real filesystem must NOT receive Argus's status plugin.
         expect(existsSync(join(realPluginsDir, 'orca-opencode-status.js'))).toBe(false)
         // Overlay's plugins/ must be a real dir, else writes leak into the user's filesystem.
         expect(lstatSync(join(env.OPENCODE_CONFIG_DIR!, 'plugins')).isSymbolicLink()).toBe(false)
-        // Orca's status plugin lands in the overlay only.
+        // Argus's status plugin lands in the overlay only.
         expect(
           existsSync(join(env.OPENCODE_CONFIG_DIR!, 'plugins', 'orca-opencode-status.js'))
         ).toBe(true)
@@ -409,7 +409,7 @@ describe('OpenCodeHookService overlay mode (user OPENCODE_CONFIG_DIR set)', () =
   )
 
   it("preserves the user's OPENCODE_CONFIG_DIR when the path does not exist", () => {
-    // Why: leave a nonexistent user path alone so OpenCode surfaces the typo instead of Orca silently hiding it.
+    // Why: leave a nonexistent user path alone so OpenCode surfaces the typo instead of Argus silently hiding it.
     const service = new OpenCodeHookService()
     const missingPath = join(tmpdir(), `orca-opencode-nope-${Date.now()}`)
     expect(existsSync(missingPath)).toBe(false)

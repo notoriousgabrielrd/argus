@@ -1,6 +1,6 @@
 // win-update-e2e — packaged NSIS update proof harness.
 //
-// Given two Orca Windows installers (version N and N+1), proves what happens to
+// Given two Argus Windows installers (version N and N+1), proves what happens to
 // the terminal daemon and its sessions across a real silent update, with
 // machine-checkable assertions. Windows-only. See README.md for usage and the
 // design context in docs/windows-terminal-update-survival-plan.md (Phase 0).
@@ -378,7 +378,7 @@ function resolveScopedDaemon(userDataDir) {
     startedAtMs: primary?.startedAtMs ?? null,
     // Why: the daemon's exe path (first token of its command line) tells us
     // whether it was forked from the relocated userData/daemon-host copy or the
-    // install-dir Orca.exe — the key survival signal.
+    // install-dir Argus.exe — the key survival signal.
     exePath: daemonExePath(scanEntry?.commandLine),
     pids: [...pids]
   }
@@ -569,7 +569,7 @@ async function teardown({
   // — uninstalling would remove a build we did not put there.
   if (hadPreexistingInstall) {
     console.log(
-      '\n*** NOTE: an Orca install existed before this run. It was OVERWRITTEN and the\n' +
+      '\n*** NOTE: an Argus install existed before this run. It was OVERWRITTEN and the\n' +
         '    --to version is now installed. Your prior build was NOT restored — reinstall\n' +
         '    your intended build if needed. Skipping uninstall. ***\n'
     )

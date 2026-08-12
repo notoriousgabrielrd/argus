@@ -28,7 +28,7 @@ const validSignature = {
 
 function withTempFile(callback) {
   const dir = mkdtempSync(join(tmpdir(), 'orca-inner-signature-'))
-  const filePath = join(dir, 'Orca.exe')
+  const filePath = join(dir, 'Argus.exe')
   writeFileSync(filePath, 'placeholder executable')
 
   try {
@@ -167,26 +167,26 @@ describe('verify-windows-inner-signature', () => {
       return { status: 0, stdout: JSON.stringify(validSignature), stderr: '' }
     }
 
-    expect(getPowerShellSignatureJson('C:\\Path With Spaces\\Orca.exe', spawnSyncImpl)).toBe(
+    expect(getPowerShellSignatureJson('C:\\Path With Spaces\\Argus.exe', spawnSyncImpl)).toBe(
       JSON.stringify(validSignature)
     )
     expect(calls[0].command).toBe('pwsh')
     expect(calls[0].args).toContain('-Command')
-    expect(calls[0].args.at(-1)).not.toBe('C:\\Path With Spaces\\Orca.exe')
+    expect(calls[0].args.at(-1)).not.toBe('C:\\Path With Spaces\\Argus.exe')
     expect(calls[0].options).toEqual(
       expect.objectContaining({
         encoding: 'utf8',
         env: expect.objectContaining({
-          ORCA_WINDOWS_INNER_EXECUTABLE: 'C:\\Path With Spaces\\Orca.exe'
+          ORCA_WINDOWS_INNER_EXECUTABLE: 'C:\\Path With Spaces\\Argus.exe'
         })
       })
     )
 
     expect(() =>
-      getPowerShellSignatureJson('Orca.exe', () => ({ status: 0, stdout: '{}', stderr: 'warning' }))
+      getPowerShellSignatureJson('Argus.exe', () => ({ status: 0, stdout: '{}', stderr: 'warning' }))
     ).toThrow(/stderr/)
     expect(() =>
-      getPowerShellSignatureJson('Orca.exe', () => ({ status: 7, stdout: '', stderr: '' }))
+      getPowerShellSignatureJson('Argus.exe', () => ({ status: 7, stdout: '', stderr: '' }))
     ).toThrow(/exit code 7/)
   })
 

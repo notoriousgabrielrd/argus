@@ -28,7 +28,7 @@ import { clearAttachmentImagesForSite } from './attachment-image-cache'
 // Electron's net.fetch sends a Chrome UA, so issue search/create/update/comment
 // all 403'd while GET calls (connect, /myself) passed. A non-browser UA is the
 // reliable fix; X-Atlassian-Token: no-check is not honored for this case.
-const JIRA_API_USER_AGENT = 'Orca'
+const JIRA_API_USER_AGENT = 'Argus'
 
 const MAX_CONCURRENT = 4
 let running = 0

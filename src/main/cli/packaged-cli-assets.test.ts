@@ -17,7 +17,7 @@ const builderConfig = require('../../../config/electron-builder.config.cjs') as 
   linux?: { extraResources?: { from?: string; to?: string }[] }
   win?: { extraResources?: { from?: string; to?: string }[] }
 }
-const linuxLauncherAsset = new URL('../../../resources/linux/bin/orca-ide', import.meta.url)
+const linuxLauncherAsset = new URL('../../../resources/linux/bin/argus-ide', import.meta.url)
 
 describe('packaged CLI assets', () => {
   it('ships embedded skill guides with the CLI instead of source Markdown', () => {
@@ -63,14 +63,14 @@ describe('packaged CLI assets', () => {
   itRunsUnixShell(
     'runs the Linux launcher from its packaged path and installed symlink',
     async () => {
-      const root = await mkdtemp(join(tmpdir(), 'orca-linux-cli-'))
+      const root = await mkdtemp(join(tmpdir(), 'argus-linux-cli-'))
       try {
-        const appDir = join(root, 'Orca')
+        const appDir = join(root, 'Argus')
         const resourcesDir = join(appDir, 'resources')
         const launcherDir = join(resourcesDir, 'bin')
         const cliDir = join(resourcesDir, 'app.asar.unpacked', 'out', 'cli')
-        const launcherPath = join(launcherDir, 'orca-ide')
-        const electronPath = join(appDir, 'orca-ide')
+        const launcherPath = join(launcherDir, 'argus-ide')
+        const electronPath = join(appDir, 'argus-ide')
         const cliPath = join(cliDir, 'index.js')
 
         await mkdir(launcherDir, { recursive: true })
@@ -96,7 +96,7 @@ printf 'arg=%s\\n' "$@"
 
         const homeDir = join(root, 'home')
         const commandDir = join(homeDir, '.local', 'bin')
-        const commandPath = join(commandDir, 'orca-ide')
+        const commandPath = join(commandDir, 'argus-ide')
         await mkdir(commandDir, { recursive: true })
         await mkdir(join(homeDir, 'orca'), { recursive: true })
         await symlink(launcherPath, commandPath)
@@ -117,11 +117,11 @@ printf 'arg=%s\\n' "$@"
   itRunsUnixShell('runs the AppImage CLI wrapper through APPDIR at runtime', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-appimage-cli-'))
     try {
-      const appDir = join(root, 'Orca.AppDir')
+      const appDir = join(root, 'Argus.AppDir')
       const cliDir = join(appDir, 'resources', 'app.asar.unpacked', 'out', 'cli')
       const cliPath = join(cliDir, 'index.js')
-      const appImagePath = join(root, "Orca's AppImage.AppImage")
-      const commandPath = join(root, 'orca-ide')
+      const appImagePath = join(root, "Argus's AppImage.AppImage")
+      const commandPath = join(root, 'argus-ide')
       await mkdir(cliDir, { recursive: true })
       await writeFile(
         cliPath,

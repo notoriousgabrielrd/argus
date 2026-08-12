@@ -132,7 +132,7 @@ function stripPersistedPtyOwnership(userDataDir: string): void {
   session.activeWorktreeIdsOnShutdown = []
   for (const record of Object.values(session.sleepingAgentSessionsByPaneKey ?? {})) {
     if (record.providerSession?.id === PROVIDER_SESSION_ID) {
-      // Why: the e2e proof should verify Orca launches the resumed command,
+      // Why: the e2e proof should verify Argus launches the resumed command,
       // not depend on a developer machine having a real Codex CLI installed.
       record.launchConfig = { agentCommand: 'echo', agentArgs: '', agentEnv: {} }
     }

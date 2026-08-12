@@ -1089,7 +1089,7 @@ export async function addSparseWorktree(
 /**
  * Move a worktree with `git worktree move` (not `fs.rename`, which corrupts the
  * `.git` file and the `.git/worktrees/<name>/gitdir` back-pointer). Local-only,
- * so there is no relay parity handler. Caller owns migrating Orca's
+ * so there is no relay parity handler. Caller owns migrating Argus's
  * path-derived worktree identity and pre-checks that the destination is free.
  */
 export async function moveWorktree(

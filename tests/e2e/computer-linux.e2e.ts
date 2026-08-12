@@ -65,7 +65,7 @@ describe.skipIf(!isLinux || !e2eOptIn)('computer-use Linux e2e (gedit)', () => {
       '--json'
     ])
 
-    const marker = ` orca-linux-type-${Date.now()}`
+    const marker = ` argus-linux-type-${Date.now()}`
     const typed = parseJsonOutput<{ result: ComputerActionResult }>(
       (
         await runOrcaCli([
@@ -86,7 +86,7 @@ describe.skipIf(!isLinux || !e2eOptIn)('computer-use Linux e2e (gedit)', () => {
   })
 
   test('paste-text mutates the test-owned document', async () => {
-    const marker = `orca-linux-paste-${Date.now()}`
+    const marker = `argus-linux-paste-${Date.now()}`
     const action = parseJsonOutput<{ result: ComputerActionResult }>(
       (
         await runOrcaCli([

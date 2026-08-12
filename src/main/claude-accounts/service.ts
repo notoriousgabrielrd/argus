@@ -252,7 +252,7 @@ export class ClaudeAccountService {
     captured: CapturedClaudeAuth
   ): Promise<ClaudeRateLimitAccountsState> {
     if (!captured.identity.email) {
-      throw new Error('Claude login completed, but Orca could not resolve the account email.')
+      throw new Error('Claude login completed, but Argus could not resolve the account email.')
     }
     // Why: duplicate rows confuse selection and rate-limit tracking; re-authentication
     // is the supported way to refresh an account that is already managed.
@@ -338,7 +338,7 @@ export class ClaudeAccountService {
       wslLinuxAuthPath: account.wslLinuxAuthPath ?? null
     })
     if (!captured.identity.email) {
-      throw new Error('Claude login completed, but Orca could not resolve the account email.')
+      throw new Error('Claude login completed, but Argus could not resolve the account email.')
     }
 
     const settings = this.store.getSettings()
@@ -961,7 +961,7 @@ export class ClaudeAccountService {
         !wslInfo.linuxPath.includes('/.local/share/orca/claude-accounts/') ||
         !wslInfo.linuxPath.endsWith('/auth')
       ) {
-        throw new Error('Managed WSL Claude auth storage is outside Orca account storage.')
+        throw new Error('Managed WSL Claude auth storage is outside Argus account storage.')
       }
       if (process.platform === 'win32') {
         try {
@@ -995,7 +995,7 @@ export class ClaudeAccountService {
           }
           return toWindowsWslPath(canonicalLinuxPath, wslInfo.distro)
         } catch (error) {
-          throw new Error('Managed WSL Claude auth storage is outside Orca account storage.', {
+          throw new Error('Managed WSL Claude auth storage is outside Argus account storage.', {
             cause: error
           })
         }
@@ -1004,7 +1004,7 @@ export class ClaudeAccountService {
         !existsSync(candidatePath) ||
         !existsSync(join(candidatePath, '.orca-managed-claude-auth'))
       ) {
-        throw new Error('Managed Claude auth storage is not owned by Orca.')
+        throw new Error('Managed Claude auth storage is not owned by Argus.')
       }
       return candidatePath
     }
@@ -1018,7 +1018,7 @@ export class ClaudeAccountService {
       adoptLegacyMarker: true
     })
     if (!trustedPath) {
-      throw new Error('Managed Claude auth storage is not owned by Orca.')
+      throw new Error('Managed Claude auth storage is not owned by Argus.')
     }
     return trustedPath
   }

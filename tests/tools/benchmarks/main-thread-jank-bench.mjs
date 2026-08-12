@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Orca main-thread jank / subprocess-churn benchmark (issue #7576).
+ * Argus main-thread jank / subprocess-churn benchmark (issue #7576).
  *
  * Reproduces the reporter's setup: a running app with an active git worktree
  * and the Source Control sidebar open, measured at steady state. The app is
@@ -81,7 +81,7 @@ function parseArgs(argv) {
  * churn-producing configuration: one git repo as the active worktree with the
  * Source Control sidebar open (engages the 3s interactive git-status poll).
  * The branch is pushed to a local `origin` but has NO configured upstream —
- * the shape Orca worktrees commonly have, which forces the effective-upstream
+ * the shape Argus worktrees commonly have, which forces the effective-upstream
  * probe (the most spawn-heavy status path) on every poll tick.
  */
 function ensureFixture(fixtureDir) {

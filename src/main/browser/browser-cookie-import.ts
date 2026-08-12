@@ -1398,7 +1398,7 @@ async function importCookiesFromSafari(
       return {
         ok: false,
         reason:
-          'macOS denied access to Safari cookies. Grant Full Disk Access to Orca in System Settings → Privacy & Security → Full Disk Access.'
+          'macOS denied access to Safari cookies. Grant Full Disk Access to Argus in System Settings → Privacy & Security → Full Disk Access.'
       }
     }
     return { ok: false, reason: 'Could not read Safari cookies.' }
@@ -1549,7 +1549,7 @@ export async function importCookiesFromBrowser(
     let colList: string | null = null
     let placeholders: string | null = null
     if (stagingAvailable) {
-      // Why: the staged file is Orca's own partition DB, also named "Cookies", so the same
+      // Why: the staged file is Argus's own partition DB, also named "Cookies", so the same
       // transient AV handle can make opening it throw — degrade instead of killing the import.
       try {
         stagingDb = new DatabaseSync(stagingCookiesPath)

@@ -59,7 +59,7 @@ function getInstallDescription(platform: string): string {
     return 'Register `orca` in /usr/local/bin.'
   }
   if (platform === 'linux') {
-    return 'Register `orca-ide` in ~/.local/bin.'
+    return 'Register `argus-ide` in ~/.local/bin.'
   }
   if (platform === 'win32') {
     return 'Register `orca` in your user PATH.'
@@ -68,7 +68,7 @@ function getInstallDescription(platform: string): string {
 }
 
 function getFallbackCommandName(platform: string): string {
-  return platform === 'linux' ? 'orca-ide' : 'orca'
+  return platform === 'linux' ? 'argus-ide' : 'orca'
 }
 
 export function CliSection({
@@ -239,12 +239,12 @@ export function CliSection({
     <section className="space-y-4" data-settings-section="cli">
       <div className="space-y-1">
         <h2 className="text-sm font-semibold">
-          {translate('auto.components.settings.CliSection.c5c0f2641d', 'Orca CLI')}
+          {translate('auto.components.settings.CliSection.c5c0f2641d', 'Argus CLI')}
         </h2>
         <p className="text-xs text-muted-foreground">
           {translate(
             'auto.components.settings.CliSection.6930feda9e',
-            'Use Orca from your terminal to open the app, manage worktrees, and interact with Orca terminals.'
+            'Use Argus from your terminal to open the app, manage worktrees, and interact with Argus terminals.'
           )}
         </p>
       </div>
@@ -371,7 +371,7 @@ export function CliSection({
               title={translate('auto.components.settings.CliSection.6053cf736c', 'CLI skill')}
               description={translate(
                 'auto.components.settings.CliSection.e8012c03a1',
-                'Enables agents to use Orca workspace, terminal, and progress commands.'
+                'Enables agents to use Argus workspace, terminal, and progress commands.'
               )}
               command={cliSkillInstallCommand}
               installedCommand={cliSkillUpdateCommand}

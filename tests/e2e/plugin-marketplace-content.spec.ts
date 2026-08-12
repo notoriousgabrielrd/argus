@@ -48,7 +48,7 @@ async function commitRepository(
     repository,
     [
       '-c',
-      'user.name=Orca Test',
+      'user.name=Argus Test',
       '-c',
       'user.email=orca-test@example.invalid',
       'commit',
@@ -129,7 +129,7 @@ async function createMarketplaceFixture(): Promise<MarketplaceFixture> {
     join(marketplaceRepository, 'orca-marketplace.json'),
     `${JSON.stringify(
       {
-        name: 'Orca Plugins',
+        name: 'Argus Plugins',
         owner: 'stablyai',
         plugins: [
           ['stablyai.orca-portuguese', 'orca-portuguese', 'languages'],

@@ -88,7 +88,7 @@ export function handleTerminalHttpLink(
     destination === 'orca'
       ? translate(
           'auto.components.terminal.pane.TerminalLinkActionPopover.orcaBrowser',
-          'Orca Browser'
+          'Argus Browser'
         )
       : translate(
           'auto.components.terminal.pane.TerminalLinkActionPopover.systemBrowser',
@@ -273,7 +273,7 @@ function rangeContainsBufferPosition(
 }
 
 export function openTerminalHttpLink(url: string, deps: UrlLinkHitTestDeps): void {
-  // Why: Orca browser tabs are local-only, so a link clicked in a runtime-hosted
+  // Why: Argus browser tabs are local-only, so a link clicked in a runtime-hosted
   // pane must be classified by its pane's host, not the global active runtime.
   const sourceOwner = deps.sourceOwner ?? { kind: 'local' }
   if (deps.forceDestination) {

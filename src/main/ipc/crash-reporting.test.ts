@@ -203,7 +203,7 @@ describe('registerCrashReportingHandlers', () => {
       reportId: pending.id,
       notes: 'current notes',
       submissionFailure: {
-        error: 'fallback failed at C:\\Users\\alice\\Orca',
+        error: 'fallback failed at C:\\Users\\alice\\Argus',
         diagnosticContext: {
           status: 'not_uploaded',
           reason: 'attachment token=super-secret-value',

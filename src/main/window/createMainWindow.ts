@@ -194,7 +194,7 @@ type CreateMainWindowOptions = {
     details: Electron.RenderProcessGoneDetails,
     webContentsId: number
   ) => void
-  /** Returns true when Orca should reload after renderer loss; update-relaunch/quit tear down children intentionally, so don't fight shutdown. */
+  /** Returns true when Argus should reload after renderer loss; update-relaunch/quit tear down children intentionally, so don't fight shutdown. */
   shouldRecoverRenderer?: (
     details: Electron.RenderProcessGoneDetails,
     webContentsId: number
@@ -271,9 +271,9 @@ export function createMainWindow(
     ...(savedBounds ? { x: savedBounds.x, y: savedBounds.y } : {}),
     minWidth: MIN_WIDTH,
     minHeight: MIN_HEIGHT,
-    title: opts?.title ?? 'Orca',
+    title: opts?.title ?? 'Argus',
     show: false,
-    // Why: macOS swallows the app-activating click by default, so clicking back into Orca needed a second click (Windows/Linux already deliver it).
+    // Why: macOS swallows the app-activating click by default, so clicking back into Argus needed a second click (Windows/Linux already deliver it).
     acceptFirstMouse: true,
     // Why: auto-hide the Windows/Linux menu bar to save a row (Alt reveals it); macOS uses the system menu bar anyway.
     autoHideMenuBar: true,
@@ -830,7 +830,7 @@ export function createMainWindow(
     }
 
     if (isMacAppPasteInput(input)) {
-      // Why: chat/terminal panes hold focus without native editable controls, so route Cmd+V through Orca's paste ownership.
+      // Why: chat/terminal panes hold focus without native editable controls, so route Cmd+V through Argus's paste ownership.
       event.preventDefault()
       mainWindow.webContents.send('ui:appMenuPaste')
       return
@@ -1009,10 +1009,10 @@ export function createMainWindow(
     if (store.getUI().trayMinimizeNoticeShown !== true) {
       try {
         new Notification({
-          title: 'Orca',
+          title: 'Argus',
           body: translateMain(
             'tray.minimizeNotice.body',
-            'Orca is still running in the system tray'
+            'Argus is still running in the system tray'
           )
         }).show()
       } catch {

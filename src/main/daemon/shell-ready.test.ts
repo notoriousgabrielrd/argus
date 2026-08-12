@@ -162,7 +162,7 @@ function expectZdotdirSourceContext(content: string, fileName: '.zprofile' | '.z
 }
 
 function expectFinalZdotdirRestoreContext(content: string) {
-  expect(content).toContain("after Orca's last wrapper file has loaded")
+  expect(content).toContain("after Argus's last wrapper file has loaded")
   expect(content).toContain('export ZDOTDIR="$_orca_home"')
 }
 
@@ -390,7 +390,7 @@ describePosix('daemon shell-ready launch config', () => {
     }
   })
 
-  it('uses inherited ORCA_ORIG_ZDOTDIR when ZDOTDIR is an Orca wrapper dir', async () => {
+  it('uses inherited ORCA_ORIG_ZDOTDIR when ZDOTDIR is an Argus wrapper dir', async () => {
     const previousZdotdir = process.env.ZDOTDIR
     const previousOrigZdotdir = process.env.ORCA_ORIG_ZDOTDIR
     const previousHome = process.env.HOME
@@ -554,7 +554,7 @@ describePosix('daemon shell-ready launch config', () => {
     15_000
   )
 
-  // Why: a re-source (nested Orca, manual) must stay idempotent — keep chaining the user's original zle-line-init.
+  // Why: a re-source (nested Argus, manual) must stay idempotent — keep chaining the user's original zle-line-init.
   itWithZsh(
     'keeps chaining the prior zle-line-init widget when the marker block is sourced twice',
     async () => {
@@ -698,7 +698,7 @@ describePosix('daemon shell-ready launch config', () => {
     'still emits 133;C when bash-preexec re-arms the DEBUG trap at first prompt',
     async () => {
       const { getDaemonBashShellReadyRcfileContent } = await importFreshShellReady()
-      // Minimal bash-preexec imitation: re-arms its own DEBUG trap from PROMPT_COMMAND at first prompt, silencing Orca's trap.
+      // Minimal bash-preexec imitation: re-arms its own DEBUG trap from PROMPT_COMMAND at first prompt, silencing Argus's trap.
       writeFileSync(
         join(userDataPath, '.bash_profile'),
         [
@@ -721,7 +721,7 @@ describePosix('daemon shell-ready launch config', () => {
   )
 
   itWithBash(
-    'dispatches a non-empty preexec_functions against the real command, not Orca hooks',
+    'dispatches a non-empty preexec_functions against the real command, not Argus hooks',
     async () => {
       const { getDaemonBashShellReadyRcfileContent } = await importFreshShellReady()
       // Why: the epilogue chains bash-preexec's re-armed DEBUG trap, so a real preexec callback must fire against the user's command.

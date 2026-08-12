@@ -111,7 +111,7 @@ async function readManifestDir(
     return {
       pluginKey,
       rootDir,
-      error: `requires Orca ${manifest.engines.orca} (this is ${hostVersion})`,
+      error: `requires Argus ${manifest.engines.orca} (this is ${hostVersion})`,
       isDev
     }
   }

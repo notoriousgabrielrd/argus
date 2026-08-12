@@ -235,7 +235,7 @@ function isWindowsPathForTrustSource(sourcePath: string): boolean {
   )
 }
 
-// Why: Codex and Orca can disagree on quote style, separators, and casing for the same Windows project.
+// Why: Codex and Argus can disagree on quote style, separators, and casing for the same Windows project.
 export function normalizeCodexProjectPathForLookup(projectPath: string): string {
   if (!usesWindowsPathSeparators(projectPath)) {
     return projectPath
@@ -546,7 +546,7 @@ type TrustBlockRange = {
 export function normalizeHookTrustKeyForLookup(key: string): string {
   const parsed = parseTrustKey(key)
   // Why: fold by path shape, not host platform — hook sources on WSL and SSH
-  // Windows remotes need the same folding when Orca runs on macOS or Linux.
+  // Windows remotes need the same folding when Argus runs on macOS or Linux.
   const foldedPath = normalizeCodexProjectPathForLookup(
     parsed
       ? parsed.sourcePath.startsWith('//')

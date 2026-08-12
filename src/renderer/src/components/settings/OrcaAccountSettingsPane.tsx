@@ -22,13 +22,13 @@ function accountStatusCopy(
   if (state === 'unconfigured') {
     return translate(
       'auto.components.settings.orcaAccount.unavailable',
-      'Orca sign-in is unavailable in this build.'
+      'Argus sign-in is unavailable in this build.'
     )
   }
   if (state === 'local') {
     return translate(
       'auto.components.settings.orcaAccount.signedOut',
-      'Sign in to extend Orca with cloud features, including Artifacts and Orca Relay.'
+      'Sign in to extend Argus with cloud features, including Artifacts and Argus Relay.'
     )
   }
   return translate('auto.components.settings.orcaAccount.checking', 'Checking account status…')
@@ -74,7 +74,7 @@ export function OrcaAccountSettingsPane(): React.JSX.Element {
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-medium">
                 {authStatus?.cloud?.displayName?.trim() ||
-                  translate('auto.components.settings.orcaAccount.account', 'Orca account')}
+                  translate('auto.components.settings.orcaAccount.account', 'Argus account')}
               </p>
               {connected ? (
                 <Badge variant="outline" className="text-[11px] text-muted-foreground">
@@ -108,7 +108,7 @@ export function OrcaAccountSettingsPane(): React.JSX.Element {
                 ? translate('auto.components.settings.orcaAccount.signingIn', 'Signing in…')
                 : authStatus?.state === 'reconnect-required'
                   ? translate('auto.components.settings.orcaAccount.signInAgain', 'Sign in again')
-                  : translate('auto.components.settings.orcaAccount.signIn', 'Sign in to Orca')}
+                  : translate('auto.components.settings.orcaAccount.signIn', 'Sign in to Argus')}
             </Button>
           )}
         </div>
@@ -133,7 +133,7 @@ export function OrcaAccountSettingsPane(): React.JSX.Element {
                 <p className="text-xs leading-5 text-muted-foreground">
                   {translate(
                     'auto.components.settings.orcaAccount.artifactsDescription',
-                    'Publish HTML and Markdown files, then manage every shared link from Orca.'
+                    'Publish HTML and Markdown files, then manage every shared link from Argus.'
                   )}
                 </p>
               </div>
@@ -142,12 +142,12 @@ export function OrcaAccountSettingsPane(): React.JSX.Element {
               <Smartphone className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
               <div className="space-y-1">
                 <p className="text-sm font-medium">
-                  {translate('auto.components.settings.orcaAccount.relayTitle', 'Orca Relay')}
+                  {translate('auto.components.settings.orcaAccount.relayTitle', 'Argus Relay')}
                 </p>
                 <p className="text-xs leading-5 text-muted-foreground">
                   {translate(
                     'auto.components.settings.orcaAccount.relayDescription',
-                    'Connect Orca Mobile to this desktop across cellular or any Wi-Fi.'
+                    'Connect Argus Mobile to this desktop across cellular or any Wi-Fi.'
                   )}
                 </p>
               </div>

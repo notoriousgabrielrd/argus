@@ -827,7 +827,7 @@ if (hasSingleInstanceLock) {
   installDevParentDisconnectQuit(shouldCoupleToDevParent)
   installDevParentWatchdog(shouldCoupleToDevParent)
   installDevParentSignalQuit(shouldCoupleToDevParent)
-  // Why: run after configureDevUserDataPath but before app.setName('Orca') (whenReady), which changes the resolved path on case-sensitive filesystems.
+  // Why: run after configureDevUserDataPath but before app.setName('Argus') (whenReady), which changes the resolved path on case-sensitive filesystems.
   initDataPath()
   // Why: use the canonical userData path — late app.getPath('userData') can resolve differently across restarts, defeating persistence.
   initSessionParseCachePersistence({
@@ -890,7 +890,7 @@ ipcMain.handle(
   }
 )
 
-/** A PTY that dies while Orca is down never runs the teardown that clears pane
+/** A PTY that dies while Argus is down never runs the teardown that clears pane
  *  state, so hydrate can rebuild a Claude subagent roster that no later hook can
  *  retire — pinning the pane 'working' and locking its agent out of hibernation
  *  for good. Once provider and hook hydration settle, targeted PTY liveness can
@@ -983,7 +983,7 @@ function startTerminalRuntimeStartupServices(): WindowsDesktopStartupServices {
       track('daemon_start_failed', classifyError(error))
     },
     onAgentHookServerError: (error) => {
-      // Why: hook callbacks are sidebar enrichment only; Orca must still boot if the loopback receiver fails.
+      // Why: hook callbacks are sidebar enrichment only; Argus must still boot if the loopback receiver fails.
       console.error('[agent-hooks] Failed to start local hook server:', error)
     }
   })
@@ -1643,9 +1643,9 @@ async function presentRendererRecoveryPrompt(recentRecoveryCount: number): Promi
     buttons: ['Reload', 'Quit'],
     defaultId: 0,
     cancelId: 1,
-    title: 'Orca keeps failing to load',
+    title: 'Argus keeps failing to load',
     message: 'The app window crashed repeatedly and stopped reloading automatically.',
-    detail: `Orca tried to recover ${recentRecoveryCount} times in a row without success. This is often a graphics-driver or installation problem. Reload to try again, or quit and relaunch Orca.`
+    detail: `Argus tried to recover ${recentRecoveryCount} times in a row without success. This is often a graphics-driver or installation problem. Reload to try again, or quit and relaunch Argus.`
   }
   const { response } = window
     ? await dialog.showMessageBox(window, options)
@@ -2656,7 +2656,7 @@ void app.whenReady().then(async () => {
   )
   runtimeService.setAccountServices({ claudeAccounts, codexAccounts, rateLimits })
   runtimeService.setCommitMessageAgentEnvironmentResolvers({
-    // Why: Codex hooks/auth live in Orca's managed runtime home even for the default path, so every launch must resolve CODEX_HOME via runtime-home.
+    // Why: Codex hooks/auth live in Argus's managed runtime home even for the default path, so every launch must resolve CODEX_HOME via runtime-home.
     prepareForCodexLaunch: prepareCodexRuntimeHomeForLaunch,
     prepareForClaudeLaunch: (target) => claudeRuntimeAuth!.prepareForClaudeLaunch(target)
   })
@@ -2944,7 +2944,7 @@ void app.whenReady().then(async () => {
   if (isE2E && (!Number.isInteger(e2eWsPort) || e2eWsPort < 0 || e2eWsPort > 65_535)) {
     throw new Error(`Invalid ORCA_E2E_RUNTIME_WS_PORT value: ${requestedE2EWsPort}`)
   }
-  // Why: pin dev to 6769 so `pnpm dev` doesn't race packaged Orca on 6768 and fall back to a random port, breaking deterministic mobile pairing/repro (STA-1511).
+  // Why: pin dev to 6769 so `pnpm dev` doesn't race packaged Argus on 6768 and fall back to a random port, breaking deterministic mobile pairing/repro (STA-1511).
   const devWsPort = is.dev && !isE2E ? 6769 : undefined
   let serveOptions: ServeOptions | null = null
   try {
@@ -3069,7 +3069,7 @@ void app.whenReady().then(async () => {
         )
       }
     }
-    // Why: Linux CLI installs as `orca-ide`, but the Claude Team launcher invokes bare `orca`; drop a ~/.local/bin dispatcher (ahead of /usr/bin) so it resolves. Best-effort.
+    // Why: Linux CLI installs as `argus-ide`, but the Claude Team launcher invokes bare `orca`; drop a ~/.local/bin dispatcher (ahead of /usr/bin) so it resolves. Best-effort.
     if (process.platform === 'linux' && app.isPackaged && process.resourcesPath) {
       try {
         const dispatcher = await installLinuxBareOrcaDispatcher({

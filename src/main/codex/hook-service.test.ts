@@ -130,7 +130,7 @@ function localManagedCodexEvents(): string[] {
 }
 
 describe('CodexHookService', () => {
-  it('installs PermissionRequest with trust so Codex approval prompts reach Orca', () => {
+  it('installs PermissionRequest with trust so Codex approval prompts reach Argus', () => {
     const systemCodexHome = join(tmpHome, '.codex')
     mkdirSync(systemCodexHome, { recursive: true })
     writeFileSync(
@@ -336,7 +336,7 @@ describe('CodexHookService', () => {
         // Why: this suite may run inside an Orca-launched terminal whose env
         // already carries ORCA_AGENT_HOOK_ENDPOINT/PORT/TOKEN. The managed
         // script sources that endpoint file, so leave it out or the hook posts
-        // to the live Orca instead of this test's listener.
+        // to the live Argus instead of this test's listener.
         const cleanEnv = { ...process.env }
         for (const key of Object.keys(cleanEnv)) {
           if (key.startsWith('ORCA_')) {
@@ -370,7 +370,7 @@ describe('CodexHookService', () => {
     }
   )
 
-  it('keeps hooks isolated by Orca userData instead of mutating system ~/.codex', () => {
+  it('keeps hooks isolated by Argus userData instead of mutating system ~/.codex', () => {
     const systemCodexHome = join(tmpHome, '.codex')
     const systemHooksPath = join(systemCodexHome, 'hooks.json')
     const existingSystemHooks = '{"hooks":{"Stop":[{"hooks":[{"command":"user-hook"}]}]}}\n'
@@ -1011,19 +1011,19 @@ describe('CodexHookService', () => {
     expect(systemHooks.hooks.Stop).toBeUndefined()
   }, 30_000)
 
-  it('removes the legacy Orca Codex profile file when it only contains managed hooks', () => {
+  it('removes the legacy Argus Codex profile file when it only contains managed hooks', () => {
     const systemCodexHome = join(tmpHome, '.codex')
     const profilePath = join(systemCodexHome, 'orca-agent-status.config.toml')
     mkdirSync(systemCodexHome, { recursive: true })
     writeFileSync(
       profilePath,
       [
-        '# BEGIN ORCA AGENT STATUS HOOKS',
+        '# BEGIN ARGUS AGENT STATUS HOOKS',
         '[[hooks.PermissionRequest]]',
         '[[hooks.PermissionRequest.hooks]]',
         'type = "command"',
         'command = "codex-hook"',
-        '# END ORCA AGENT STATUS HOOKS',
+        '# END ARGUS AGENT STATUS HOOKS',
         ''
       ].join('\n'),
       'utf-8'
@@ -1034,7 +1034,7 @@ describe('CodexHookService', () => {
     expect(existsSync(profilePath)).toBe(false)
   })
 
-  it('removes only the legacy Orca block from a user-edited Codex profile file', () => {
+  it('removes only the legacy Argus block from a user-edited Codex profile file', () => {
     const systemCodexHome = join(tmpHome, '.codex')
     const profilePath = join(systemCodexHome, 'orca-agent-status.config.toml')
     mkdirSync(systemCodexHome, { recursive: true })
@@ -1043,12 +1043,12 @@ describe('CodexHookService', () => {
       [
         'model = "gpt-5.5"',
         '',
-        '# BEGIN ORCA AGENT STATUS HOOKS',
+        '# BEGIN ARGUS AGENT STATUS HOOKS',
         '[[hooks.PermissionRequest]]',
         '[[hooks.PermissionRequest.hooks]]',
         'type = "command"',
         'command = "codex-hook"',
-        '# END ORCA AGENT STATUS HOOKS',
+        '# END ARGUS AGENT STATUS HOOKS',
         ''
       ].join('\n'),
       'utf-8'
@@ -1058,7 +1058,7 @@ describe('CodexHookService', () => {
 
     const profileConfig = readFileSync(profilePath, 'utf-8')
     expect(profileConfig).toContain('model = "gpt-5.5"')
-    expect(profileConfig).not.toContain('ORCA AGENT STATUS HOOKS')
+    expect(profileConfig).not.toContain('ARGUS AGENT STATUS HOOKS')
     expect(profileConfig).not.toContain('codex-hook')
   })
 
@@ -1099,12 +1099,12 @@ describe('CodexHookService', () => {
     writeFileSync(
       profilePath,
       [
-        '# BEGIN ORCA AGENT STATUS HOOKS',
+        '# BEGIN ARGUS AGENT STATUS HOOKS',
         '[[hooks.PermissionRequest]]',
         '[[hooks.PermissionRequest.hooks]]',
         'type = "command"',
         'command = "codex-hook"',
-        '# END ORCA AGENT STATUS HOOKS',
+        '# END ARGUS AGENT STATUS HOOKS',
         ''
       ].join('\n'),
       'utf-8'
@@ -1215,12 +1215,12 @@ describe('CodexHookService', () => {
     writeFileSync(
       legacyProfilePath,
       [
-        '# BEGIN ORCA AGENT STATUS HOOKS',
+        '# BEGIN ARGUS AGENT STATUS HOOKS',
         '[[hooks.PermissionRequest]]',
         '[[hooks.PermissionRequest.hooks]]',
         'type = "command"',
         'command = "codex-hook"',
-        '# END ORCA AGENT STATUS HOOKS',
+        '# END ARGUS AGENT STATUS HOOKS',
         ''
       ].join('\n'),
       'utf-8'

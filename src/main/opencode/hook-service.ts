@@ -45,13 +45,13 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '// Why: process-lifetime guard so a recurring parse error on a malformed',
     "// endpoint file does not spam OpenCode's stderr once per hook post.",
     '// This guard lives inside the plugin source because the plugin runs in',
-    "// OpenCode's Node process (not Orca's) and has no access to server.ts's",
+    "// OpenCode's Node process (not Argus's) and has no access to server.ts's",
     '// equivalent warnedVersions / warnedEnvs Sets.',
     'let warnedBadEndpoint = false;',
     '',
     '// Why: message.part.updated can fire many times per second during a',
     '// streaming assistant reply, and each post() calls resolveHookCoords()',
-    '// which reads the endpoint file. The file only changes on Orca restart',
+    '// which reads the endpoint file. The file only changes on Argus restart',
     '// (rare), so a stat+mtime check is substantially cheaper than a full',
     '// readFileSync+parse on every streamed part. On stat error we fall',
     '// through to parse so the fail-open behavior is preserved.',
@@ -66,7 +66,7 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '    try {',
     '      const stat = fs.statSync(path);',
     '      // Why: cache key combines mtime + size + inode. renameSync (used by',
-    '      // writeEndpointFile on the Orca side) allocates a fresh inode on',
+    '      // writeEndpointFile on the Argus side) allocates a fresh inode on',
     '      // POSIX and a new Windows file ID on NTFS, so ino changes on every',
     '      // legitimate rewrite even when mtimeMs resolution is coarse and size',
     '      // happens to match.',
@@ -114,10 +114,10 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '',
     'function resolveHookCoords() {',
     '  // Why: prefer the on-disk endpoint file over process.env because env was',
-    '  // frozen when OpenCode was fork()ed — stale after an Orca restart. The',
-    '  // file is rewritten on every Orca start(), so sourcing it per post lets',
+    '  // frozen when OpenCode was fork()ed — stale after an Argus restart. The',
+    '  // file is rewritten on every Argus start(), so sourcing it per post lets',
     '  // a long-running OpenCode session reach the current server. Falls back',
-    '  // to process.env when the file is absent (first-run / pre-endpoint-file / Orca',
+    '  // to process.env when the file is absent (first-run / pre-endpoint-file / Argus',
     '  // never started writing the file).',
     '  const fileEnv = readEndpointFile() || {};',
     '  return {',
@@ -173,7 +173,7 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '',
     '// Why: message.part.updated re-sends the FULL accumulated text of the part',
     '// after every streamed append, so posting each event forwards O(n^2) bytes',
-    '// per turn through Orca (loopback HTTP -> main JSON parse -> status compare',
+    '// per turn through Argus (loopback HTTP -> main JSON parse -> status compare',
     '// -> IPC -> renderer store update -> React commit). On Windows that flood',
     '// saturated both event loops and froze the whole UI a few seconds into a',
     '// streaming reply. The dashboard only needs a bounded preview at a human',
@@ -261,7 +261,7 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '',
     '// Why: oh-my-opencode style tools spawn child sessions that emit their',
     '// own session.idle / message events. Those child completions must not',
-    '// flip the root Orca pane to done or overwrite the parent turn preview.',
+    '// flip the root Argus pane to done or overwrite the parent turn preview.',
     '// Resolve the full parentID chain so descendant attention can be attributed',
     '// to the root while child completion and previews remain non-authoritative.',
     'async function resolveRootSessionID(client, sessionID) {',
@@ -372,7 +372,7 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '',
     'async function post(hookEventName, extraProperties) {',
     '  // Why: resolve coords per post — the endpoint file may have been',
-    '  // rewritten by a newer Orca since the last call. Pane/tab/worktree IDs',
+    '  // rewritten by a newer Argus since the last call. Pane/tab/worktree IDs',
     '  // stay on process.env because they are per-PTY (stable for the life of',
     '  // the OpenCode process), not per-Orca-instance.',
     '  const coords = resolveHookCoords();',
@@ -404,7 +404,7 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '    return response.ok;',
     '  } catch {',
     '    // Why: OpenCode session events must never fail the agent run just',
-    '    // because Orca is unavailable or the local loopback request failed.',
+    '    // because Argus is unavailable or the local loopback request failed.',
     '    return false;',
     '  } finally {',
     '    clearTimeout(timeout);',
@@ -972,7 +972,7 @@ export function getOpenCodeFamilyPluginSource(hookPathname: string): string {
     '          );',
     '        } else {',
     '          // Why: Instance disposal can happen while the PTY stays alive;',
-    '          // publish a final idle so Orca does not retain a dead owner.',
+    '          // publish a final idle so Argus does not retain a dead owner.',
     '          if (!deliveredStatusKey.startsWith("idle:") || ownsDeliveredMessagePart) {',
     '            await setStatus(',
     '              "idle",',
@@ -1006,7 +1006,7 @@ export class OpenCodeHookService {
 
   buildPtyEnv(ptyId: string, existingConfigDir?: string | undefined): Record<string, string> {
     if (!isUsableId(ptyId)) {
-      // Why: on a bad id, still preserve a user-set OPENCODE_CONFIG_DIR; only the Orca status plugin is forfeited.
+      // Why: on a bad id, still preserve a user-set OPENCODE_CONFIG_DIR; only the Argus status plugin is forfeited.
       return existingConfigDir ? { OPENCODE_CONFIG_DIR: existingConfigDir } : {}
     }
 
@@ -1085,7 +1085,7 @@ export class OpenCodeHookService {
     }
   }
 
-  // Why: mirror user config entries as symlinks so edits propagate live; only plugins/ becomes a real overlay dir so Orca can drop a sibling plugin file.
+  // Why: mirror user config entries as symlinks so edits propagate live; only plugins/ becomes a real overlay dir so Argus can drop a sibling plugin file.
   private mirrorUserConfig(sourceDir: string, overlayDir: string): void {
     const previousManifest = this.readOverlayManifest(overlayDir)
     // Why: overlays persist across terminals; remove only Orca-mirrored paths so stale user config clears but OpenCode runtime dirs (node_modules) survive.
@@ -1115,7 +1115,7 @@ export class OpenCodeHookService {
           const overlayPluginsDir = join(overlayDir, 'plugins')
           mkdirSync(overlayPluginsDir, { recursive: true })
           for (const pluginEntry of readdirSync(resolvedSource, { withFileTypes: true })) {
-            // Why: skip a user plugin sharing Orca's filename; mirroring it would let writePluginIntoOverlay clobber the user's file.
+            // Why: skip a user plugin sharing Argus's filename; mirroring it would let writePluginIntoOverlay clobber the user's file.
             if (pluginEntry.name === ORCA_OPENCODE_PLUGIN_FILE) {
               continue
             }

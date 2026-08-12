@@ -109,7 +109,7 @@ async function activateTerminalTab(page: Page, tabId: string): Promise<void> {
   await page.evaluate((tabId) => {
     const state = window.__store?.getState()
     if (!state) {
-      throw new Error('Orca store unavailable')
+      throw new Error('Argus store unavailable')
     }
     state.setActiveTabType('terminal')
     state.setActiveTab(tabId)

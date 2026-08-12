@@ -28,9 +28,9 @@ export const WINDOWS_HOOK_STDIN_DRAIN_LABEL = 'orca_agent_hook_drain_stdin'
 export const WINDOWS_HOOK_STDIN_READER = '"%SystemRoot%\\System32\\more.com"'
 export const WINDOWS_HOOK_STDIN_DRAIN_COMMAND = `${WINDOWS_HOOK_STDIN_READER} >nul 2>nul`
 
-// Why (#11549): missing Orca context means the hook ran outside an Orca pane, where the caller
+// Why (#11549): missing Argus context means the hook ran outside an Argus pane, where the caller
 // may abandon stdin rather than close it — a read-to-EOF then blocks forever and strands a
-// visible window per hook event. The Windows rule: a hook must check the Orca env before it
+// visible window per hook event. The Windows rule: a hook must check the Argus env before it
 // owns stdin, and exit without reading when the env is missing — the payload is discarded on
 // that path anyway. This applies to .cmd, the copilot .ps1, and the Git Bash kimi .sh alike.
 // POSIX hooks keep capture-first: their callers close stdin, and exiting mid-write there

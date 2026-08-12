@@ -1185,7 +1185,7 @@ describe('createPtySubprocess', () => {
     }
   })
 
-  it('does not inherit parent Orca pane identity when caller omits pane env', () => {
+  it('does not inherit parent Argus pane identity when caller omits pane env', () => {
     const proc = mockPtyProcess()
     spawnMock.mockReturnValue(proc)
     const saved = {
@@ -1215,7 +1215,7 @@ describe('createPtySubprocess', () => {
     expect(env.ORCA_WORKTREE_ID).toBeUndefined()
   })
 
-  it('preserves explicit child Orca pane identity over parent env', () => {
+  it('preserves explicit child Argus pane identity over parent env', () => {
     const proc = mockPtyProcess()
     spawnMock.mockReturnValue(proc)
     const saved = {
@@ -1277,8 +1277,8 @@ describe('createPtySubprocess', () => {
   })
 
   it('does not inherit NODE_ENV from the daemon process env', () => {
-    // Why: a dev-mode Orca forks the daemon with NODE_ENV=development; leaking
-    // Orca's build mode into user shells breaks `next build` and Vitest.
+    // Why: a dev-mode Argus forks the daemon with NODE_ENV=development; leaking
+    // Argus's build mode into user shells breaks `next build` and Vitest.
     const proc = mockPtyProcess()
     spawnMock.mockReturnValue(proc)
     const previous = process.env.NODE_ENV
@@ -2075,7 +2075,7 @@ describe('createPtySubprocess', () => {
     expect(env.ORCA_CODEX_HOME).toBeUndefined()
   })
 
-  it('strips an inherited per-account self-contained CODEX_HOME overlay in a nested Orca (#5370)', () => {
+  it('strips an inherited per-account self-contained CODEX_HOME overlay in a nested Argus (#5370)', () => {
     const proc = mockPtyProcess()
     spawnMock.mockReturnValue(proc)
     const previousCodexHome = process.env.CODEX_HOME
@@ -2883,7 +2883,7 @@ describe('createPtySubprocess', () => {
     )
   })
 
-  it('marks Orca terminal handles for WSL env import in daemon WSL terminals', () => {
+  it('marks Argus terminal handles for WSL env import in daemon WSL terminals', () => {
     const proc = mockPtyProcess()
     spawnMock.mockReturnValue(proc)
     const platform = Object.getOwnPropertyDescriptor(process, 'platform')

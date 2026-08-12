@@ -49,12 +49,12 @@ describe('getRequiredReleaseAssetNames', () => {
     expect(getRequiredReleaseAssetNames('v1.4.27')).toEqual(
       expect.arrayContaining([
         'latest-linux-arm64.yml',
-        'orca-linux.AppImage',
-        'orca-linux-arm64.AppImage',
+        'argus-linux.AppImage',
+        'argus-linux-arm64.AppImage',
         'orca-ide_1.4.27_amd64.deb',
         'orca-ide_1.4.27_arm64.deb',
-        'orca-ide-1.4.27.x86_64.rpm',
-        'orca-ide-1.4.27.aarch64.rpm'
+        'argus-ide-1.4.27.x86_64.rpm',
+        'argus-ide-1.4.27.aarch64.rpm'
       ])
     )
   })
@@ -67,11 +67,11 @@ describe('extractManifestAssetNames', () => {
         [
           'files:',
           '  - url: Orca-1.4.27-arm64-mac.zip',
-          '  - url: https://example.com/downloads/orca-windows-setup.exe',
-          'path: orca-linux.AppImage'
+          '  - url: https://example.com/downloads/argus-windows-setup.exe',
+          'path: argus-linux.AppImage'
         ].join('\n')
       )
-    ).toEqual(['Orca-1.4.27-arm64-mac.zip', 'orca-windows-setup.exe', 'orca-linux.AppImage'])
+    ).toEqual(['Orca-1.4.27-arm64-mac.zip', 'argus-windows-setup.exe', 'argus-linux.AppImage'])
   })
 })
 
@@ -119,8 +119,8 @@ describe('verifyRequiredReleaseAssets', () => {
           [
             'version: 1.4.27',
             'files:',
-            '  - url: orca-linux-arm64.AppImage.blockmap',
-            'path: orca-linux-arm64.AppImage'
+            '  - url: argus-linux-arm64.AppImage.blockmap',
+            'path: argus-linux-arm64.AppImage'
           ].join('\n')
         )
       )
@@ -129,7 +129,7 @@ describe('verifyRequiredReleaseAssets', () => {
 
     await expect(
       verifyRequiredReleaseAssets({ repo: 'stablyai/orca', tag, token: 'token' })
-    ).rejects.toThrow('Missing: orca-linux-arm64.AppImage.blockmap')
+    ).rejects.toThrow('Missing: argus-linux-arm64.AppImage.blockmap')
     expect(arm64Manifest).toBeTruthy()
   })
 })

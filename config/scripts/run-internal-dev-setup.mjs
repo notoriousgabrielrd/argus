@@ -20,7 +20,7 @@ function quoteWindowsArg(value) {
   return `"${value.replace(/"/g, '""')}"`
 }
 
-// Why: under a Git Bash setup runner, Orca exports ORCA_WORKTREE_PATH in MSYS form (/c/...), which
+// Why: under a Git Bash setup runner, Argus exports ORCA_WORKTREE_PATH in MSYS form (/c/...), which
 // cmd.exe cannot resolve. This is the migration pattern for any setup script feeding a native exe.
 function posixShellPathToNativeWindowsPath(value) {
   const driveMatch = value.match(/^\/([A-Za-z])\/(.*)$/)

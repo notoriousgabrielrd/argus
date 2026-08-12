@@ -72,7 +72,7 @@ export function humanizeTerminalError(error: string): string {
       PANE_OWNER_UNVERIFIED_MARKER,
       translate(
         'auto.components.terminal.pane.TerminalErrorToast.7ee11bc0db',
-        "Orca couldn't confirm whether this terminal's previous session is still running, so it left the session untouched. Reopen this pane to retry."
+        "Argus couldn't confirm whether this terminal's previous session is still running, so it left the session untouched. Reopen this pane to retry."
       )
     )
   }

@@ -679,13 +679,13 @@ export class LocalPtyProvider implements IPtyProvider {
       ...mergeGitConfigEnvProtocol(stripInheritedBuildModeEnv(process.env), args.env),
       TERM: 'xterm-256color',
       COLORTERM: 'truecolor',
-      TERM_PROGRAM: 'Orca',
+      TERM_PROGRAM: 'Argus',
       // Why: TUIs feature-gate on TERM_PROGRAM_VERSION; the fallback keeps tests and non-Electron runs working.
       TERM_PROGRAM_VERSION: process.env.ORCA_APP_VERSION ?? '0.0.0-dev',
-      // Why: supports-hyperlinks rejects TERM_PROGRAM=Orca, so tools drop OSC 8 links; force it since xterm.js parses them.
+      // Why: supports-hyperlinks rejects TERM_PROGRAM=Argus, so tools drop OSC 8 links; force it since xterm.js parses them.
       FORCE_HYPERLINK: '1'
     } as Record<string, string>
-    // Why: Orca can be launched from an Orca terminal; pane identity belongs to the child PTY, not the parent shell.
+    // Why: Argus can be launched from an Argus terminal; pane identity belongs to the child PTY, not the parent shell.
     removeUnspecifiedPaneIdentityEnv(spawnEnv, args.env)
     removeAppImageRuntimeEnv(spawnEnv)
     removeInheritedNoColor(spawnEnv)
@@ -751,7 +751,7 @@ export class LocalPtyProvider implements IPtyProvider {
             }
           }
         } else if (isHostCodexHomeForWsl(finalEnv.CODEX_HOME)) {
-          // Why: Orca's Codex home is host-local; WSL Codex must use its Linux-side ~/.codex, not a Windows path.
+          // Why: Argus's Codex home is host-local; WSL Codex must use its Linux-side ~/.codex, not a Windows path.
           delete finalEnv.CODEX_HOME
           delete finalEnv.ORCA_CODEX_HOME
         } else if (finalEnv.CODEX_HOME) {

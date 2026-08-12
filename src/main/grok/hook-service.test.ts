@@ -112,7 +112,7 @@ describe('GrokHookService', () => {
   })
 
   // Why: #9358 / #9941 — empty GROK_HOME + parse-time %VAR:~n,m% / `"\"` broke
-  // every SessionStart/UserPromptSubmit on Windows outside Orca terminals.
+  // every SessionStart/UserPromptSubmit on Windows outside Argus terminals.
   it('guards Windows GROK_HOME substring checks when empty (#9358)', () => {
     const script = buildWindowsGrokHookScript()
     expect(script).toContain('set "ORCA_GROK_HOME="')
@@ -335,7 +335,7 @@ describe('GrokHookService', () => {
     }
   })
 
-  it('preserves user-authored hook entries in the Orca Grok config file', () => {
+  it('preserves user-authored hook entries in the Argus Grok config file', () => {
     const configPath = join(homeDir, '.grok', 'hooks', 'orca-status.json')
     mkdirSync(dirname(configPath), { recursive: true })
     writeFileSync(

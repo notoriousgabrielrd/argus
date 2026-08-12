@@ -2,7 +2,7 @@
  * Reproduces issue #8048 against the built daemon on Windows.
  *
  * A witness PowerShell stays alive while victim sessions receive the same
- * graceful-then-immediate kill pair emitted when Orca closes a workspace.
+ * graceful-then-immediate kill pair emitted when Argus closes a workspace.
  * The daemon PID and witness session must survive every iteration.
  */
 import { fork } from 'node:child_process'

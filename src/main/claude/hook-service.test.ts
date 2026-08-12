@@ -485,7 +485,7 @@ describe('ClaudeHookService.installRemote', () => {
     )
     await svc.installRemote(sftp, '/home/dev')
     const parsed = JSON.parse(fs.files.get('/home/dev/.claude/settings.json')!)
-    // Original user-authored entry survives, while stale Orca entries are
+    // Original user-authored entry survives, while stale Argus entries are
     // replaced with the current managed hook command.
     const stopDefs = parsed.hooks.Stop as { hooks: { command: string }[] }[]
     const userCmds = stopDefs.flatMap((d) => d.hooks.map((h) => h.command))

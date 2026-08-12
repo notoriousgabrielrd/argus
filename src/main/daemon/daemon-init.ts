@@ -270,7 +270,7 @@ async function reconcileDaemonPidOwnership(
  * Publishing a repaired record without them makes a healthy daemon look permanently stale.
  * The values come from the authenticated hello rather than the owner's command line: a command
  * line is a single space-joined string, so any install path containing a space (`C:\Program
- * Files\...`, `/Applications/Orca 2.app/...`) cannot be split back into argv unambiguously.
+ * Files\...`, `/Applications/Argus 2.app/...`) cannot be split back into argv unambiguously.
  */
 async function readDaemonOwnerMetadata(
   identity: DaemonEndpointIdentity
@@ -694,7 +694,7 @@ function createOutOfProcessLauncher(
           // Why: detached+unref outlives Electron; stdout 'ignore' (else blocks exit), stderr 'pipe' captures startup crashes lost in v1.4.129-rc.1.
           detached: true,
           stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
-          // Why: run the byte-identical relocated Orca.exe so the image path sits outside the updater's kill zone.
+          // Why: run the byte-identical relocated Argus.exe so the image path sits outside the updater's kill zone.
           ...(relocatedHost ? { execPath: relocatedHost.execPath } : {}),
           // Why: run the fork as plain Node so Electron's GPU/display init can't interfere with node-pty's posix_spawn of the spawn-helper.
           env: {
@@ -1263,7 +1263,7 @@ async function runRestartDaemon(): Promise<RestartDaemonResult> {
 }
 
 // Disconnect without killing: the daemon survives app quit so sessions stay warm for reattach.
-// Leave history sessions marked "unclean" so a daemon crash while Orca is closed stays recoverable.
+// Leave history sessions marked "unclean" so a daemon crash while Argus is closed stays recoverable.
 export async function disconnectDaemon(): Promise<void> {
   await adapter?.disconnectOnly()
   adapter = null

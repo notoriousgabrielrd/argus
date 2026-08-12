@@ -1,5 +1,5 @@
 // daemon-relocation-spike — empirically finds the minimal file set that lets a
-// COPIED Orca.exe (ELECTRON_RUN_AS_NODE=1), launched from outside the install
+// COPIED Argus.exe (ELECTRON_RUN_AS_NODE=1), launched from outside the install
 // dir, host the terminal daemon + a real ConPTY session while holding no open
 // handles into the app dir. See README.md.
 //

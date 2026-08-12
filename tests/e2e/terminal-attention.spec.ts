@@ -345,7 +345,7 @@ test.describe('Terminal attention', () => {
   })
 
   // Why (restart regression guard): the original user-reported bug was that
-  // after restarting Orca with a Claude Code session open, clicking between
+  // after restarting Argus with a Claude Code session open, clicking between
   // panes on the restored tab produced undismissable bell indicators. Root
   // cause: xterm's SerializeAddon captures the TUI's mode-setting bytes
   // (e.g. `\e[?1004h` for focus reporting) in the scrollback snapshot, and

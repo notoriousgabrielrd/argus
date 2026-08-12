@@ -303,7 +303,7 @@ describe('handleOscLink', () => {
     expect(openUrlMock).not.toHaveBeenCalled()
   })
 
-  it('uses the system browser for shift+cmd/ctrl+click even when Orca browser tabs are enabled', () => {
+  it('uses the system browser for shift+cmd/ctrl+click even when Argus browser tabs are enabled', () => {
     setPlatform('Windows')
     storeState.settings = { openLinksInApp: true }
 
@@ -327,7 +327,7 @@ describe('handleOscLink', () => {
     expect(createBrowserTabMock).not.toHaveBeenCalled()
   })
 
-  it('opens local .html file paths in Orca browser tabs with the platform modifier', async () => {
+  it('opens local .html file paths in Argus browser tabs with the platform modifier', async () => {
     setPlatform('Macintosh')
 
     openDetectedFilePath('/tmp/report.html', null, null, deps)
@@ -345,7 +345,7 @@ describe('handleOscLink', () => {
     expect(openFilePathMock).not.toHaveBeenCalled()
   })
 
-  it('also opens local .htm paths in Orca browser tabs with the platform modifier', async () => {
+  it('also opens local .htm paths in Argus browser tabs with the platform modifier', async () => {
     setPlatform('Macintosh')
 
     openDetectedFilePath('/tmp/legacy.HTM', null, null, deps)
@@ -361,7 +361,7 @@ describe('handleOscLink', () => {
     expect(openFilePathMock).not.toHaveBeenCalled()
   })
 
-  it('opens local file paths in Orca and reveals default column 1 with the platform modifier', async () => {
+  it('opens local file paths in Argus and reveals default column 1 with the platform modifier', async () => {
     setPlatform('Macintosh')
 
     openDetectedFilePath('/tmp/src/main.ts', 42, null, deps)
@@ -383,7 +383,7 @@ describe('handleOscLink', () => {
     expect(openFilePathMock).not.toHaveBeenCalled()
   })
 
-  it('preserves explicit column for Orca opens from :line:column links', async () => {
+  it('preserves explicit column for Argus opens from :line:column links', async () => {
     setPlatform('Macintosh')
 
     openDetectedFilePath('/tmp/src/main.ts', 42, 7, deps)
@@ -459,7 +459,7 @@ describe('handleOscLink', () => {
     expect(setPendingEditorRevealMock).not.toHaveBeenCalled()
   })
 
-  it('falls back to Orca when shift+cmd/ctrl-click system default open fails', async () => {
+  it('falls back to Argus when shift+cmd/ctrl-click system default open fails', async () => {
     setPlatform('Macintosh')
     openFilePathMock.mockResolvedValueOnce(false)
 
@@ -552,7 +552,7 @@ describe('handleOscLink', () => {
     expect(openFilePathMock).not.toHaveBeenCalled()
   })
 
-  it('opens local file URL links in Orca with the platform modifier on desktop', async () => {
+  it('opens local file URL links in Argus with the platform modifier on desktop', async () => {
     setPlatform('Windows')
 
     expect(handleOscLink('file:///tmp/test.txt', { metaKey: false, ctrlKey: true }, deps)).toBe(
@@ -642,7 +642,7 @@ describe('handleOscLink', () => {
     expect(openFileMock).not.toHaveBeenCalled()
   })
 
-  it('opens #L file URL links in Orca and preserves anchors', async () => {
+  it('opens #L file URL links in Argus and preserves anchors', async () => {
     setPlatform('Macintosh')
 
     handleOscLink('file:///tmp/test.txt#L42', { metaKey: true, ctrlKey: false }, deps)
@@ -929,7 +929,7 @@ describe('handleOscLink', () => {
     )
   })
 
-  it('opens SSH file links through Orca without local authorization', async () => {
+  it('opens SSH file links through Argus without local authorization', async () => {
     setPlatform('Macintosh')
     vi.mocked(getConnectionId).mockReturnValue('ssh-1')
 
@@ -1170,7 +1170,7 @@ describe('handleOscLink', () => {
     expect(openFileMock).not.toHaveBeenCalled()
   })
 
-  it('ignores stale async completion so latest local click wins for Orca open and reveal', async () => {
+  it('ignores stale async completion so latest local click wins for Argus open and reveal', async () => {
     setPlatform('Macintosh')
     const firstStat = createDeferred<{ isDirectory: boolean }>()
     const secondStat = createDeferred<{ isDirectory: boolean }>()
@@ -1417,7 +1417,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     expect(pkg!.range.end.x).toBe(pkgStartIndex + 'package.json'.length)
   })
 
-  it('shows the Orca plus default-app hint for local file link hover', async () => {
+  it('shows the Argus plus default-app hint for local file link hover', async () => {
     setPlatform('Macintosh')
     const { provider, linkTooltip } = createProviderSetup([makeBufferLine('CLAUDE.md')])
 
@@ -1549,7 +1549,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     )
   })
 
-  it('shows the Orca hint for SSH file link hover', async () => {
+  it('shows the Argus hint for SSH file link hover', async () => {
     setPlatform('Macintosh')
     vi.mocked(getConnectionId).mockReturnValue('ssh-1')
     const { provider, linkTooltip } = createProviderSetup([makeBufferLine('CLAUDE.md')])
@@ -1561,7 +1561,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     links[0]!.hover?.({} as MouseEvent, links[0]!.text)
 
     expect(linkTooltip.textContent).toBe(
-      '/repo/CLAUDE.md (Click for actions or ⌘+click to open in Orca)'
+      '/repo/CLAUDE.md (Click for actions or ⌘+click to open in Argus)'
     )
   })
 

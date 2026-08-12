@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- Why: canonical transport-agnostic listener; parser, normalizer, per-CLI extractors, and endpoint writer share invariants that must not drift between Orca's main process and the relay. */
+/* eslint-disable max-lines -- Why: canonical transport-agnostic listener; parser, normalizer, per-CLI extractors, and endpoint writer share invariants that must not drift between Argus's main process and the relay. */
 
 // Why: extracted from src/main/agent-hooks/server.ts so the relay can host the same pipeline without Electron — this file must stay on Node builtins and other shared/ modules, or the relay bundle breaks.
 import type { IncomingMessage } from 'node:http'
@@ -120,7 +120,7 @@ export function normalizeClaudePromptId(value: unknown): string | undefined {
   return CLAUDE_PROMPT_ID_RE.test(normalized) ? normalized : undefined
 }
 
-/** Per-listener-instance caches needing per-PTY teardown; Orca's main process and the relay each get their own, never shared. */
+/** Per-listener-instance caches needing per-PTY teardown; Argus's main process and the relay each get their own, never shared. */
 export type HookListenerState = {
   warnedVersions: Set<string>
   warnedEnvs: Set<string>
@@ -309,7 +309,7 @@ export function warnOnHookEnvOrVersionMismatch(
       state.warnedEnvs.add(key)
       console.warn(
         `[agent-hooks] received ${env} hook on ${expectedEnv} server. ` +
-          'Likely a stale terminal from another Orca install.'
+          'Likely a stale terminal from another Argus install.'
       )
     }
   }
@@ -319,7 +319,7 @@ export type AgentHookEventPayload = {
   paneKey: string
   /** Authenticated hook route that produced this event. */
   source?: AgentHookSource
-  /** Ephemeral Orca launch identity stamped into the PTY env for this process. */
+  /** Ephemeral Argus launch identity stamped into the PTY env for this process. */
   launchToken?: string
   tabId?: string
   worktreeId?: string
@@ -2633,7 +2633,7 @@ export function markClaudeLeadTurnInterrupted(state: HookListenerState, paneKey:
   state.claudeActiveSessionCronPaneKeys.delete(paneKey)
 }
 
-/** Rebuild a pane's working roster from a persisted snapshot; live activity confirms a seed, a complete task inventory may reap an unconfirmed one whose finish hook arrived while Orca was offline. */
+/** Rebuild a pane's working roster from a persisted snapshot; live activity confirms a seed, a complete task inventory may reap an unconfirmed one whose finish hook arrived while Argus was offline. */
 export function seedClaudeSubagentRosterFromSnapshots(
   state: HookListenerState,
   paneKey: string,
@@ -2653,7 +2653,7 @@ export function seedClaudeSubagentRosterFromSnapshots(
       startedAt: snapshot.startedAt,
       agentType: snapshot.agentType,
       description: snapshot.description,
-      // Why: the seed can be a phantom (child finished while Orca was down, SubagentStop lost); let a PRESENT background_tasks list omitting the id remove it, not gate the pane 'working' forever.
+      // Why: the seed can be a phantom (child finished while Argus was down, SubagentStop lost); let a PRESENT background_tasks list omitting the id remove it, not gate the pane 'working' forever.
       backgroundTasksAuthoritative: true,
       // Why: an idle parent never emits that list, so the inventory reap alone can strand the seed; mark it for the liveness reap below.
       restoredFromSnapshot: true
@@ -2662,7 +2662,7 @@ export function seedClaudeSubagentRosterFromSnapshots(
 }
 
 /** Reap this pane's unconfirmed restored seeds because no live agent process backs
- *  the pane any more (its PTY died while Orca was down, so no finish hook could
+ *  the pane any more (its PTY died while Argus was down, so no finish hook could
  *  arrive). Callers must have proven the pane is LOCAL-launched — a remote/SSH
  *  agent runs on the far host and can never appear in a local process index.
  *  Returns whether the roster changed. */
@@ -2722,7 +2722,7 @@ function buildClaudeCachedLeadStatusPayload(
   paneKey: string,
   hookPayload: Record<string, unknown>
 ): ParsedAgentStatusPayload | null {
-  // Why: default 'working' — a spawn proves activity even before the lead's first state-bearing event (e.g. Orca restarted mid-session).
+  // Why: default 'working' — a spawn proves activity even before the lead's first state-bearing event (e.g. Argus restarted mid-session).
   const lead = state.claudeLeadStateByPaneKey.get(paneKey)
   const leadState = lead?.state ?? 'working'
   return buildClaudeStatusPayload(state, eventName, '', paneKey, hookPayload, {

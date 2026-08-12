@@ -295,7 +295,7 @@ const AGENT_HOOK_RUNTIME_ENV_KEYS = [
   'ORCA_CLAUDE_AGENT_STATUS_SETTINGS'
 ] as const
 
-// Why: Orca never sets these, so an inherited value means a pty host launched from inside a Claude session — Claude reads it as a nested child and silently stops persisting the transcript.
+// Why: Argus never sets these, so an inherited value means a pty host launched from inside a Claude session — Claude reads it as a nested child and silently stops persisting the transcript.
 const CLAUDE_CHILD_SESSION_STAMP_ENV_KEYS = [
   'CLAUDE_CODE_CHILD_SESSION',
   'CLAUDE_CODE_SESSION_ID',
@@ -1120,7 +1120,7 @@ export type BuildPtyHostEnvOptions = {
   selectedCodexHomePath: string | null
   skipCodexHomeEnv?: boolean
   /** System-default real-home routing (flag ON): inject no managed CODEX_HOME,
-   *  and strip only an inherited Orca-owned override so nested Orca panes do not
+   *  and strip only an inherited Orca-owned override so nested Argus panes do not
    *  leak the parent's managed home. A user-set CODEX_HOME is preserved. */
   stripInheritedOrcaCodexHome?: boolean
   githubAttributionEnabled: boolean
@@ -1166,7 +1166,7 @@ function promoteAgentTeamsShimPath(
   const remaining = currentPath
     .split(delimiter)
     .filter((entry) => entry.length > 0 && entry !== shimPath)
-  // Why: host env injection prepends Orca's shims; Claude Agent Teams must still resolve our fake tmux before any real tmux.
+  // Why: host env injection prepends Argus's shims; Claude Agent Teams must still resolve our fake tmux before any real tmux.
   env[currentPathKey] = [shimPath, ...remaining].join(delimiter)
 }
 
@@ -1206,10 +1206,10 @@ function shouldStripInheritedOrcaCodexHome(args: {
 const CODEX_HOME_ENV_KEYS = ['CODEX_HOME', 'ORCA_CODEX_HOME'] as const
 
 // Why: system-default real-home routing runs Codex on the user's own ~/.codex.
-// Nested Orca panes inherit the parent's Orca-owned override; strip only that
-// (CODEX_HOME matching Orca's private ORCA_CODEX_HOME marker), and always drop
+// Nested Argus panes inherit the parent's Orca-owned override; strip only that
+// (CODEX_HOME matching Argus's private ORCA_CODEX_HOME marker), and always drop
 // the marker so a shell-ready wrapper cannot restore the managed home. A
-// user-set CODEX_HOME with no Orca marker is preserved untouched (see #8606).
+// user-set CODEX_HOME with no Argus marker is preserved untouched (see #8606).
 function stripInheritedOrcaCodexHomeOverride(baseEnv: Record<string, string>): void {
   for (const key of getLocalOrcaCodexHomeEnvKeysToDelete(baseEnv)) {
     delete baseEnv[key]
@@ -1518,7 +1518,7 @@ function resolvePiAgentSourceDir(
   const publicDir = readEnvWithProcessFallback(baseEnv, primaryKey)
   const ownOverlayDir = readEnvWithProcessFallback(baseEnv, overlayKey)
   const otherOverlayDir = readEnvWithProcessFallback(baseEnv, otherOverlayKey)
-  // Why: if PI_CODING_AGENT_DIR is a restored Orca overlay with no source shadow, remirroring leaks another agent's overlay tree; fall through to defaults.
+  // Why: if PI_CODING_AGENT_DIR is a restored Argus overlay with no source shadow, remirroring leaks another agent's overlay tree; fall through to defaults.
   if (publicDir && publicDir !== ownOverlayDir && publicDir !== otherOverlayDir) {
     return publicDir
   }
@@ -1721,13 +1721,13 @@ export function buildPtyHostEnv(
       : resolveScopedPiAgentSourceDir(baseEnv, 'prime-agent')
 
   if (opts.agentStatusHooksEnabled) {
-    // Why: OPENCODE_CONFIG_DIR is a single path, not a colon-list; mirror the user's value into an overlay so their plugins and Orca's status plugin coexist. See docs/opencode-config-dir-collision.md.
+    // Why: OPENCODE_CONFIG_DIR is a single path, not a colon-list; mirror the user's value into an overlay so their plugins and Argus's status plugin coexist. See docs/opencode-config-dir-collision.md.
     Object.assign(baseEnv, openCodeHookService.buildPtyEnv(id, preexistingOpenCodeConfigDir))
     if (baseEnv.OPENCODE_CONFIG_DIR) {
       // Why: ~/.zshrc can re-export the user's default after spawn; shell-ready wrappers restore this PTY-scoped value.
       baseEnv.ORCA_OPENCODE_CONFIG_DIR = baseEnv.OPENCODE_CONFIG_DIR
       if (preexistingOpenCodeConfigDir) {
-        // Why: nested Orca terminals inherit the overlay as OPENCODE_CONFIG_DIR; keep the real source so overlays don't mirror overlays.
+        // Why: nested Argus terminals inherit the overlay as OPENCODE_CONFIG_DIR; keep the real source so overlays don't mirror overlays.
         baseEnv.ORCA_OPENCODE_SOURCE_CONFIG_DIR = preexistingOpenCodeConfigDir
       } else {
         delete baseEnv.ORCA_OPENCODE_SOURCE_CONFIG_DIR
@@ -1855,8 +1855,8 @@ export function buildPtyHostEnv(
   // Why: WSL shells need the managed userData root for shell-ready wrappers; dev-mode terminals need the same export so `orca` targets the live dev instance.
   if (opts.isWsl) {
     baseEnv.ORCA_USER_DATA_PATH = opts.userDataPath
-    // Why: managed WSL registration uses `orca-ide`; exposing that literal scopes agent guidance to WSL without a bare-orca shim.
-    baseEnv.ORCA_CLI_COMMAND = opts.isPackaged ? 'orca-ide' : 'orca-dev'
+    // Why: managed WSL registration uses `argus-ide`; exposing that literal scopes agent guidance to WSL without a bare-orca shim.
+    baseEnv.ORCA_CLI_COMMAND = opts.isPackaged ? 'argus-ide' : 'orca-dev'
   } else {
     if (!opts.isPackaged) {
       baseEnv.ORCA_USER_DATA_PATH ??= opts.userDataPath
@@ -1872,7 +1872,7 @@ export function buildPtyHostEnv(
       ? `${devCliBin}${delimiter}${inheritedPath}`
       : devCliBin
   } else if (process.platform === 'linux') {
-    // Why: bare-`orca` shim scoped to Orca PTYs — Linux CLI installs as `orca-ide` to avoid shadowing GNOME's /usr/bin/orca screen reader (stablyai/orca#7904).
+    // Why: bare-`orca` shim scoped to Argus PTYs — Linux CLI installs as `argus-ide` to avoid shadowing GNOME's /usr/bin/orca screen reader (stablyai/orca#7904).
     const shimDir = ensureLinuxTerminalOrcaCliShimDir({ userDataPath: opts.userDataPath })
     if (shimDir) {
       const inheritedEntries = readInheritedPath(baseEnv)
@@ -1892,7 +1892,7 @@ export function buildPtyHostEnv(
       : bundledCliBin
   }
 
-  // Why: PATH shims keep GitHub attribution scoped to Orca's own PTYs without rewriting user git config.
+  // Why: PATH shims keep GitHub attribution scoped to Argus's own PTYs without rewriting user git config.
   if (!opts.githubAttributionEnabled) {
     delete baseEnv.ORCA_ENABLE_GIT_ATTRIBUTION
     delete baseEnv.ORCA_GIT_COMMIT_TRAILER
@@ -6715,7 +6715,7 @@ export function registerPtyHandlers(
         }
         const relayResultId = getRelayPtyId(args.connectionId, result.id)
         if (store && args.connectionId) {
-          // Why: remote PTYs live in the SSH relay grace window after Orca detaches; persist IDs immediately so reconnect reattaches instead of spawning a fresh shell.
+          // Why: remote PTYs live in the SSH relay grace window after Argus detaches; persist IDs immediately so reconnect reattaches instead of spawning a fresh shell.
           store.upsertSshRemotePtyLease({
             targetId: args.connectionId,
             ptyId: relayResultId,

@@ -6,10 +6,10 @@ import type { Readable } from 'node:stream'
 export type LogStreamChild = ChildProcessByStdio<null, Readable, Readable>
 
 /**
- * Counts the macOS TCC consent dialogs that name Orca as the responsible
+ * Counts the macOS TCC consent dialogs that name Argus as the responsible
  * process (#9756). Terminal children — agent CLIs and anything else the user
  * runs — perform the access, but TCC walks the responsibility chain back to
- * Orca and puts Orca's name on the dialog, so users read it as Orca snooping.
+ * Argus and puts Argus's name on the dialog, so users read it as Argus snooping.
  *
  * tccd emits one `AUTHREQ_PROMPTING` line per dialog it actually displays,
  * carrying the service and both identities, so this never has to correlate
@@ -19,12 +19,12 @@ export type LogStreamChild = ChildProcessByStdio<null, Readable, Readable>
 
 /** Why: terminals run from the detached helper, which TCC can hold responsible independently. */
 const ORCA_RESPONSIBLE_IDENTIFIERS = new Set([
-  'com.stablyai.orca',
-  'com.stablyai.orca.helper',
-  'com.stablyai.orca.dev',
-  'com.stablyai.orca.dev.helper',
-  'com.stablyai.orca.local',
-  'com.stablyai.orca.local.helper'
+  'dev.argus.desktop',
+  'dev.argus.desktop.helper',
+  'dev.argus.desktop.dev',
+  'dev.argus.desktop.dev.helper',
+  'dev.argus.desktop.local',
+  'dev.argus.desktop.local.helper'
 ])
 
 /** Why: the prompt classes #9756 is about — other-apps' data plus the protected home folders agents sweep. */
@@ -72,7 +72,7 @@ export function parseTccPromptEvent(line: string): TccPromptEvent | null {
   }
 }
 
-/** True when this dialog is one macOS raised in Orca's name for a watched file-access service. */
+/** True when this dialog is one macOS raised in Argus's name for a watched file-access service. */
 export function isOrcaAttributedPrompt(event: TccPromptEvent): boolean {
   return (
     ORCA_RESPONSIBLE_IDENTIFIERS.has(event.responsibleIdentifier) &&

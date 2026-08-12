@@ -216,7 +216,7 @@ export class RuntimeGitCommands {
     }
     const gitOptions = localGitOptionsForTarget(target)
     // Why: Git can't ignore a shared symlink under a directory-only rule, so tell
-    // status which untracked entries are Orca's own artifacts (issue #10451).
+    // status which untracked entries are Argus's own artifacts (issue #10451).
     const sharedLinkPaths = target.repo ? getWorktreeSharedLinkPaths(target.repo) : []
     const sharedOptions = sharedLinkPaths.length > 0 ? { sharedLinkPaths } : {}
     return options

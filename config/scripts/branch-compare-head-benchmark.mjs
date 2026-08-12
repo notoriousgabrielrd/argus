@@ -160,7 +160,7 @@ console.log(
   `${pad('base ref', 30)} ${pad('serial', 11)} ${pad('concurrent', 11)} ${pad('speedup', 9)}`
 )
 
-// A short remote label is the common case (Orca's base picker emits `origin/main`); the
+// A short remote label is the common case (Argus's base picker emits `origin/main`); the
 // already-qualified ref skips the probe entirely, so only the concurrency half applies.
 const upstream = await git(['rev-parse', '--abbrev-ref', 'HEAD@{upstream}']).catch(() => null)
 const baseRefs = ['origin/main', 'refs/remotes/origin/main', 'main']

@@ -1871,7 +1871,7 @@ export class AgentBrowserBridge {
         throw new BrowserError('browser_error', 'Debugger not attached')
       }
 
-      // Why: agent-browser's `set viewport` has no `mobile` flag, so apply the emulation directly via CDP to honor Orca's --mobile.
+      // Why: agent-browser's `set viewport` has no `mobile` flag, so apply the emulation directly via CDP to honor Argus's --mobile.
       await dbg.sendCommand('Emulation.setDeviceMetricsOverride', {
         width,
         height,
@@ -2029,7 +2029,7 @@ export class AgentBrowserBridge {
 
   async exec(command: string, worktreeId?: string, browserPageId?: string): Promise<unknown> {
     return this.enqueueTargetedCommand(worktreeId, browserPageId, async (sessionName) => {
-      // Why: strip target/session flags from passthrough so a caller can't override Orca's selected page or CDP proxy.
+      // Why: strip target/session flags from passthrough so a caller can't override Argus's selected page or CDP proxy.
       const args = stripAgentBrowserTargetArgs(parseShellArgs(command.trim()))
       return await this.execAgentBrowser(sessionName, args)
     })
@@ -2489,7 +2489,7 @@ export class AgentBrowserBridge {
       commandArgs[0] === 'network' && (commandArgs[1] === 'route' || commandArgs[1] === 'unroute')
 
     const needsInit = !session.initialized
-    // Why: a restarted named daemon auto-launches Chrome unless every invocation reasserts Orca's CDP owner.
+    // Why: a restarted named daemon auto-launches Chrome unless every invocation reasserts Argus's CDP owner.
     args.push('--cdp', String(session.proxy.getPort()))
 
     // Why: exec passthrough can produce a large argv; spreading into push risks V8 argument limits.

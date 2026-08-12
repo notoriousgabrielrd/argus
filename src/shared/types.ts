@@ -275,11 +275,11 @@ export type Repo = {
    *  identically to `'auto'`; writers leave it undefined on creation so
    *  existing persisted records stay forward-compatible. */
   issueSourcePreference?: IssueSourcePreference
-  /** Controls Orca's fork-default-branch sync offer for repos with upstream metadata. */
+  /** Controls Argus's fork-default-branch sync offer for repos with upstream metadata. */
   forkSyncMode?: ForkSyncMode
-  /** Canonical identity for the repo remote Orca should use for provider-level grouping. */
+  /** Canonical identity for the repo remote Argus should use for provider-level grouping. */
   gitRemoteIdentity?: GitRemoteIdentity | null
-  /** Controls whether worktrees Orca did not create appear in the sidebar. */
+  /** Controls whether worktrees Argus did not create appear in the sidebar. */
   externalWorktreeVisibility?: ExternalWorktreeVisibility
   /** True when the repo predates hidden-by-default external worktrees. */
   externalWorktreeVisibilityLegacy?: boolean
@@ -528,12 +528,12 @@ export type Worktree = {
   /** User-authored sidebar ordering. Higher values render earlier in Manual sort. */
   manualOrder?: number
   lastActivityAt: number
-  /** Set once when Orca creates the worktree. Absent for worktrees discovered
+  /** Set once when Argus creates the worktree. Absent for worktrees discovered
    *  on disk or persisted before this field existed. Used by the sidebar to
    *  grant newly-created worktrees a short grace window at the top of Recent,
    *  immune to ambient PTY-bump reordering in other worktrees. */
   createdAt?: number
-  /** Agent selected when Orca originally created the worktree. Used only to
+  /** Agent selected when Argus originally created the worktree. Used only to
    *  seed a replacement terminal if the user later reopens the worktree after
    *  closing every visible surface. */
   createdWithAgent?: TuiAgent
@@ -551,7 +551,7 @@ export type Worktree = {
   sparsePresetId?: string
   /** Intended create base for stale-base probes. Persisted metadata, not UI drift state. */
   baseRef?: string
-  /** Remote/branch Orca should publish review commits to when it created this worktree. */
+  /** Remote/branch Argus should publish review commits to when it created this worktree. */
   pushTarget?: GitPushTarget
   /** Path-derived worktree ids this worktree had before folder renames. */
   priorWorktreeIds?: string[]
@@ -568,7 +568,7 @@ export type Worktree = {
 export type CliWorkspaceProvenance = {
   kind: 'created-by-cli'
   createdAt: number
-  /** Orca terminal the CLI ran inside, when the caller had one — distinguishes
+  /** Argus terminal the CLI ran inside, when the caller had one — distinguishes
    *  an agent-issued create from one hand-typed in an external shell. */
   callerTerminalHandle?: string
   /** Agent requested via `--agent`, when one was passed. */
@@ -604,7 +604,7 @@ export type GitPushTarget = {
   remoteName: string
   branchName: string
   remoteUrl?: string
-  /** True when Orca added this remote while preparing a fork-PR worktree. */
+  /** True when Argus added this remote while preparing a fork-PR worktree. */
   remoteCreated?: boolean
 }
 
@@ -672,14 +672,14 @@ export type WorktreeMeta = {
   sparsePresetId?: string
   /** Intended create base for stale-base probes. Persisted metadata, not UI drift state. */
   baseRef?: string
-  /** True when Orca checked out a pre-existing local branch that delete must not prune. */
+  /** True when Argus checked out a pre-existing local branch that delete must not prune. */
   preserveBranchOnDelete?: boolean
   /** See {@link Worktree.pushTarget}. Persisted so refreshed worktree lists keep the target. */
   pushTarget?: GitPushTarget
-  /** Explicit marker stamped when Orca creates the worktree. */
+  /** Explicit marker stamped when Argus creates the worktree. */
   orcaCreatedAt?: number
   orcaCreationSource?: 'desktop' | 'runtime' | 'cli' | 'ssh'
-  /** Workspace layout active when Orca created the worktree. */
+  /** Workspace layout active when Argus created the worktree. */
   orcaCreationWorkspaceLayout?: OrcaWorkspaceLayout
   /** User-assigned workspace board status for manual sidebar organization. */
   workspaceStatus?: WorkspaceStatus
@@ -889,7 +889,7 @@ export type TerminalTab = {
   worktreeId: string
   title: string
   /** Stable fallback label for default-named terminals ("Terminal 1", etc.).
-   *  Why: agent CLIs overwrite the live title via OSC updates, but Orca still
+   *  Why: agent CLIs overwrite the live title via OSC updates, but Argus still
    *  needs the original terminal label for numbering and reset behavior. */
   defaultTitle?: string
   /** Stable opt-in label derived from the first known agent prompt. */
@@ -918,7 +918,7 @@ export type TerminalTab = {
   /** Why: explorer-created terminals can start below the workspace root while
    *  still belonging to that workspace for tab/session ownership. */
   startupCwd?: string
-  /** Why: the coding-harness agent Orca launched in this tab. Lets the tab bar
+  /** Why: the coding-harness agent Argus launched in this tab. Lets the tab bar
    *  show the provider icon immediately, before the agent emits its first hook
    *  event (a freshly-launched, idle agent reports no live status yet). Live
    *  hook status overrides this once the agent does anything. Plain terminals
@@ -1012,7 +1012,7 @@ export type BrowserPage = {
 export type BrowserWorkspace = {
   id: string
   worktreeId: string
-  /** Stable display label for the outer Orca tab ("Browser 1", "Browser 2", …).
+  /** Stable display label for the outer Argus tab ("Browser 1", "Browser 2", …).
    *  Optional so sessions persisted before this field was added fall back
    *  gracefully to the URL-derived label in getBrowserTabLabel. */
   label?: string
@@ -1028,7 +1028,7 @@ export type BrowserWorkspace = {
   activePageId?: string | null
   pageIds?: string[]
   // Why: the active page owns real browser chrome state now, but the top-level
-  // Orca tab strip still renders one workspace entry. Mirror the active page's
+  // Argus tab strip still renders one workspace entry. Mirror the active page's
   // title/url/loading metadata here so existing workspace-level UI can stay
   // stable while Phase 2 introduces nested browser pages.
   url: string
@@ -1712,7 +1712,7 @@ export type GitHubPRReviewCommentInput = {
 }
 
 export type GitHubWorkItemDetails = {
-  // Why: main-process doesn't know Orca's Repo.id, so this inner item omits
+  // Why: main-process doesn't know Argus's Repo.id, so this inner item omits
   // repoId. The renderer stamps it when routing the details through the store.
   item: Omit<GitHubWorkItem, 'repoId'>
   body: string
@@ -2564,7 +2564,7 @@ export type CodexManagedAccountSummary = {
 }
 
 /** Live, read-only identity of the user's real ~/.codex used by the
- *  system-default (activeAccountId:null) Codex account. Orca reads this to
+ *  system-default (activeAccountId:null) Codex account. Argus reads this to
  *  display and attribute the system default; it never writes ~/.codex. */
 export type CodexSystemDefaultIdentity = {
   /** True when ~/.codex/auth.json exists (signed in via a token file). */
@@ -2631,11 +2631,11 @@ export type ClaudeManagedAccountRuntimeSelection = {
   wsl: Record<string, string | null>
 }
 
-/** All AI coding agents Orca knows how to launch. Used for the agent picker in the new-workspace
+/** All AI coding agents Argus knows how to launch. Used for the agent picker in the new-workspace
  *  flow and for the default-agent setting. Extend this union as new agents are added. */
 export type TuiAgent =
   | 'claude' // Claude Code
-  | 'claude-agent-teams' // Claude Code Agent Teams via Orca native panes
+  | 'claude-agent-teams' // Claude Code Agent Teams via Argus native panes
   | 'openclaude' // OpenClaude
   | 'codex' // OpenAI Codex
   | 'autohand' // Autohand Code CLI
@@ -2787,7 +2787,7 @@ export type GlobalSettings = {
   /** Set once the user dismisses the "local main is behind" suggestion toast, so
    *  the nudge to enable refreshLocalBaseRefOnWorktreeCreate never shows again. */
   localBaseRefSuggestionDismissed: boolean
-  /** When enabled, Orca renames a workspace's auto-generated creature branch to
+  /** When enabled, Argus renames a workspace's auto-generated creature branch to
    *  a short name derived from the first prompt once work begins. Users can
    *  still turn this off from global Git settings. */
   autoRenameBranchFromWork: boolean
@@ -2874,7 +2874,7 @@ export type GlobalSettings = {
   windowBackgroundBlur?: boolean
   /** Windows-only: close (X) hides to tray instead of quitting; the tray icon is always present regardless. */
   minimizeToTrayOnClose?: boolean
-  /** macOS: toggles the additive menu-bar entry (Orca survives last-window close); doesn't change Dock behavior. */
+  /** macOS: toggles the additive menu-bar entry (Argus survives last-window close); doesn't change Dock behavior. */
   showMenuBarIcon?: boolean
   /** Windows convention: right-click pastes; macOS/Linux keep the context menu. */
   terminalRightClickToPaste: boolean
@@ -2941,7 +2941,7 @@ export type GlobalSettings = {
   sourceControlGroupOrder: SourceControlGroupOrder
   /** Compare base defaults to the branch upstream instead of the repo default; affects only the compare/diff view, not the PR/rebase target. Per-user. */
   sourceControlCompareAgainstUpstream: boolean
-  /** Whether to show the Orca app name in the titlebar. */
+  /** Whether to show the Argus app name in the titlebar. */
   showTitlebarAppName: boolean
   /** Hides the Tasks sidebar button (also removes it from keyboard navigation). */
   showTasksButton: boolean
@@ -2953,7 +2953,7 @@ export type GlobalSettings = {
   artifactSharingEnabled?: boolean
   /** Only toggles the sidebar shortcut; Artifacts stay reachable from Settings. */
   showArtifactsButton?: boolean
-  /** Only toggles the sidebar shortcut; Orca Mobile stays reachable from Settings. */
+  /** Only toggles the sidebar shortcut; Argus Mobile stays reachable from Settings. */
   showMobileButton?: boolean
   /** Pinned workspaces show in one sidebar location by default; opt in to also show them in their natural groups. */
   showPinnedWorktreesInGroups?: boolean
@@ -2985,7 +2985,7 @@ export type GlobalSettings = {
   promptCacheTimerEnabled: boolean
   /** Prompt-cache TTL (ms); only 300000 (5 min standard) or 3600000 (1 hr, extended-TTL plans). */
   promptCacheTtlMs: number
-  /** Why: durable main-owned pref so Orca can prepare shared ~/.codex before the renderer hydrates. */
+  /** Why: durable main-owned pref so Argus can prepare shared ~/.codex before the renderer hydrates. */
   codexManagedAccounts: CodexManagedAccount[]
   activeCodexManagedAccountId: string | null
   activeCodexManagedAccountIdsByRuntime?: CodexManagedAccountRuntimeSelection
@@ -3068,7 +3068,7 @@ export type GlobalSettings = {
   /** Per-agent CLI command overrides. A missing key means use the catalog default binary name. */
   agentCmdOverrides: Partial<Record<TuiAgent, string>>
   /** Custom CODEX_HOME for Codex session-history discovery (defaults to ~/.codex).
-   *  History-only: does not change which account/config/hooks Orca uses. */
+   *  History-only: does not change which account/config/hooks Argus uses. */
   codexSessionSourceHome?: {
     /** Absolute host path; empty/undefined falls back to ~/.codex. */
     host?: string
@@ -3089,7 +3089,7 @@ export type GlobalSettings = {
   tabAutoGenerateTitle: boolean
   /** Why: pinned tabs can still be closed via keyboard/native-menu; this gates that behind a confirmation. Defaults on. */
   confirmClosePinnedTab: boolean
-  /** When true, Orca requests local awake assertions while hook-reported agents are working. */
+  /** When true, Argus requests local awake assertions while hook-reported agents are working. */
   keepComputerAwakeWhileAgentsRun: boolean
   /** Optional for mixed-version compatibility; the legacy boolean maps true to Auto. */
   computerAwakeMode?: ComputerAwakeMode
@@ -3516,7 +3516,7 @@ export type PersistedUIState = {
   releaseChannelOverride?: ReleaseChannel | null
   pendingUpdateNudgeId?: string | null
   dismissedUpdateNudgeId?: string | null
-  /** Whether Orca already tried triggering the macOS notification permission dialog; prevents re-firing every launch. */
+  /** Whether Argus already tried triggering the macOS notification permission dialog; prevents re-firing every launch. */
   notificationPermissionRequested?: boolean
   /** Once the "your sessions won't be interrupted" reassurance card is seen, never show it again. */
   updateReassuranceSeen?: boolean
@@ -3530,7 +3530,7 @@ export type PersistedUIState = {
   setupGuideBrowserMilestoneLegacyComplete?: boolean
   /** User-dismissed browser import toolbar hint; import stays available from Settings > Browser and the overflow menu. */
   browserImportHintHidden?: boolean
-  /** Why: Windows-only. Set once on first hide to tray so the "Orca is still running" notice shows only once. */
+  /** Why: Windows-only. Set once on first hide to tray so the "Argus is still running" notice shows only once. */
   trayMinimizeNoticeShown?: boolean
   /** Set by the OSC 52 default-on migration when it overrode a persisted `false`; the renderer shows one notice and clears it. */
   osc52ClipboardDefaultOnNoticePending?: boolean
@@ -3574,7 +3574,7 @@ export type PersistedUIState = {
   starNagAppVersion?: string | null
   /** Next agents-since-baseline threshold that fires the star-nag; starts at 35, doubles per dismissal without starring. */
   starNagNextThreshold?: number
-  /** Once the user has starred Orca (any entry point), permanently suppress the nag. */
+  /** Once the user has starred Argus (any entry point), permanently suppress the nag. */
   starNagCompleted?: boolean
   /** Timestamp until which nonterminal dismissals suppress threshold prompts (force-show bypasses for dev/testing). */
   starNagDeferredUntil?: number | null
@@ -3889,7 +3889,7 @@ export type AppMemory = UsageValues & {
   main: UsageValues
   renderer: UsageValues
   other: UsageValues
-  /** Oldest-first memory samples (bytes) for the whole Orca app; empty before the first snapshot. */
+  /** Oldest-first memory samples (bytes) for the whole Argus app; empty before the first snapshot. */
   history: number[]
 }
 

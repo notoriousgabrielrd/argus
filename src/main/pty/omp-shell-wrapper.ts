@@ -1,5 +1,5 @@
 // Why: OMP 15.x discovers built-in user extensions from ~/.omp/agent, but a
-// typed `omp` in an existing terminal still needs Orca's status extension
+// typed `omp` in an existing terminal still needs Argus's status extension
 // passed explicitly. Do not redirect PI_CODING_AGENT_DIR here: that variable
 // is OMP's mutable home, so config/auth/session commands must keep the user's
 // normal source of truth.
@@ -41,7 +41,7 @@ const OMP_SUBCOMMANDS = [
 
 export function getPosixOmpShellWrapper(): string {
   const subcommands = OMP_SUBCOMMANDS.join('|')
-  return `# Why: OMP does not auto-load Orca's managed status extension; wrap only
+  return `# Why: OMP does not auto-load Argus's managed status extension; wrap only
 # interactive launch invocations so subcommands such as \`omp config\` keep
 # their normal argv shape.
 __orca_omp_should_skip_extension() {
@@ -73,7 +73,7 @@ fi
 
 export function getPowerShellOmpShellWrapper(): string {
   const subcommands = OMP_SUBCOMMANDS.map((value) => `'${value}'`).join(', ')
-  return `# Why: OMP does not auto-load Orca's managed status extension; wrap only
+  return `# Why: OMP does not auto-load Argus's managed status extension; wrap only
 # interactive launch invocations so subcommands such as \`omp config\` keep
 # their normal argv shape.
 function Global:__OrcaOmpShouldSkipExtension {

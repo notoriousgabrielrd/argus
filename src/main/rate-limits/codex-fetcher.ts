@@ -1265,7 +1265,7 @@ export async function fetchCodexRateLimits(
   }
 
   // Why: probes spawn a real codex process inside the live credential home;
-  // the per-home lock keeps Orca's own spawns (probe vs probe, probe vs
+  // the per-home lock keeps Argus's own spawns (probe vs probe, probe vs
   // commit-message run) from refreshing one auth.json concurrently.
   const homeLockKey = resolveCodexHomeProcessLockKey(options?.codexHomePath)
 

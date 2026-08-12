@@ -63,7 +63,7 @@ export function resolveWslHookRelayBundle(): WslHookRelayBundle | null {
   return null
 }
 
-// Why: the install dir is namespaced by bundle version so concurrent Orca
+// Why: the install dir is namespaced by bundle version so concurrent Argus
 // instances with different bundles (dev + prod) never reinstall over each
 // other; each instance launches exactly the version it shipped.
 function guestRelayDirExpr(version: string): string {

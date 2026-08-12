@@ -26,7 +26,7 @@ import {
 import { buildPosixHookPayloadCapture } from '../agent-hooks/hook-stdin-contract'
 
 // Why: Copilot's user-level hook files can use VS Code-compatible PascalCase
-// names, which match the event vocabulary already normalized by Orca's hook
+// names, which match the event vocabulary already normalized by Argus's hook
 // server and avoid wrapper-side event remapping.
 const COPILOT_EVENTS = [
   'SessionStart',
@@ -37,7 +37,7 @@ const COPILOT_EVENTS = [
   'PostToolUseFailure',
   // Why: GitHub's current reference documents subagentStart with only the
   // camelCase payload shape. The wrapper passes the event name separately, so
-  // Orca can normalize it without depending on a PascalCase payload.
+  // Argus can normalize it without depending on a PascalCase payload.
   'subagentStart',
   'SubagentStop',
   'PreCompact',
@@ -119,7 +119,7 @@ function getManagedScript(target: 'local' | 'posix' = 'local'): string {
     return [
       "Write-Output '{}'",
       // Why: endpoint.cmd is cmd syntax, not PowerShell. Parse its `set KEY=...`
-      // lines so surviving PTYs can refresh to the current Orca server.
+      // lines so surviving PTYs can refresh to the current Argus server.
       'if ($env:ORCA_AGENT_HOOK_ENDPOINT -and (Test-Path -LiteralPath $env:ORCA_AGENT_HOOK_ENDPOINT)) {',
       '  try {',
       '    Get-Content -LiteralPath $env:ORCA_AGENT_HOOK_ENDPOINT | ForEach-Object {',
@@ -129,8 +129,8 @@ function getManagedScript(target: 'local' | 'posix' = 'local'): string {
       '    }',
       '  } catch {}',
       '}',
-      // Why (#11549 class): missing Orca context means a user-wide hook fired outside an
-      // Orca pane. ReadToEnd blocks forever if that caller abandons the pipe, so the guard
+      // Why (#11549 class): missing Argus context means a user-wide hook fired outside an
+      // Argus pane. ReadToEnd blocks forever if that caller abandons the pipe, so the guard
       // must run before the hook owns stdin; the payload would be discarded anyway.
       'if (-not $env:ORCA_AGENT_HOOK_PORT -or -not $env:ORCA_AGENT_HOOK_TOKEN -or -not $env:ORCA_PANE_KEY) { exit 0 }',
       '$inputData = [Console]::In.ReadToEnd()',
@@ -352,7 +352,7 @@ export class CopilotHookService {
       config.version = 1
       delete config.disableAllHooks
       config.hooks = nextHooks
-      // Why: SSH remotes use POSIX scripts regardless of Orca's local OS. Write
+      // Why: SSH remotes use POSIX scripts regardless of Argus's local OS. Write
       // the script before hooks/orca.json so a partial install cannot point
       // Copilot at a missing managed command.
       await writeManagedScriptRemote(sftp, remoteScriptPath, getManagedScript('posix'))

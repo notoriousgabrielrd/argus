@@ -126,7 +126,7 @@ export function registerHostedReviewHandlers(store: Store, stats: StatsCollector
     const repo = assertRegisteredRepo(args.repoPath, store, args.repoId)
     const worktreePath = await resolveHostedReviewWorktreePath(repo, store, args.worktreePath)
     const localGitOptions = getLocalProjectWorktreeGitOptions(store, repo)
-    // Why: the dirty preflight must not count Orca's own shared symlinks as user work (issue #10451).
+    // Why: the dirty preflight must not count Argus's own shared symlinks as user work (issue #10451).
     // Remote creation never materializes them, and `repo.path` is a path on the
     // remote host — reading it locally would resolve an unrelated `orca.yaml`.
     // Not dead code: SSH ignores these, so this only prevents that read and a poisoned cache entry.

@@ -94,7 +94,7 @@ describe('emitBrowserCookieImportToast', () => {
 
     expect(successToastMock).toHaveBeenCalledWith('Imported 2 cookies.')
     expect(warningToastMock.mock.calls[0][0]).toBe(
-      'Google cookies were not imported. Open a browser in Orca with this profile, then sign into Google.'
+      'Google cookies were not imported. Open a browser in Argus with this profile, then sign into Google.'
     )
     expect(warningToastMock.mock.calls[0][1].action.label).toBe('Sign in to Google')
     expect(successToastMock.mock.invocationCallOrder[0]).toBeLessThan(
@@ -133,7 +133,7 @@ describe('emitBrowserCookieImportToast', () => {
     expect(successToastMock).not.toHaveBeenCalled()
     expect(warningToastMock.mock.calls.map(([message]) => message)).toEqual([
       'Imported 1 of 2 cookies. The rest could not be loaded, and the restart fallback was unavailable. Try the import again.',
-      'Google cookies were not imported. Open a browser in Orca with this profile, then sign into Google.'
+      'Google cookies were not imported. Open a browser in Argus with this profile, then sign into Google.'
     ])
   })
 
@@ -170,7 +170,7 @@ describe('emitBrowserCookieImportToast', () => {
     )
 
     expect(warningToastMock).toHaveBeenLastCalledWith(
-      'Google cookies were not imported. Open a browser in Orca with this profile, then sign into Google.'
+      'Google cookies were not imported. Open a browser in Argus with this profile, then sign into Google.'
     )
   })
 

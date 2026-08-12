@@ -43,7 +43,7 @@ function emitGoogleCookieImportWarning(
   }
   const message = translate(
     'auto.lib.browser.cookie.import.toast.googleCookiesSkipped',
-    'Google cookies were not imported. Open a browser in Orca with this profile, then sign into Google.'
+    'Google cookies were not imported. Open a browser in Argus with this profile, then sign into Google.'
   )
   if (!useAppStore.getState().activeWorktreeId) {
     toast.warning(message)

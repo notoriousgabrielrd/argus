@@ -36,13 +36,13 @@ export type { RemoteOrcaCliRequest, RemoteOrcaCliResult } from './ssh-remote-cli
 // cannot host. Everything else routes through the full host CLI.
 const HOST_INTERACTIVE_COMMANDS: Record<string, string> = {
   serve:
-    'orca serve starts a foreground headless Orca server and cannot run through the SSH relay bridge. Run it directly on the machine that should host Orca.',
+    'orca serve starts a foreground headless Argus server and cannot run through the SSH relay bridge. Run it directly on the machine that should host Argus.',
   'claude-teams':
-    'orca claude-teams starts an interactive Claude Code session and cannot run through the SSH relay bridge. Run it in a terminal on the Orca host machine.',
+    'orca claude-teams starts an interactive Claude Code session and cannot run through the SSH relay bridge. Run it in a terminal on the Argus host machine.',
   'agent-teams-tmux':
-    'orca agent-teams-tmux is a tmux pane shim for the Orca host machine and cannot run through the SSH relay bridge.',
+    'orca agent-teams-tmux is a tmux pane shim for the Argus host machine and cannot run through the SSH relay bridge.',
   'account add':
-    'orca account add runs an interactive agent login and cannot run through the buffered SSH relay bridge. Run it directly in a terminal on the Orca host machine.'
+    'orca account add runs an interactive agent login and cannot run through the buffered SSH relay bridge. Run it directly in a terminal on the Argus host machine.'
 }
 
 export async function runRemoteOrcaCli(
@@ -285,7 +285,7 @@ async function dispatchRemoteCli(
       // include that root cause so users can fix the install instead of
       // assuming the command family is unsupported over SSH.
       throw new Error(
-        `Unsupported SSH Orca CLI command: ${command} (full Orca CLI bridge unavailable: ${passthroughFailureReason})`
+        `Unsupported SSH Argus CLI command: ${command} (full Argus CLI bridge unavailable: ${passthroughFailureReason})`
       )
   }
 }

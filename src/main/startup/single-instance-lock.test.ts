@@ -70,19 +70,19 @@ describe('acquireSingleInstanceLock', () => {
 
     const [registered] = fake.listeners['second-instance'] ?? []
     expect(registered).toBeDefined()
-    registered?.({}, ['/opt/orca/orca-linux.AppImage', '--serve'], '/home/orca')
+    registered?.({}, ['/opt/orca/argus-linux.AppImage', '--serve'], '/home/orca')
 
     expect(onSecondInstance).toHaveBeenCalledTimes(1)
-    expect(onSecondInstance).toHaveBeenCalledWith(['/opt/orca/orca-linux.AppImage', '--serve'])
+    expect(onSecondInstance).toHaveBeenCalledWith(['/opt/orca/argus-linux.AppImage', '--serve'])
   })
 })
 
 describe('shouldActivateDesktopForSecondInstance', () => {
   it('ignores a duplicate serve launch but still activates for a desktop launch', () => {
     // Why: a supervisor respawning `orca serve` must not open a window on a display-less host (#11935).
-    const serveArgv = ['/opt/orca/orca-linux.AppImage', '--serve']
+    const serveArgv = ['/opt/orca/argus-linux.AppImage', '--serve']
     expect(shouldActivateDesktopForSecondInstance(serveArgv)).toBe(false)
-    expect(shouldActivateDesktopForSecondInstance(['/Applications/Orca.app/orca'])).toBe(true)
+    expect(shouldActivateDesktopForSecondInstance(['/Applications/Argus.app/orca'])).toBe(true)
   })
 
   it('ignores a duplicate CLI-form serve launch the CLI redirect never rewrote', () => {
@@ -90,7 +90,7 @@ describe('shouldActivateDesktopForSecondInstance', () => {
     // start reaches Electron in that shape, so a flag-only check would open a window on the live server.
     expect(
       shouldActivateDesktopForSecondInstance([
-        '/opt/orca/squashfs-root/orca-ide',
+        '/opt/orca/squashfs-root/argus-ide',
         'serve',
         '--port',
         '6768',
@@ -100,7 +100,7 @@ describe('shouldActivateDesktopForSecondInstance', () => {
     ).toBe(false)
     // A path argument that merely contains `serve` is still a desktop launch.
     expect(
-      shouldActivateDesktopForSecondInstance(['/opt/orca/orca-ide', '/home/u/serve-repo'])
+      shouldActivateDesktopForSecondInstance(['/opt/orca/argus-ide', '/home/u/serve-repo'])
     ).toBe(true)
   })
 

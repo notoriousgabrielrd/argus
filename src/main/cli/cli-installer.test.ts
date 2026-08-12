@@ -82,7 +82,7 @@ describe('CliInstaller', () => {
         platform: 'darwin',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         commandPathOverride: installPath,
         processPathEnv: join(fixture.root, 'bin')
@@ -112,12 +112,12 @@ describe('CliInstaller', () => {
     'creates a linux symlink under the requested path and warns when PATH is missing',
     async () => {
       const fixture = await makeFixture()
-      const installPath = join(fixture.root, '.local', 'bin', 'orca-ide')
+      const installPath = join(fixture.root, '.local', 'bin', 'argus-ide')
       const installer = new CliInstaller({
         platform: 'linux',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/opt/Orca/orca-ide',
+        execPath: '/opt/Argus/argus-ide',
         appPath: fixture.appPath,
         commandPathOverride: installPath,
         processPathEnv: '/usr/bin'
@@ -125,7 +125,7 @@ describe('CliInstaller', () => {
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
-      expect(installed.commandName).toBe('orca-ide')
+      expect(installed.commandName).toBe('argus-ide')
       expect(installed.pathConfigured).toBe(false)
       expect(installed.detail).toContain('.local')
 
@@ -139,7 +139,7 @@ describe('CliInstaller', () => {
   )
 
   // Why: dev installs are useful for validation, but they must not replace the
-  // packaged `orca` / `orca-ide` commands developers rely on day to day.
+  // packaged `orca` / `argus-ide` commands developers rely on day to day.
   it.skipIf(process.platform === 'win32')(
     'uses a separate orca-dev command for default development installs',
     async () => {
@@ -150,7 +150,7 @@ describe('CliInstaller', () => {
         platform: 'linux',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/opt/Orca/orca-ide',
+        execPath: '/opt/Argus/argus-ide',
         appPath: fixture.appPath,
         homePath,
         processPathEnv: commandDir
@@ -175,8 +175,8 @@ describe('CliInstaller', () => {
     async () => {
       const fixture = await makeFixture()
       const commandDir = join(fixture.root, '.local', 'bin')
-      const installPath = join(commandDir, 'orca-ide')
-      const appImagePath = join(fixture.root, 'Orca.AppImage')
+      const installPath = join(commandDir, 'argus-ide')
+      const appImagePath = join(fixture.root, 'Argus.AppImage')
       await writeFile(appImagePath, '#!/usr/bin/env bash\n', {
         encoding: 'utf8',
         mode: 0o755
@@ -200,7 +200,7 @@ describe('CliInstaller', () => {
       const installed = await installer.install()
       expect(installed).toMatchObject({
         state: 'installed',
-        commandName: 'orca-ide',
+        commandName: 'argus-ide',
         installMethod: 'wrapper',
         launcherPath: appImagePath,
         currentTarget: appImagePath,
@@ -225,9 +225,9 @@ describe('CliInstaller', () => {
     async () => {
       const fixture = await makeFixture()
       const commandDir = join(fixture.root, '.local', 'bin')
-      const installPath = join(commandDir, 'orca-ide')
+      const installPath = join(commandDir, 'argus-ide')
       const oldAppImagePath = join(fixture.root, 'Old-Orca.AppImage')
-      const newAppImagePath = join(fixture.root, 'Orca.AppImage')
+      const newAppImagePath = join(fixture.root, 'Argus.AppImage')
       await mkdir(commandDir, { recursive: true })
       await writeFile(installPath, buildAppImageCliWrapper(oldAppImagePath), {
         encoding: 'utf8',
@@ -259,16 +259,16 @@ describe('CliInstaller', () => {
     }
   )
 
-  // Why: Linux renamed the public command to avoid shadowing GNOME Orca, so
-  // upgrading must clean up only the old symlink owned by prior Orca installs.
+  // Why: Linux renamed the public command to avoid shadowing GNOME Argus, so
+  // upgrading must clean up only the old symlink owned by prior Argus installs.
   it.skipIf(process.platform === 'win32')(
-    'removes the old managed linux orca symlink when installing orca-ide',
+    'removes the old managed linux orca symlink when installing argus-ide',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
       const commandDir = join(homePath, '.local', 'bin')
       const resourcesPath = join(fixture.root, 'resources')
-      const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+      const launcherPath = join(resourcesPath, 'bin', 'argus-ide')
       const oldLauncherPath = join(resourcesPath, 'bin', 'orca')
       const legacyCommandPath = join(commandDir, 'orca')
       await mkdir(commandDir, { recursive: true })
@@ -286,7 +286,7 @@ describe('CliInstaller', () => {
       })
 
       const installed = await installer.install()
-      expect(installed.commandPath).toBe(join(commandDir, 'orca-ide'))
+      expect(installed.commandPath).toBe(join(commandDir, 'argus-ide'))
       await expect(lstat(legacyCommandPath)).rejects.toMatchObject({ code: 'ENOENT' })
     }
   )
@@ -298,7 +298,7 @@ describe('CliInstaller', () => {
       const homePath = join(fixture.root, 'home')
       const commandDir = join(homePath, '.local', 'bin')
       const legacyCommandPath = join(commandDir, 'orca')
-      const appImagePath = join(fixture.root, 'Orca.AppImage')
+      const appImagePath = join(fixture.root, 'Argus.AppImage')
       await mkdir(commandDir, { recursive: true })
       await writeFile(appImagePath, '#!/usr/bin/env bash\n', {
         encoding: 'utf8',
@@ -315,20 +315,20 @@ describe('CliInstaller', () => {
       })
 
       const installed = await installer.install()
-      expect(installed.commandPath).toBe(join(commandDir, 'orca-ide'))
+      expect(installed.commandPath).toBe(join(commandDir, 'argus-ide'))
       await expect(lstat(legacyCommandPath)).rejects.toMatchObject({ code: 'ENOENT' })
     }
   )
 
   it('creates a windows wrapper and updates the user PATH', async () => {
     const fixture = await makeFixture()
-    const installPath = join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd')
+    const installPath = join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd')
     let userPath = 'C:\\Windows\\System32'
     const installer = new CliInstaller({
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
       commandPathOverride: installPath,
       userPathReader: async () => userPathRead(userPath),
@@ -340,7 +340,7 @@ describe('CliInstaller', () => {
     const installed = await installer.install()
     expect(installed.state).toBe('installed')
     expect(installed.pathConfigured).toBe(true)
-    expect(userPath).toContain(join(fixture.root, 'Programs', 'Orca', 'bin'))
+    expect(userPath).toContain(join(fixture.root, 'Programs', 'Argus', 'bin'))
 
     const wrapperContent = await readFile(installPath, 'utf8')
     expect(wrapperContent).toContain('ORCA_LAUNCHER=')
@@ -351,19 +351,19 @@ describe('CliInstaller', () => {
 
     const removed = await installer.remove()
     expect(removed.state).toBe('not_installed')
-    expect(userPath).not.toContain(join(fixture.root, 'Programs', 'Orca', 'bin'))
+    expect(userPath).not.toContain(join(fixture.root, 'Programs', 'Argus', 'bin'))
   })
 
   it.each(['UnauthorizedAccessException', 'SecurityException'])(
     'rejects with a friendly message for Windows PATH denial: %s',
     async (permissionMarker) => {
       const fixture = await makeFixture()
-      const installPath = join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd')
+      const installPath = join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd')
       const installer = new CliInstaller({
         platform: 'win32',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+        execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
         appPath: fixture.appPath,
         commandPathOverride: installPath,
         userPathReader: async () => userPathRead('C:\\Windows\\System32'),
@@ -395,9 +395,9 @@ describe('CliInstaller', () => {
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
-      commandPathOverride: join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd'),
+      commandPathOverride: join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd'),
       userPathReader: async () => userPathRead('C:\\Windows\\System32'),
       userPathWriter
     })
@@ -416,12 +416,12 @@ describe('CliInstaller', () => {
     'propagates a non-permission Windows PATH write error unchanged: %s',
     async (_name, message) => {
       const fixture = await makeFixture()
-      const installPath = join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd')
+      const installPath = join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd')
       const installer = new CliInstaller({
         platform: 'win32',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+        execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
         appPath: fixture.appPath,
         commandPathOverride: installPath,
         userPathReader: async () => userPathRead('C:\\Windows\\System32'),
@@ -438,17 +438,17 @@ describe('CliInstaller', () => {
 
   it('reports an unknown Windows PATH without spawning PowerShell', async () => {
     const fixture = await makeFixture()
-    const installPath = join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd')
+    const installPath = join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd')
     const installer = new CliInstaller({
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
       commandPathOverride: installPath,
       userPathReader: async () => ({
         state: 'unknown',
-        detail: 'Orca could not read the Windows user PATH registry value.'
+        detail: 'Argus could not read the Windows user PATH registry value.'
       })
     })
 
@@ -467,12 +467,12 @@ describe('CliInstaller', () => {
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
-      commandPathOverride: join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd'),
+      commandPathOverride: join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd'),
       userPathReader: async () => ({
         state: 'unknown',
-        detail: 'Orca could not read the Windows user PATH registry value.'
+        detail: 'Argus could not read the Windows user PATH registry value.'
       }),
       userPathWriter
     })
@@ -483,7 +483,7 @@ describe('CliInstaller', () => {
 
   it('bypasses cached status data before a Windows PATH mutation', async () => {
     const fixture = await makeFixture()
-    const installPath = join(fixture.root, 'Programs', 'Orca', 'bin', 'orca.cmd')
+    const installPath = join(fixture.root, 'Programs', 'Argus', 'bin', 'orca.cmd')
     const pathDirectory = dirname(installPath)
     let registryPath = 'C:\\Tools'
     const registryReader = new WindowsUserPathRegistryReader({
@@ -502,7 +502,7 @@ describe('CliInstaller', () => {
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
       commandPathOverride: installPath,
       userPathReader: () => registryReader.read(),
@@ -522,17 +522,17 @@ describe('CliInstaller', () => {
 
   it('matches expandable Windows PATH entries case-insensitively without rewriting them', async () => {
     const fixture = await makeFixture()
-    const installPath = join(fixture.root, 'Local App Data', 'Orca', 'bin', 'orca.cmd')
+    const installPath = join(fixture.root, 'Local App Data', 'Argus', 'bin', 'orca.cmd')
     const userPathWriter = vi.fn()
     const installer = new CliInstaller({
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
       commandPathOverride: installPath,
       windowsEnvironment: { LOCALAPPDATA: join(fixture.root, 'Local App Data') },
-      userPathReader: async () => userPathRead('%localappdata%\\Orca\\bin\\', true),
+      userPathReader: async () => userPathRead('%localappdata%\\Argus\\bin\\', true),
       userPathWriter
     })
 
@@ -545,24 +545,24 @@ describe('CliInstaller', () => {
 
   it('does not expand environment variables stored in a REG_SZ Windows PATH', async () => {
     const fixture = await makeFixture()
-    const installPath = join(fixture.root, 'Local App Data', 'Orca', 'bin', 'orca.cmd')
+    const installPath = join(fixture.root, 'Local App Data', 'Argus', 'bin', 'orca.cmd')
     const pathDirectory = dirname(installPath)
     const userPathWriter = vi.fn()
     const installer = new CliInstaller({
       platform: 'win32',
       isPackaged: false,
       userDataPath: fixture.userDataPath,
-      execPath: 'C:\\Users\\me\\AppData\\Local\\Orca\\Orca.exe',
+      execPath: 'C:\\Users\\me\\AppData\\Local\\Argus\\Argus.exe',
       appPath: fixture.appPath,
       commandPathOverride: installPath,
       windowsEnvironment: { LOCALAPPDATA: join(fixture.root, 'Local App Data') },
-      userPathReader: async () => userPathRead('%LOCALAPPDATA%\\Orca\\bin'),
+      userPathReader: async () => userPathRead('%LOCALAPPDATA%\\Argus\\bin'),
       userPathWriter
     })
 
     await installer.install()
 
-    expect(userPathWriter).toHaveBeenCalledWith(`%LOCALAPPDATA%\\Orca\\bin;${pathDirectory}`)
+    expect(userPathWriter).toHaveBeenCalledWith(`%LOCALAPPDATA%\\Argus\\bin;${pathDirectory}`)
   })
 
   // Why: this test creates a Unix symlink to /tmp/not-orca, which only applies on macOS/Linux.
@@ -579,7 +579,7 @@ describe('CliInstaller', () => {
         platform: 'darwin',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         commandPathOverride: installPath
       })
@@ -596,7 +596,7 @@ describe('CliInstaller', () => {
   // Why: packaged app moves can leave a symlink to an older Orca-owned launcher;
   // those are safe to refresh, unlike arbitrary user symlinks.
   it.skipIf(process.platform === 'win32')(
-    'replaces stale packaged Orca launcher symlinks',
+    'replaces stale packaged Argus launcher symlinks',
     async () => {
       const fixture = await makeFixture()
       const commandDir = join(fixture.root, 'bin')
@@ -626,7 +626,7 @@ describe('CliInstaller', () => {
     }
   )
 
-  // Why: old dev/package experiments wrote a generated Orca launcher file
+  // Why: old dev/package experiments wrote a generated Argus launcher file
   // directly into /usr/local/bin/orca. That broke profiling because Settings
   // treated the regular file as a hard conflict and would not self-heal it.
   it.skipIf(process.platform === 'win32')(
@@ -707,7 +707,7 @@ describe('CliInstaller', () => {
   )
 
   // Why: a dev build can temporarily own the public command on developer
-  // machines; packaged Orca should treat that as stale, not a hard conflict.
+  // machines; packaged Argus should treat that as stale, not a hard conflict.
   it.skipIf(process.platform === 'win32')(
     'replaces stale sibling dev launcher symlinks from packaged installs',
     async () => {
@@ -763,7 +763,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: absentUsrLocalBin,
@@ -798,7 +798,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         defaultMacCommandPath: installPath,
         processPathEnv: usrLocalBin
@@ -811,7 +811,7 @@ describe('CliInstaller', () => {
     }
   )
 
-  // Why: users can have a managed Orca command in ~/.local/bin even when
+  // Why: users can have a managed Argus command in ~/.local/bin even when
   // /usr/local/bin exists; Settings must follow the shell-visible command.
   it.skipIf(process.platform === 'win32')(
     'uses an existing managed macOS orca command from the shell PATH before /usr/local/bin',
@@ -833,7 +833,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -875,7 +875,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -920,7 +920,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -934,7 +934,7 @@ describe('CliInstaller', () => {
   )
 
   // Why: shells skip missing PATH entries, so a managed command later in PATH
-  // is still the shell-visible Orca command until the default path is installed.
+  // is still the shell-visible Argus command until the default path is installed.
   it.skipIf(process.platform === 'win32')(
     'uses a later managed macOS orca command when the default command is missing',
     async () => {
@@ -955,7 +955,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -972,7 +972,7 @@ describe('CliInstaller', () => {
     }
   )
 
-  // Why: bash/zsh skip non-executable PATH entries even at Orca's configured
+  // Why: bash/zsh skip non-executable PATH entries even at Argus's configured
   // install slot, then keep looking for a runnable command later in PATH.
   it.skipIf(process.platform === 'win32')(
     'uses a later managed macOS orca command when the default command is not executable',
@@ -995,7 +995,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -1037,7 +1037,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -1078,7 +1078,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -1120,7 +1120,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -1158,7 +1158,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: defaultInstallPath,
@@ -1178,9 +1178,9 @@ describe('CliInstaller', () => {
   )
 
   // Why: when macCommandPath falls back to ~/.local/bin/orca on arm64, commandName
-  // must still be 'orca' (not 'orca-ide' which is Linux-only).
+  // must still be 'orca' (not 'argus-ide' which is Linux-only).
   it.skipIf(process.platform === 'win32')(
-    'reports commandName as orca (not orca-ide) when falling back to ~/.local/bin on macOS',
+    'reports commandName as orca (not argus-ide) when falling back to ~/.local/bin on macOS',
     async () => {
       const fixture = await makeFixture()
       const homePath = join(fixture.root, 'home')
@@ -1191,7 +1191,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: absentUsrLocalBin,
@@ -1219,7 +1219,7 @@ describe('CliInstaller', () => {
         platform: 'darwin',
         isPackaged: false,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         commandPathOverride: installPath,
         privilegedRunner: async (command: string) => {
@@ -1261,7 +1261,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: absentUsrLocalBin,
@@ -1282,7 +1282,7 @@ describe('CliInstaller', () => {
   it('resolves custom-install packaged Windows command path from resourcesPath', async () => {
     const fixture = await makeFixture()
     const localAppDataPath = join(fixture.root, 'AppData', 'Local')
-    const resourcesPath = join(fixture.root, 'D Custom Orca', 'resources')
+    const resourcesPath = join(fixture.root, 'D Custom Argus', 'resources')
     await mkdir(join(resourcesPath, 'bin'), { recursive: true })
     await writeFile(join(resourcesPath, 'bin', 'orca.exe'), 'native launcher', 'utf8')
 
@@ -1292,7 +1292,7 @@ describe('CliInstaller', () => {
       resourcesPath,
       localAppDataPath,
       userDataPath: fixture.userDataPath,
-      execPath: join(fixture.root, 'D Custom Orca', 'Orca.exe'),
+      execPath: join(fixture.root, 'D Custom Argus', 'Argus.exe'),
       appPath: fixture.appPath,
       userPathReader: async () => userPathRead(null),
       userPathWriter: async () => {}
@@ -1314,11 +1314,11 @@ describe('CliInstaller', () => {
       isPackaged: true,
       resourcesPath,
       userDataPath: fixture.userDataPath,
-      execPath: join(fixture.root, 'Orca.exe'),
+      execPath: join(fixture.root, 'Argus.exe'),
       appPath: fixture.appPath,
       userPathReader: async () => ({
         state: 'unknown',
-        detail: 'Orca could not read the Windows user PATH registry value.'
+        detail: 'Argus could not read the Windows user PATH registry value.'
       })
     })
 
@@ -1332,7 +1332,7 @@ describe('CliInstaller', () => {
   it('does not overwrite the packaged Windows launcher while registering PATH', async () => {
     const fixture = await makeFixture()
     const localAppDataPath = join(fixture.root, 'AppData', 'Local')
-    const resourcesPath = join(fixture.root, 'D Custom Orca', 'resources')
+    const resourcesPath = join(fixture.root, 'D Custom Argus', 'resources')
     const bundledLauncher = join(resourcesPath, 'bin', 'orca.exe')
     const bundledContent = 'native launcher'
     await mkdir(dirname(bundledLauncher), { recursive: true })
@@ -1345,7 +1345,7 @@ describe('CliInstaller', () => {
       resourcesPath,
       localAppDataPath,
       userDataPath: fixture.userDataPath,
-      execPath: join(fixture.root, 'D Custom Orca', 'Orca.exe'),
+      execPath: join(fixture.root, 'D Custom Argus', 'Argus.exe'),
       appPath: fixture.appPath,
       userPathReader: async () => userPathRead(userPath),
       userPathWriter: async (value) => {
@@ -1389,7 +1389,7 @@ describe('CliInstaller', () => {
         isPackaged: true,
         resourcesPath,
         userDataPath: fixture.userDataPath,
-        execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+        execPath: '/Applications/Argus.app/Contents/MacOS/Argus',
         appPath: fixture.appPath,
         homePath,
         defaultMacCommandPath: absentUsrLocalBin,

@@ -130,7 +130,7 @@ test.describe('File Open & Markdown Preview', () => {
     // Wait for the editor tab to become active
     await expect.poll(async () => getActiveTabType(orcaPage), { timeout: 5_000 }).toBe('editor')
 
-    // The seeded README.md starts with `# Orca E2E Test Repo`, so the rich
+    // The seeded README.md starts with `# Argus E2E Test Repo`, so the rich
     // markdown editor should render a real <h1> with that text. Asserting on
     // the rendered heading (not `markdownViewMode` in the store) is the whole
     // point of this spec — a store-only check passes even if
@@ -138,7 +138,7 @@ test.describe('File Open & Markdown Preview', () => {
     // Fall back to CLAUDE.md's first heading when that file was opened
     // instead: the seeded `CLAUDE.md` starts with `# CLAUDE.md`.
     const expectedHeading = clickedFile?.endsWith('README.md')
-      ? /Orca E2E Test Repo/i
+      ? /Argus E2E Test Repo/i
       : /CLAUDE\.md/i
     // Why 25s: first-time markdown open in a headless Electron session waits
     // on two lazy chunks (EditorPanel → RichMarkdownEditor) plus ProseMirror

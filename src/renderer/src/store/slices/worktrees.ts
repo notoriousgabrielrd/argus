@@ -301,7 +301,7 @@ function showLocalBaseRefRefreshToast(
       description: worktreeName
         ? translate(
             'auto.store.slices.worktrees.localBaseRefRefreshFailedDescriptionNamed',
-            'Workspace "{{value0}}" was created from {{value1}}, but Orca could not fast-forward local {{value2}}. {{value3}}',
+            'Workspace "{{value0}}" was created from {{value1}}, but Argus could not fast-forward local {{value2}}. {{value3}}',
             {
               value0: worktreeName,
               value1: result.baseRef,
@@ -311,7 +311,7 @@ function showLocalBaseRefRefreshToast(
           )
         : translate(
             'auto.store.slices.worktrees.903b51c2ed',
-            'Workspace created from {{value0}}, but Orca could not fast-forward local {{value1}}. {{value2}}',
+            'Workspace created from {{value0}}, but Argus could not fast-forward local {{value1}}. {{value2}}',
             { value0: result.baseRef, value1: result.localBranch, value2: detail }
           ),
       duration: Infinity,
@@ -750,7 +750,7 @@ function notifyRuntimeScopeForbiddenIfNeeded(error: unknown): boolean {
       id: RUNTIME_SCOPE_FORBIDDEN_TOAST_ID,
       description: translate(
         'auto.store.slices.worktrees.runtimeScopeForbiddenDescription',
-        'Workspaces are unavailable on a mobile-scope pairing. Reconnect using the browser access link from Settings → Runtime Environments → Share this Orca server.'
+        'Workspaces are unavailable on a mobile-scope pairing. Reconnect using the browser access link from Settings → Runtime Environments → Share this Argus server.'
       )
     }
   )
@@ -4224,7 +4224,7 @@ export const createWorktreeSlice: StateCreator<AppState, [], [], WorktreeSlice> 
       if (!forgetLocalOnly) {
         removalGenerationGuard?.assertCurrent()
       }
-      // Why: forget-local clears Orca's records via local IPC regardless of host — the remote is gone or unreachable.
+      // Why: forget-local clears Argus's records via local IPC regardless of host — the remote is gone or unreachable.
       const target = getActiveRuntimeTarget(
         removalRoute
           ? settingsForWorktreeOperationRoute(get().settings, removalRoute)

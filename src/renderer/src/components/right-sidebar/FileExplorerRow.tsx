@@ -427,7 +427,7 @@ export async function copyFileToOsClipboard(
   )
   const stagingFailureMessage = translate(
     'auto.components.right.sidebar.FileExplorerRow.clipboardStagingUnavailable',
-    "Could not copy the file because Orca's temporary storage is unavailable"
+    "Could not copy the file because Argus's temporary storage is unavailable"
   )
   try {
     const result = await window.api.ui.writeClipboardFile(
@@ -769,7 +769,7 @@ export function FileExplorerRow({
             <Globe />
             {translate(
               'auto.components.right.sidebar.FileExplorerRow.dd112c81d2',
-              'Open in Orca Browser'
+              'Open in Argus Browser'
             )}
           </ContextMenuItem>
         )}

@@ -411,7 +411,7 @@ function Terminal(): React.JSX.Element | null {
   )
   useTerminalProviderSnapshotCapability(workspaceSessionReady && hydrationSucceeded)
 
-  // Why: TabBar portals into the titlebar (target created by App.tsx) so tabs share the "Orca" title row.
+  // Why: TabBar portals into the titlebar (target created by App.tsx) so tabs share the "Argus" title row.
   const titlebarTabsTarget = document.getElementById('titlebar-tabs')
 
   useEffect(() => {

@@ -24,7 +24,7 @@ import {
 beforeEach(() => {
   environmentMocks.resolveFooter.mockReset()
   environmentMocks.resolveFooter.mockResolvedValue(
-    ['---', 'Orca: 1.4.178-rc.2', 'OS: darwin 25.0.0 (arm64)', 'Shell: /bin/zsh'].join('\n')
+    ['---', 'Argus: 1.4.178-rc.2', 'OS: darwin 25.0.0 (arm64)', 'Shell: /bin/zsh'].join('\n')
   )
 })
 
@@ -134,7 +134,7 @@ describe('isExplainedTerminalError', () => {
     ).toBe(true)
   })
 
-  it('keeps the issue link for errors Orca cannot explain', () => {
+  it('keeps the issue link for errors Argus cannot explain', () => {
     expect(isExplainedTerminalError('Paste failed.')).toBe(false)
     expect(isExplainedTerminalError('node-pty: open_slave failed: EMFILE')).toBe(false)
     expect(isExplainedTerminalError('terminal_gone')).toBe(false)
@@ -187,7 +187,7 @@ describe('shouldOfferDaemonRestart', () => {
   it('matches stale daemon node-pty install failures', () => {
     expect(
       shouldOfferDaemonRestart(
-        "Daemon's node-pty install is gone (worktree deleted?). Restart Orca. node-pty: posix_spawn failed: ENOENT (errno 2, No such file or directory) - helper='/Applications/Orca.app/Contents/Resources/app.asar.unpacked/node_modules/node-pty/build/Release/spawn-helper'"
+        "Daemon's node-pty install is gone (worktree deleted?). Restart Argus. node-pty: posix_spawn failed: ENOENT (errno 2, No such file or directory) - helper='/Applications/Argus.app/Contents/Resources/app.asar.unpacked/node_modules/node-pty/build/Release/spawn-helper'"
       )
     ).toBe(true)
   })
@@ -195,7 +195,7 @@ describe('shouldOfferDaemonRestart', () => {
   it('matches stale daemon cwd failures', () => {
     expect(
       shouldOfferDaemonRestart(
-        "Daemon's working directory is gone (worktree deleted?). Restart Orca. node-pty: daemon_cwd failed: ENOENT (errno 2, No such file or directory) - cwd='<unavailable>'"
+        "Daemon's working directory is gone (worktree deleted?). Restart Argus. node-pty: daemon_cwd failed: ENOENT (errno 2, No such file or directory) - cwd='<unavailable>'"
       )
     ).toBe(true)
   })
@@ -215,7 +215,7 @@ describe('TerminalErrorToast environment footer', () => {
       })
     )
 
-    await waitFor(() => expect(view.container.textContent).toContain('Orca: 1.4.178-rc.2'))
+    await waitFor(() => expect(view.container.textContent).toContain('Argus: 1.4.178-rc.2'))
   })
 
   it('does not retain a prior async footer when the next error already has one', async () => {
@@ -225,17 +225,17 @@ describe('TerminalErrorToast environment footer', () => {
         onDismiss: vi.fn()
       })
     )
-    await waitFor(() => expect(view.container.textContent).toContain('Orca: 1.4.178-rc.2'))
+    await waitFor(() => expect(view.container.textContent).toContain('Argus: 1.4.178-rc.2'))
 
     view.rerender(
       React.createElement(TerminalErrorToast, {
-        error: 'Second failure.\n\n---\nOrca: embedded\nOS: linux 6.8 (x64)',
+        error: 'Second failure.\n\n---\nArgus: embedded\nOS: linux 6.8 (x64)',
         onDismiss: vi.fn()
       })
     )
 
-    expect(view.container.textContent).toContain('Orca: embedded')
-    expect(view.container.textContent).not.toContain('Orca: 1.4.178-rc.2')
+    expect(view.container.textContent).toContain('Argus: embedded')
+    expect(view.container.textContent).not.toContain('Argus: 1.4.178-rc.2')
   })
 
   it('omits client details for every SSH reconnect-owned error', async () => {

@@ -235,7 +235,7 @@ export type WorktreeSlice = {
   removeWorktree: (
     worktreeId: string,
     force?: boolean,
-    // 'forget-local' drops the workspace from Orca only (no remote Git/FS work)
+    // 'forget-local' drops the workspace from Argus only (no remote Git/FS work)
     // for workspaces pinned to a removed/disconnected SSH host. Reuses the same
     // renderer-side teardown/purge as a normal remove.
     options?: {

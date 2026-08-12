@@ -109,8 +109,8 @@ export const AGENT_KIND_VALUES = [
 export const agentKindSchema = z.enum(AGENT_KIND_VALUES)
 export type AgentKind = z.infer<typeof agentKindSchema>
 
-// Small set: only failures Orca's PTY-typed-command launch can observe (`binary_not_found` = shell ENOENT, `paste_readiness_timeout`, `unknown`).
-// Provider-side errors (auth/rate-limit/network) happen inside the agent CLI subprocess and are invisible to Orca. See telemetry-plan.md §Defer per-incident error fields.
+// Small set: only failures Argus's PTY-typed-command launch can observe (`binary_not_found` = shell ENOENT, `paste_readiness_timeout`, `unknown`).
+// Provider-side errors (auth/rate-limit/network) happen inside the agent CLI subprocess and are invisible to Argus. See telemetry-plan.md §Defer per-incident error fields.
 export const errorClassSchema = z.enum(['binary_not_found', 'paste_readiness_timeout', 'unknown'])
 export type ErrorClass = z.infer<typeof errorClassSchema>
 
@@ -456,7 +456,7 @@ const daemonAuditEligibilitySchema = z.discriminatedUnion('exact_incarnation', [
 ])
 
 // Rollout signal for granting Codex hook trust via codex app-server RPCs
-// instead of Orca's self-computed trusted_hash. `fallback`/`verify_failed`
+// instead of Argus's self-computed trusted_hash. `fallback`/`verify_failed`
 // spikes mean the RPC lane is not taking; steady-state ledger skips are not
 // reported (they would only measure launch volume). `lane` attributes the
 // grant surface (real ~/.codex vs managed home); `error_class`/`verify_class`

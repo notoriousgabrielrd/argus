@@ -1,4 +1,4 @@
-// Launches the copied Orca.exe as the daemon host (ELECTRON_RUN_AS_NODE=1) and
+// Launches the copied Argus.exe as the daemon host (ELECTRON_RUN_AS_NODE=1) and
 // waits for its {type:'ready'} IPC signal. Mirrors the real fork() options in
 // src/main/daemon/daemon-init.ts (detached, ipc channel, ORCA_USER_DATA_PATH).
 

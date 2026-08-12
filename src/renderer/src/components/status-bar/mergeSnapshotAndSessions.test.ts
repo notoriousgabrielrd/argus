@@ -78,7 +78,7 @@ describe('mergeSnapshotAndSessions', () => {
     const browser = {
       id: 'browser-1',
       worktreeId: worktree.id,
-      title: 'Orca docs',
+      title: 'Argus docs',
       url: 'https://docs.orca.dev',
       loading: false,
       faviconUrl: null,
@@ -91,7 +91,7 @@ describe('mergeSnapshotAndSessions', () => {
       null,
       [],
       baseCtx({
-        repoDisplayNameById: new Map([['orca', 'ORCA']]),
+        repoDisplayNameById: new Map([['orca', 'ARGUS']]),
         worktreeById: new Map([[worktree.id, worktree]]),
         browserTabsByWorktree: { [worktree.id]: [browser] }
       })
@@ -99,7 +99,7 @@ describe('mergeSnapshotAndSessions', () => {
 
     expect(out[0]).toMatchObject({
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       worktrees: [
         {
           worktreeId: worktree.id,
@@ -116,7 +116,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 1.5,
       memory: 100_000_000,
       history: [1, 2, 3],
@@ -126,7 +126,7 @@ describe('mergeSnapshotAndSessions', () => {
     expect(out).toHaveLength(1)
     expect(out[0]).toMatchObject({
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 1.5,
       memory: 100_000_000,
       hasRemoteChildren: false
@@ -150,7 +150,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 0.1,
       memory: 50_000_000,
       history: [],
@@ -176,7 +176,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 0.1,
       memory: 50_000_000,
       history: [],
@@ -223,7 +223,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 0.1,
       memory: 50_000_000,
       history: [],
@@ -487,7 +487,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 0.1,
       memory: 1_000,
       history: [],
@@ -511,7 +511,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 0,
       memory: 0,
       history: [],
@@ -549,10 +549,10 @@ describe('mergeSnapshotAndSessions', () => {
       { id: 'stably-ai/orca::/remote/Wt@@1', cwd: '', title: '', agentOwnership: 'absent' as const }
     ]
     const ctx = baseCtx({
-      repoDisplayNameById: new Map([['stably-ai/orca', 'ORCA']])
+      repoDisplayNameById: new Map([['stably-ai/orca', 'ARGUS']])
     })
     const out = mergeSnapshotAndSessions(null, ds, ctx)
-    expect(out[0].repoName).toBe('ORCA')
+    expect(out[0].repoName).toBe('ARGUS')
   })
 
   it('workspaceSessionReady=false suppresses bound flags so nothing looks bound prematurely', () => {
@@ -561,7 +561,7 @@ describe('mergeSnapshotAndSessions', () => {
       worktreeId: 'orca::/Users/me/Triton',
       worktreeName: 'Triton',
       repoId: 'orca',
-      repoName: 'ORCA',
+      repoName: 'ARGUS',
       cpu: 0,
       memory: 0,
       history: [],

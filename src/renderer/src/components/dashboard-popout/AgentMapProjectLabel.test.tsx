@@ -10,7 +10,7 @@ const LAYOUT: AgentMapLayout = {
   projects: [
     {
       id: 'repo-1',
-      name: 'Orca',
+      name: 'Argus',
       x: 120,
       y: 120,
       radius: 96,
@@ -52,9 +52,9 @@ describe('AgentMapScene project labels', () => {
     )
 
     const label = container.querySelector('.agent-map-project-label')!
-    expect(label).toHaveTextContent('ORCA')
+    expect(label).toHaveTextContent('ARGUS')
     expect(label).toHaveClass('agent-map-project-label')
-    expect(label.querySelector('.agent-map-project-name')).toHaveTextContent('ORCA')
+    expect(label.querySelector('.agent-map-project-name')).toHaveTextContent('ARGUS')
     expect(label.querySelector('img')).toHaveAttribute('src', 'data:image/png;base64,AAAA')
     expect(label.firstElementChild?.querySelector('img')).toBeInTheDocument()
     expect(container.querySelector('.agent-map-project-label-frame')).toHaveAttribute('x', '-48')

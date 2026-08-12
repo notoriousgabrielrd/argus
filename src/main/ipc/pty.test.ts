@@ -918,7 +918,7 @@ describe('registerPtyHandlers', () => {
 
     it('answers unknown for remote-scoped ids without consulting local providers', async () => {
       // Why: a locally routed provider would answer confidently — and wrongly —
-      // for a PTY that lives on a remote Orca host.
+      // for a PTY that lives on a remote Argus host.
       setLocalPtyProvider(new LocalPtyProvider())
       const controller = registerAgentClaimController()
 
@@ -1984,7 +1984,7 @@ describe('registerPtyHandlers', () => {
           shellOverride: 'wsl.exe',
           terminalWindowsWslDistro: 'Ubuntu',
           env: {
-            PATH: 'C:\\Orca\\bin;C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps',
+            PATH: 'C:\\Argus\\bin;C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps',
             WSLENV: 'ORCA_TERMINAL_HANDLE/u'
           }
         })
@@ -1992,7 +1992,7 @@ describe('registerPtyHandlers', () => {
 
         expect(file).toBe('wsl.exe')
         expect(options.env.PATH).toBe(
-          'C:\\Orca\\bin;C:\\Windows\\System32;C:\\Python314;C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps'
+          'C:\\Argus\\bin;C:\\Windows\\System32;C:\\Python314;C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps'
         )
         const forwardedKeys = options.env.WSLENV.split(':').map((entry) =>
           entry.split('/')[0]!.toLowerCase()
@@ -2100,7 +2100,7 @@ describe('registerPtyHandlers', () => {
       const env = await spawnAndGetEnv()
       expect(env.TERM).toBe('xterm-256color')
       expect(env.COLORTERM).toBe('truecolor')
-      expect(env.TERM_PROGRAM).toBe('Orca')
+      expect(env.TERM_PROGRAM).toBe('Argus')
     })
 
     it('keeps indexed Git prompt guards in a local agent terminal env', async () => {
@@ -2125,7 +2125,7 @@ describe('registerPtyHandlers', () => {
     })
 
     it('advertises OSC 8 hyperlink support via FORCE_HYPERLINK', async () => {
-      // Why: supports-hyperlinks allowlists TERM_PROGRAM and reports false for Orca, so FORCE_HYPERLINK=1 forces detection on (xterm.js handles OSC 8 natively).
+      // Why: supports-hyperlinks allowlists TERM_PROGRAM and reports false for Argus, so FORCE_HYPERLINK=1 forces detection on (xterm.js handles OSC 8 natively).
       const env = await spawnAndGetEnv()
       expect(env.FORCE_HYPERLINK).toBe('1')
     })
@@ -2140,7 +2140,7 @@ describe('registerPtyHandlers', () => {
       expect(env.TERM_PROGRAM_VERSION).toBe('0.0.0-dev')
     })
 
-    it('injects the selected Codex home into Orca terminal PTYs', async () => {
+    it('injects the selected Codex home into Argus terminal PTYs', async () => {
       const env = await spawnAndGetEnv(undefined, undefined, () => TEST_CODEX_HOME)
       expect(env.CODEX_HOME).toBe(TEST_CODEX_HOME)
       expect(env.ORCA_CODEX_HOME).toBe(TEST_CODEX_HOME)
@@ -2387,7 +2387,7 @@ describe('registerPtyHandlers', () => {
       }
 
       posixOnlyIt(
-        'launches plain codex when a REAL rollout sits under a home Orca no longer trusts',
+        'launches plain codex when a REAL rollout sits under a home Argus no longer trusts',
         async () => {
           // Why: the discriminating case — the rollout exists, so only the trust check can
           // reject it. Falling through would resume it under the selected account.
@@ -2671,7 +2671,7 @@ describe('registerPtyHandlers', () => {
       )
     })
 
-    it('injects the OpenCode hook env into Orca terminal PTYs', async () => {
+    it('injects the OpenCode hook env into Argus terminal PTYs', async () => {
       // Why: clear any ambient OPENCODE_CONFIG_DIR so the mock's value is used
       const env = await spawnAndGetEnv(undefined, { OPENCODE_CONFIG_DIR: undefined })
       expect(openCodeBuildPtyEnvMock).toHaveBeenCalledTimes(1)
@@ -2683,7 +2683,7 @@ describe('registerPtyHandlers', () => {
       expect(env.ORCA_OPENCODE_CONFIG_DIR).toBe(env.OPENCODE_CONFIG_DIR)
     })
 
-    it('mirrors the original OpenCode source dir when launched from an Orca overlay shell', async () => {
+    it('mirrors the original OpenCode source dir when launched from an Argus overlay shell', async () => {
       const env = await spawnAndGetEnv({
         OPENCODE_CONFIG_DIR: '/tmp/parent-orca-opencode-overlay',
         ORCA_OPENCODE_SOURCE_CONFIG_DIR: '/tmp/user-opencode-config'
@@ -2697,7 +2697,7 @@ describe('registerPtyHandlers', () => {
       expect(env.ORCA_OPENCODE_SOURCE_CONFIG_DIR).toBe('/tmp/user-opencode-config')
     })
 
-    it('does not treat inherited Orca OpenCode config as user config without a source dir', async () => {
+    it('does not treat inherited Argus OpenCode config as user config without a source dir', async () => {
       const env = await spawnAndGetEnv({
         OPENCODE_CONFIG_DIR: '/tmp/parent-orca-opencode-overlay',
         ORCA_OPENCODE_CONFIG_DIR: '/tmp/parent-orca-opencode-overlay'
@@ -2709,7 +2709,7 @@ describe('registerPtyHandlers', () => {
       expect(env.ORCA_OPENCODE_SOURCE_CONFIG_DIR).toBeUndefined()
     })
 
-    it('restores user OpenCode config when agent status hooks are disabled in a nested Orca shell', async () => {
+    it('restores user OpenCode config when agent status hooks are disabled in a nested Argus shell', async () => {
       const env = await spawnAndGetEnv(
         {
           OPENCODE_CONFIG_DIR: '/tmp/parent-orca-opencode-overlay',
@@ -2784,7 +2784,7 @@ describe('registerPtyHandlers', () => {
       expect(mimoCodeBuildPtyEnvMock).not.toHaveBeenCalled()
     })
 
-    it('restores user MiMo home when agent status hooks are disabled in a nested Orca shell', async () => {
+    it('restores user MiMo home when agent status hooks are disabled in a nested Argus shell', async () => {
       const env = await spawnAndGetEnv(
         {
           MIMOCODE_HOME: '/tmp/parent-orca-mimocode-overlay',
@@ -2804,7 +2804,7 @@ describe('registerPtyHandlers', () => {
     })
 
     posixOnlyIt(
-      'reproduces issue #1534: GUI-launched Orca mirrors zshrc-only OpenCode config',
+      'reproduces issue #1534: GUI-launched Argus mirrors zshrc-only OpenCode config',
       async () => {
         // Why: the reporter's app didn't inherit OPENCODE_CONFIG_DIR; their interactive zsh later exported a company config repo.
         readFileSyncMock.mockImplementation((path: string) => {
@@ -2836,7 +2836,7 @@ describe('registerPtyHandlers', () => {
       }
     )
 
-    it('installs Pi managed extensions without redirecting Orca terminal PTY homes', async () => {
+    it('installs Pi managed extensions without redirecting Argus terminal PTY homes', async () => {
       const env = await spawnAndGetEnv(undefined, { PI_CODING_AGENT_DIR: '/tmp/user-pi-agent' })
       expect(piBuildPtyEnvMock).toHaveBeenCalledWith(
         expect.any(String),
@@ -2968,7 +2968,7 @@ describe('registerPtyHandlers', () => {
       expect(env.ORCA_PI_SOURCE_AGENT_DIR).toBeUndefined()
     })
 
-    it('mirrors the original Pi source dir when launched from an Orca overlay shell', async () => {
+    it('mirrors the original Pi source dir when launched from an Argus overlay shell', async () => {
       const env = await spawnAndGetEnv({
         PI_CODING_AGENT_DIR: '/tmp/parent-orca-pi-overlay',
         ORCA_PI_SOURCE_AGENT_DIR: '/tmp/user-pi-agent'
@@ -3031,7 +3031,7 @@ describe('registerPtyHandlers', () => {
       expect(env.ORCA_OMP_STATUS_EXTENSION).toBeUndefined()
     })
 
-    it('restores user Pi config when agent status hooks are disabled in a nested Orca shell', async () => {
+    it('restores user Pi config when agent status hooks are disabled in a nested Argus shell', async () => {
       const env = await spawnAndGetEnv(
         {
           PI_CODING_AGENT_DIR: '/tmp/parent-orca-pi-overlay',
@@ -3089,7 +3089,7 @@ describe('registerPtyHandlers', () => {
       }
     )
 
-    it('injects the agent hook receiver env into Orca terminal PTYs', async () => {
+    it('injects the agent hook receiver env into Argus terminal PTYs', async () => {
       const env = await spawnAndGetEnv()
       // Why: buildAgentHookEnv must run exactly once per local spawn (inside shared buildPtyHostEnv); the old ad-hoc double-call is gone.
       expect(buildAgentHookEnvMock).toHaveBeenCalledTimes(1)
@@ -3141,9 +3141,9 @@ describe('registerPtyHandlers', () => {
       }))
 
       expect(env.ORCA_ENABLE_GIT_ATTRIBUTION).toBe('1')
-      expect(env.ORCA_GIT_COMMIT_TRAILER).toBe('Co-authored-by: Orca <help@stably.ai>')
-      expect(env.ORCA_GH_PR_FOOTER).toBe('Made with [Orca](https://github.com/stablyai/orca) 🐋')
-      expect(env.ORCA_GH_ISSUE_FOOTER).toBe('Made with [Orca](https://github.com/stablyai/orca) 🐋')
+      expect(env.ORCA_GIT_COMMIT_TRAILER).toBe('Co-authored-by: Argus <help@stably.ai>')
+      expect(env.ORCA_GH_PR_FOOTER).toBe('Made with [Argus](https://github.com/stablyai/orca) 🐋')
+      expect(env.ORCA_GH_ISSUE_FOOTER).toBe('Made with [Argus](https://github.com/stablyai/orca) 🐋')
       expect(env.PATH).toContain(expectedAttributionShimDir())
     })
 
@@ -4212,11 +4212,11 @@ describe('registerPtyHandlers', () => {
         try {
           const spawnOptions = await daemonSpawnAndGetOptions(
             {},
-            () => 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home',
+            () => 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home',
             undefined,
             {
-              CODEX_HOME: 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home',
-              ORCA_CODEX_HOME: 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home'
+              CODEX_HOME: 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home',
+              ORCA_CODEX_HOME: 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home'
             },
             {
               cwd: '\\\\wsl.localhost\\Ubuntu\\home\\test\\repo',
@@ -4246,11 +4246,11 @@ describe('registerPtyHandlers', () => {
         try {
           const spawnOptions = await daemonSpawnAndGetOptions(
             {},
-            () => 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home',
+            () => 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home',
             undefined,
             {
               CODEX_HOME: 'C:\\Users\\test\\.codex',
-              ORCA_CODEX_HOME: 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home'
+              ORCA_CODEX_HOME: 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home'
             },
             { shellOverride: 'wsl.exe' }
           )
@@ -4415,7 +4415,7 @@ describe('registerPtyHandlers', () => {
           })
           const entries = env.PATH.split(delimiter)
           const shimDir = join('/tmp/orca-user-data', 'linux-orca-cli-shim')
-          // Why: bare `orca` must resolve to the Orca CLI before /usr/bin/orca (the GNOME screen reader) in Orca terminals (#7904).
+          // Why: bare `orca` must resolve to the Argus CLI before /usr/bin/orca (the GNOME screen reader) in Argus terminals (#7904).
           expect(entries.indexOf(shimDir)).toBeGreaterThanOrEqual(0)
           expect(entries.indexOf(shimDir)).toBeLessThan(entries.indexOf('/usr/bin'))
           expect(env.ORCA_CLI_COMMAND).toBeUndefined()
@@ -4889,7 +4889,7 @@ describe('registerPtyHandlers', () => {
           env: {
             PATH: `/tmp/orca-agent-teams-bin${delimiter}/usr/bin`,
             ORCA_AGENT_TEAMS_TEAM_ID: 'team-test',
-            TERM_PROGRAM: 'Orca',
+            TERM_PROGRAM: 'Argus',
             ORCA_ATTRIBUTION_SHIM_DIR: '/tmp/stale-attribution'
           },
           envToDelete: ['TERM_PROGRAM', 'ORCA_ATTRIBUTION_SHIM_DIR']
@@ -4935,7 +4935,7 @@ describe('registerPtyHandlers', () => {
           {
             PATH: `/tmp/orca-agent-teams-bin${delimiter}/usr/bin`,
             ORCA_AGENT_TEAMS_TEAM_ID: 'team-test',
-            TERM_PROGRAM: 'Orca',
+            TERM_PROGRAM: 'Argus',
             ORCA_ATTRIBUTION_SHIM_DIR: '/tmp/stale-attribution'
           },
           undefined,
@@ -5177,7 +5177,7 @@ describe('registerPtyHandlers', () => {
       })
 
       it('does not mutate the caller-provided args.env on the daemon path', async () => {
-        // Why: the handler clones baseEnv so IPC-provided env stays pristine; a regression would leak Orca host env back into the renderer's reused copy.
+        // Why: the handler clones baseEnv so IPC-provided env stays pristine; a regression would leak Argus host env back into the renderer's reused copy.
         const daemonSpawn = setupDaemonAdapter()
         const argsEnv: Record<string, string> = { FOO: 'bar' }
         handlers.clear()
@@ -8187,7 +8187,7 @@ describe('registerPtyHandlers', () => {
         TMUX: '/tmp/orca-claude-agent-teams/team-stale,0,1',
         ORCA_AGENT_TEAMS_TEAM_ID: 'team-stale',
         ORCA_AGENT_TEAMS_TOKEN: 'stale-token',
-        TERM_PROGRAM: 'Orca',
+        TERM_PROGRAM: 'Argus',
         ORCA_ATTRIBUTION_SHIM_DIR: '/tmp/stale-attribution'
       },
       launchConfig: {
@@ -11702,7 +11702,7 @@ describe('registerPtyHandlers', () => {
     expect(runtime.preAllocateHandleForPty).toHaveBeenCalledWith(expect.any(String))
   })
 
-  it('forwards the trusted Orca terminal handle into managed WSL terminals', async () => {
+  it('forwards the trusted Argus terminal handle into managed WSL terminals', async () => {
     const platform = Object.getOwnPropertyDescriptor(process, 'platform')
     Object.defineProperty(process, 'platform', {
       configurable: true,
@@ -11735,7 +11735,7 @@ describe('registerPtyHandlers', () => {
     expect(spawnCall[0]).toBe('wsl.exe')
     expect(env.ORCA_TERMINAL_HANDLE).toBe('term_wsl')
     expect(env.ORCA_USER_DATA_PATH).toBe('/tmp/orca-user-data')
-    expect(env.ORCA_CLI_COMMAND).toBe('orca-ide')
+    expect(env.ORCA_CLI_COMMAND).toBe('argus-ide')
     expect(env.WSLENV?.split(':')).toEqual(
       expect.arrayContaining([
         'ORCA_TERMINAL_HANDLE/u',
@@ -12167,7 +12167,7 @@ describe('registerPtyHandlers', () => {
       registerPtyHandlers(
         mainWindow as never,
         undefined,
-        () => 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home',
+        () => 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home',
         () =>
           ({
             terminalWindowsShell: 'wsl.exe',
@@ -12189,7 +12189,7 @@ describe('registerPtyHandlers', () => {
       registerPtyHandlers(
         mainWindow as never,
         undefined,
-        () => 'C:\\Users\\test\\AppData\\Roaming\\Orca\\codex-runtime-home\\home',
+        () => 'C:\\Users\\test\\AppData\\Roaming\\Argus\\codex-runtime-home\\home',
         () =>
           ({
             terminalWindowsShell: 'powershell.exe',

@@ -124,7 +124,7 @@ function spawnShellAndReadPath(shell: string): Promise<HydrationResult> {
       // Why: inherit current env so the shell sees the same baseline, then let
       // it layer its own rc files on top. Do NOT forward stdio — some shells
       // (oh-my-zsh setups, powerlevel10k) print a lot to stderr on startup,
-      // and we don't want that in Orca's console.
+      // and we don't want that in Argus's console.
       env: process.env,
       stdio: ['ignore', 'pipe', 'ignore'],
       detached: false,

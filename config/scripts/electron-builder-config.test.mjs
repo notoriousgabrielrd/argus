@@ -92,8 +92,8 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.mac.extraResources).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          from: 'native/computer-use-macos/.build/release/Orca Computer Use.app',
-          to: 'Orca Computer Use.app'
+          from: 'native/computer-use-macos/.build/release/Argus Computer Use.app',
+          to: 'Argus Computer Use.app'
         })
       ])
     )
@@ -213,11 +213,11 @@ describe('electron-builder config', () => {
 
   it('uses AppImage and deb as local Linux targets without changing existing artifact names', () => {
     expect(electronBuilderConfig.linux.target).toEqual(['AppImage', 'deb'])
-    expect(electronBuilderConfig.appImage.artifactName).toBe('orca-linux.${ext}')
-    expect(electronBuilderConfig.deb.artifactName).toBe('orca-ide_${version}_${arch}.${ext}')
+    expect(electronBuilderConfig.appImage.artifactName).toBe('argus-linux.${ext}')
+    expect(electronBuilderConfig.deb.artifactName).toBe('argus-ide_${version}_${arch}.${ext}')
     expect(electronBuilderConfig.rpm).toMatchObject({
-      packageName: 'orca-ide',
-      artifactName: 'orca-ide-${version}.${arch}.${ext}'
+      packageName: 'argus-ide',
+      artifactName: 'argus-ide-${version}.${arch}.${ext}'
     })
   })
 
@@ -228,7 +228,7 @@ describe('electron-builder config', () => {
       delete require.cache[configPath]
       process.env.ORCA_LINUX_ARM64_RELEASE = '1'
       expect(require('../electron-builder.config.cjs').appImage.artifactName).toBe(
-        'orca-linux-arm64.${ext}'
+        'argus-linux-arm64.${ext}'
       )
     } finally {
       if (original === undefined) {
@@ -293,7 +293,7 @@ describe('electron-builder config', () => {
     }
   })
 
-  it('uses Orca native rebuild hook instead of electron-builder default rebuild', () => {
+  it('uses Argus native rebuild hook instead of electron-builder default rebuild', () => {
     expect(electronBuilderConfig.beforeBuild).toBe(electronBuilderNativeRebuild)
     expect(electronBuilderConfig.npmRebuild).toBe(true)
   })
@@ -530,7 +530,7 @@ describe('electron-builder config', () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-electron-builder-config-'))
       try {
         const resourcesDir = join(root, 'linux-unpacked', 'resources')
-        const launcherPath = join(resourcesDir, 'bin', 'orca-ide')
+        const launcherPath = join(resourcesDir, 'bin', 'argus-ide')
         await mkdir(join(resourcesDir, 'bin'), { recursive: true })
         await cp(
           join(process.cwd(), 'resources', 'plugins', 'launch'),

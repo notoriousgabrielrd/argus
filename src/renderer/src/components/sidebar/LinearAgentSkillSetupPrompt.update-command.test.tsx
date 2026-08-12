@@ -59,7 +59,7 @@ function cliStatus(): CliInstallStatus {
     commandPath: null,
     pathDirectory: null,
     pathConfigured: false,
-    launcherPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+    launcherPath: '/Applications/Argus.app/Contents/MacOS/Argus',
     installMethod: null,
     supported: true,
     state: 'not_installed',

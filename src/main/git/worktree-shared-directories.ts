@@ -44,7 +44,7 @@ export function clearConfiguredWorktreeSharedDirectoriesCacheForTests(): void {
   configuredSharedDirectoriesByRepoPath.clear()
 }
 
-/** Every path Orca may have symlinked into a worktree: the per-user Worktree
+/** Every path Argus may have symlinked into a worktree: the per-user Worktree
  *  Shared Paths setting plus the repo's `orca.yaml` shared directories.
  *
  *  Callers pair this with `findExistingWorktreeSymlinkPaths`, which keeps only

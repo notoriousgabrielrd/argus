@@ -269,7 +269,7 @@ describe('skill discovery', () => {
     const linkedSkill = join(home, '.agents', 'skills', 'orca-cli')
     await mkdir(realSkill, { recursive: true })
     await mkdir(join(home, '.agents', 'skills'), { recursive: true })
-    await writeFile(join(realSkill, 'SKILL.md'), '# Orca CLI\n\nUse the Orca CLI.')
+    await writeFile(join(realSkill, 'SKILL.md'), '# Argus CLI\n\nUse the Argus CLI.')
     await symlink(realSkill, linkedSkill, process.platform === 'win32' ? 'junction' : 'dir')
 
     const result = await discoverSkills({
@@ -277,7 +277,7 @@ describe('skill discovery', () => {
       cwd: join(root, 'missing-cwd')
     })
 
-    const skill = result.skills.find((entry) => entry.name === 'Orca CLI')
+    const skill = result.skills.find((entry) => entry.name === 'Argus CLI')
     expect(skill?.sourceKind).toBe('home')
     expect(skill?.directoryPath).toBe(linkedSkill)
   })
@@ -337,7 +337,7 @@ describe('skill discovery', () => {
     await mkdir(skillDir, { recursive: true })
     await writeFile(
       join(skillDir, 'SKILL.md'),
-      ['---', 'name: orca-cli', 'description: Use the Orca CLI.', '---', ''].join('\n')
+      ['---', 'name: orca-cli', 'description: Use the Argus CLI.', '---', ''].join('\n')
     )
 
     const result = await discoverSkills({

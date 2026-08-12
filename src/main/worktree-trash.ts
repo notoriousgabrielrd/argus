@@ -152,7 +152,7 @@ async function collectExistingTrashRoots(workspaceRoots: readonly string[]): Pro
   return [...trashRoots]
 }
 
-/** Workspace roots of local git repos — the only places Orca creates worktree trash. */
+/** Workspace roots of local git repos — the only places Argus creates worktree trash. */
 export function collectWorktreeTrashSweepRoots(
   repos: readonly Repo[],
   settings: Pick<GlobalSettings, 'workspaceDir' | 'nestWorkspaces'>

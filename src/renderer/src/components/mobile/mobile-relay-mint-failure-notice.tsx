@@ -36,12 +36,12 @@ export function MobileRelayMintFailureNotice({
   const title = visibleBusy
     ? translate(
         'auto.components.mobile.MobileRelayMintFailureNotice.retryingTitle',
-        'Retrying Orca Relay…'
+        'Retrying Argus Relay…'
       )
     : providerMissing
       ? translate(
           'auto.components.mobile.MobileRelayMintFailureNotice.unavailableTitle',
-          'Orca Relay isn’t available on this desktop.'
+          'Argus Relay isn’t available on this desktop.'
         )
       : translate(
           'auto.components.mobile.MobileRelayMintFailureNotice.title',

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Orca daemon cold-start benchmark (Windows-focused).
+ * Argus daemon cold-start benchmark (Windows-focused).
  *
  * Reproduces the "daemon was force-killed / machine rebooted" launch path:
  * every daemon pid file (current protocol + all legacy versions) is planted

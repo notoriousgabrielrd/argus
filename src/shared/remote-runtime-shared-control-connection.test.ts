@@ -702,7 +702,7 @@ describe('RemoteRuntimeSharedControlConnection', () => {
     const connection = new RemoteRuntimeSharedControlConnection(server.pairing)
 
     await expect(connection.request('worktree.ps', undefined, 1000)).rejects.toThrow(
-      'Remote Orca runtime closed the connection'
+      'Remote Argus runtime closed the connection'
     )
     expect(connection.getDiagnostics()).toMatchObject({
       state: 'closed',

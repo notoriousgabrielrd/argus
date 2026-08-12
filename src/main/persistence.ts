@@ -341,7 +341,7 @@ function retireLegacyInstructionsForClearedTextActionRecipes(
 }
 
 // Why capture once (not a module const, not per-call): a const resolves before configureDevUserDataPath() redirects userData (dev/prod collide);
-// per-call resolves after app.setName('Orca') flips path case and loses data on case-sensitive FS. index.ts calls initDataPath() at the right moment.
+// per-call resolves after app.setName('Argus') flips path case and loses data on case-sensitive FS. index.ts calls initDataPath() at the right moment.
 let _dataFile: string | null = null
 let _userDataDir: string | null = null
 
@@ -367,7 +367,7 @@ function getGithubCacheFile(dataFile = getDataFile()): string {
   return join(dirname(dataFile), 'orca-github-cache.json')
 }
 
-// Why: worktrees deleted outside Orca orphan their worktreeMeta, so the map grew monotonically (63% dead on a heavy install).
+// Why: worktrees deleted outside Argus orphan their worktreeMeta, so the map grew monotonically (63% dead on a heavy install).
 // GC stays narrow: local-host entries only (a local existsSync would falsely condemn SSH/WSL remote paths) and only after a 30-day idle grace.
 const WORKTREE_META_GC_GRACE_MS = 30 * 24 * 60 * 60 * 1000
 const STALE_DURABLE_WRITE_TEMP_AGE_MS = 24 * 60 * 60 * 1000
@@ -3056,7 +3056,7 @@ export class Store {
   }
 
   private load(allowBackupRecovery = true): PersistedState {
-    // Capture "has run Orca before?" for telemetry cohort; the telemetry field is new, so field inference misclassifies old users as fresh.
+    // Capture "has run Argus before?" for telemetry cohort; the telemetry field is new, so field inference misclassifies old users as fresh.
     const dataFile = this.dataFile
     const fileExistedOnLoad = existsSync(dataFile)
     logPersistenceStartupMilestone('persistence-load-start', {

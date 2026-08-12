@@ -18,8 +18,8 @@ export function getTerminalFileOpenHint(showActions = true): string {
 export function getTerminalOrcaFileOpenHint(showActions = true): string {
   const prefix = showActions ? 'Click for actions or ' : ''
   return isMacPlatform()
-    ? `${prefix}⌘+click to open in Orca`
-    : `${prefix}Ctrl+click to open in Orca`
+    ? `${prefix}⌘+click to open in Argus`
+    : `${prefix}Ctrl+click to open in Argus`
 }
 
 // Why: local HTML paths keep Shift+modifier as the system-browser shortcut.
@@ -36,8 +36,8 @@ export type TerminalUrlOpenHintOptions = {
   showActions?: boolean
 }
 
-// Why: openHttpLink only routes to Orca when the source is local, so a remote pane
-// pins every link to the system browser and inverting cannot reach Orca there. The
+// Why: openHttpLink only routes to Argus when the source is local, so a remote pane
+// pins every link to the system browser and inverting cannot reach Argus there. The
 // clicked pane's owner decides that, not the global active runtime — a workspace-bound
 // remote pane is remote even when no runtime is globally active.
 export function terminalUrlOpenHintOptionsFor(
@@ -67,8 +67,8 @@ export function getTerminalUrlOpenHint(options: TerminalUrlOpenHintOptions = {})
   const prefix = terminalLinkActionHintPrefix(options.showActions !== false)
   if (invertsToOrca) {
     return isMacPlatform()
-      ? `${prefix}⌘+click to open, or ⇧⌘+click to open in Orca`
-      : `${prefix}Ctrl+click to open, or Shift+Ctrl+click to open in Orca`
+      ? `${prefix}⌘+click to open, or ⇧⌘+click to open in Argus`
+      : `${prefix}Ctrl+click to open, or Shift+Ctrl+click to open in Argus`
   }
   return isMacPlatform()
     ? `${prefix}⌘+click to open, or ⇧⌘+click for system browser`
@@ -82,7 +82,7 @@ export function getTerminalUrlSystemBrowserHint(): string {
 // Why: the mirror of the system-browser hint for surfaces where inverting sends the
 // modifier the other way; a plain click there already opens the system browser.
 export function getTerminalUrlOrcaBrowserHint(): string {
-  return isMacPlatform() ? '⇧⌘+click to open in Orca' : 'Shift+Ctrl+click to open in Orca'
+  return isMacPlatform() ? '⇧⌘+click to open in Argus' : 'Shift+Ctrl+click to open in Argus'
 }
 
 export function getTerminalWorktreePathOpenHint(

@@ -221,7 +221,7 @@ async function hasUncommittedChanges(
   return await anyRecordIsUserDirt(repoPath, records, options.sharedLinkPaths ?? [])
 }
 
-/** True when any record is real user work rather than a shared symlink Orca put
+/** True when any record is real user work rather than a shared symlink Argus put
  *  in the worktree.
  *
  *  Fails closed on purpose: anything not positively identified as an Orca-owned
@@ -469,7 +469,7 @@ async function validateCurrentBranchCanCreateReview(
       return {
         ok: false,
         code: 'validation',
-        error: `Create ${copy.shortLabel} failed: Orca could not confirm whether this branch already has a ${copy.reviewLabel}. Retry once the ${copy.providerName} lookup succeeds.`
+        error: `Create ${copy.shortLabel} failed: Argus could not confirm whether this branch already has a ${copy.reviewLabel}. Retry once the ${copy.providerName} lookup succeeds.`
       }
     }
     // Why: renderer eligibility can be stale by submit time; main process is the last gate before an out-of-date create.
@@ -521,7 +521,7 @@ export async function getHostedReviewCreationEligibility(
       linkedGiteaPR: args.linkedGiteaPR ?? null,
       connectionId: args.connectionId ?? null,
       // Why: eligibility is only ever asked for the worktree the user is acting
-      // on, so it earns the fast tier. Without it a review opened outside Orca
+      // on, so it earns the fast tier. Without it a review opened outside Argus
       // in the last no-review interval would leave Create enabled (#11532).
       active: true,
       ...hostedReviewExecutionContext(args)
@@ -658,7 +658,7 @@ export async function createHostedReview(
       : await provider.createReview(repoPath, input, connectionId)
   if (result.ok) {
     // Why (#11532): the branch cache holds a "no review" answer for far longer
-    // than a poll interval, so Orca's own creation must retire it at once.
+    // than a poll interval, so Argus's own creation must retire it at once.
     invalidateHostedReviewBranchCache(repoPath, connectionId)
   }
   return result

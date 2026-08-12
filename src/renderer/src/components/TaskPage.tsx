@@ -8242,7 +8242,7 @@ export default function TaskPage(): React.JSX.Element {
           setLinearError(
             translate(
               'auto.components.TaskPage.linearHasWorktreeLoadFailed',
-              'Unable to load Linear issues linked to an Orca workspace.'
+              'Unable to load Linear issues linked to an Argus workspace.'
             )
           )
           setLinearIssues([])
@@ -8253,7 +8253,7 @@ export default function TaskPage(): React.JSX.Element {
           setLinearError(
             translate(
               'auto.components.TaskPage.linearHasWorktreePartialLoadFailed',
-              'Some Linear issues linked to an Orca workspace could not be loaded. Refresh to try again.'
+              'Some Linear issues linked to an Argus workspace could not be loaded. Refresh to try again.'
             )
           )
         }
@@ -9447,7 +9447,7 @@ export default function TaskPage(): React.JSX.Element {
                                 <TooltipContent side="bottom" sideOffset={6}>
                                   {translate(
                                     'auto.components.TaskPage.linearModeHasWorktreeTooltip',
-                                    'Linear tickets linked to an Orca workspace'
+                                    'Linear tickets linked to an Argus workspace'
                                   )}
                                 </TooltipContent>
                               </Tooltip>
@@ -9626,7 +9626,7 @@ export default function TaskPage(): React.JSX.Element {
                               linearMode === 'in-orca'
                                 ? translate(
                                     'auto.components.TaskPage.linearHasWorktreeSearchPlaceholder',
-                                    'Filter issues linked to an Orca workspace...'
+                                    'Filter issues linked to an Argus workspace...'
                                   )
                                 : translate(
                                     'auto.components.TaskPage.eec0c5c079',
@@ -10091,7 +10091,7 @@ export default function TaskPage(): React.JSX.Element {
                 ) : null}
 
                 {!tasksError && githubUnavailable ? (
-                  // Why: name the GitHub outage explicitly so an empty list isn't misread as an Orca bug; takes priority over the count banner.
+                  // Why: name the GitHub outage explicitly so an empty list isn't misread as an Argus bug; takes priority over the count banner.
                   <div
                     role="alert"
                     className="border-b border-border/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
@@ -11457,7 +11457,7 @@ export default function TaskPage(): React.JSX.Element {
                           }
                           return translate(
                             'auto.components.TaskPage.linearEmptyHasWorktree',
-                            'No Linear tickets are linked to an Orca workspace yet. Start work from a Linear issue to see it here.'
+                            'No Linear tickets are linked to an Argus workspace yet. Start work from a Linear issue to see it here.'
                           )
                         }
                         const emptyKind = resolveLinearIssueEmptyKind({

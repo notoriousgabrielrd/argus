@@ -398,7 +398,7 @@ describe('completed background-worker retirement resume matrix', () => {
       ownedRecord
     )
 
-    // Case 2: the renderer boundary used by an explicit Orca close retires the exact authority.
+    // Case 2: the renderer boundary used by an explicit Argus close retires the exact authority.
     seedWorkspace()
     recordCompletedWorker()
     closeTerminalTab(ORIGINAL_TAB_ID, {

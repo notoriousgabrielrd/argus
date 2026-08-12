@@ -168,7 +168,7 @@ describe('buildDispatchPreamble', () => {
   })
 
   it('uses orca-dev CLI when devMode is true', () => {
-    const result = buildDispatchPreamble(baseParams({ devMode: true, cliCommand: 'orca-ide' }))
+    const result = buildDispatchPreamble(baseParams({ devMode: true, cliCommand: 'argus-ide' }))
     expect(result).toContain('orca-dev orchestration send')
     expect(result).toContain('orca-dev orchestration check')
     expect(result).toContain('orca-dev orchestration ask')
@@ -184,12 +184,12 @@ describe('buildDispatchPreamble', () => {
     expect(result).toContain('orca orchestration check')
   })
 
-  it('uses the exact orca-ide command for packaged WSL workers', () => {
-    const result = buildDispatchPreamble(baseParams({ cliCommand: 'orca-ide' }))
+  it('uses the exact argus-ide command for packaged WSL workers', () => {
+    const result = buildDispatchPreamble(baseParams({ cliCommand: 'argus-ide' }))
 
-    expect(result).toContain('orca-ide orchestration send')
-    expect(result).toContain('orca-ide orchestration check')
-    expect(result).toContain('orca-ide orchestration ask')
+    expect(result).toContain('argus-ide orchestration send')
+    expect(result).toContain('argus-ide orchestration check')
+    expect(result).toContain('argus-ide orchestration ask')
     expect(result).not.toMatch(/(^|\s)orca orchestration/m)
   })
 

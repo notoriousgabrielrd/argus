@@ -3,23 +3,23 @@ import { describe, expect, it } from 'vitest'
 import { repairTranslatedValue } from './locale-translation-policy.mjs'
 
 describe('locale-translation-policy zh round 5', () => {
-  it('fixes brand spacing, hosted review, and Orca Mobile regressions', () => {
+  it('fixes brand spacing, hosted review, and Argus Mobile regressions', () => {
     expect(
       repairTranslatedValue({
         key: 'auto.components.stats.ShareUsageCard.0eb31e79ee',
-        enValue: 'Orca IDE',
-        localeValue: 'Orca集成开发环境',
+        enValue: 'Argus IDE',
+        localeValue: 'Argus集成开发环境',
         locale: 'zh'
       })
-    ).toBe('Orca IDE')
+    ).toBe('Argus IDE')
     expect(
       repairTranslatedValue({
         key: 'auto.components.settings.ShortcutsPane.2a0e8aeccf',
-        enValue: 'Orca first',
-        localeValue: 'Orca第一',
+        enValue: 'Argus first',
+        localeValue: 'Argus第一',
         locale: 'zh'
       })
-    ).toBe('Orca 优先')
+    ).toBe('Argus 优先')
     expect(
       repairTranslatedValue({
         key: 'auto.components.settings.CommitMessageAiPane.2dafc7646e',
@@ -39,19 +39,19 @@ describe('locale-translation-policy zh round 5', () => {
     expect(
       repairTranslatedValue({
         key: 'menu.showMobileButton',
-        enValue: 'Show Orca Mobile Button',
-        localeValue: '显示 Orca 移动按钮',
+        enValue: 'Show Argus Mobile Button',
+        localeValue: '显示 Argus 移动按钮',
         locale: 'zh'
       })
-    ).toBe('显示 Orca Mobile 按钮')
+    ).toBe('显示 Argus Mobile 按钮')
     expect(
       repairTranslatedValue({
         key: 'auto.components.settings.GitPane.e02ea23a32',
-        enValue: 'Orca Attribution',
-        localeValue: 'Orca归属',
+        enValue: 'Argus Attribution',
+        localeValue: 'Argus归属',
         locale: 'zh'
       })
-    ).toBe('Orca 归因')
+    ).toBe('Argus 归因')
     expect(
       repairTranslatedValue({
         key: 'auto.hooks.useSettingsNavigationMetadata.ab4b21b58e',
@@ -185,12 +185,12 @@ describe('locale-translation-policy zh round 5', () => {
       repairTranslatedValue({
         key: 'auto.store.slices.worktrees.d1d78a7baa',
         enValue:
-          'Git could not safely delete branch "{{value0}}"{{value1}}, so Orca kept it to avoid losing local commits.',
+          'Git could not safely delete branch "{{value0}}"{{value1}}, so Argus kept it to avoid losing local commits.',
         localeValue:
-          'Git 无法安全删除分支“{{value0}}”{{value1}}，因此 Orca 保留它以避免丢失本地提交。',
+          'Git 无法安全删除分支“{{value0}}”{{value1}}，因此 Argus 保留它以避免丢失本地提交。',
         locale: 'zh'
       })
-    ).toBe('Git 无法安全删除分支“{{value0}}”{{value1}}，因此 Orca 保留它以避免丢失本地提交。')
+    ).toBe('Git 无法安全删除分支“{{value0}}”{{value1}}，因此 Argus 保留它以避免丢失本地提交。')
   })
 
   it('does not confuse proxy copy with Agent terminology', () => {

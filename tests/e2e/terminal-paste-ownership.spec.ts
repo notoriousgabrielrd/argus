@@ -337,7 +337,7 @@ test.describe('terminal paste ownership', () => {
       `mixed-newline-before\r\nlf-line\ncrlf-line\r\n${sentinel}`
     ].join('\n')
     // Why: xterm translates clipboard line endings to terminal Enter bytes;
-    // Orca's direct Windows bracketed-paste path must produce the same bytes.
+    // Argus's direct Windows bracketed-paste path must produce the same bytes.
     const terminalText = payload.replace(/\r?\n/g, '\r')
     const scriptPath = path.join(testRepoPath, `.orca-paste-multiline-${runId}.mjs`)
     writeFileSync(scriptPath, pasteCollectScript(runId, sentinel, terminalText))

@@ -596,7 +596,7 @@ export class AgentHookServer {
   private server: ReturnType<typeof createServer> | null = null
   private port = 0
   private token = ''
-  // Why: identifies this Orca instance so the server can detect dev vs. prod cross-talk; set at start() from packaged-build knowledge.
+  // Why: identifies this Argus instance so the server can detect dev vs. prod cross-talk; set at start() from packaged-build knowledge.
   private env = 'production'
   private onAgentStatus: ((payload: EnrichedAgentHookEventPayload) => void) | null = null
   private onClaudeStatusLine: ((event: ClaudeStatusLineRateLimits) => void) | null = null
@@ -2217,7 +2217,7 @@ export class AgentHookServer {
       clearTimeout(timer)
     }
     this.codexSubagentPollTimers.clear()
-    // Why: don't unlink the endpoint file — a stale file matches fail-open and avoids a TOCTOU race with a concurrent Orca.
+    // Why: don't unlink the endpoint file — a stale file matches fail-open and avoids a TOCTOU race with a concurrent Argus.
     this.endpointDir = null
     this.endpointFilePathCache = null
     this.endpointFileWritten = false
@@ -2451,7 +2451,7 @@ export class AgentHookServer {
   }
 
   /** Second reap path for restored Claude subagent rows: drop the ones whose pane
-   *  has no live local agent process behind it any more. A PTY that dies while Orca
+   *  has no live local agent process behind it any more. A PTY that dies while Argus
    *  is down never runs the teardown that clears pane state, so hydrate rebuilds a
    *  roster nothing can ever retire — the inventory reap needs the parent to emit a
    *  complete `background_tasks` list and an idle parent never does. The row then

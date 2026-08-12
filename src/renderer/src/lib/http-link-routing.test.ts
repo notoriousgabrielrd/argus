@@ -59,7 +59,7 @@ afterEach(() => {
 })
 
 describe('openHttpLink', () => {
-  it('routes into Orca when openLinksInApp is on and a worktree is known', () => {
+  it('routes into Argus when openLinksInApp is on and a worktree is known', () => {
     storeState.settings = { openLinksInApp: true }
 
     openHttpLink('https://example.com/', { worktreeId: 'wt-1' })
@@ -80,7 +80,7 @@ describe('openHttpLink', () => {
     expect(createBrowserTabMock).not.toHaveBeenCalled()
   })
 
-  it('routes floating workspace links into Orca without changing the active repo worktree', () => {
+  it('routes floating workspace links into Argus without changing the active repo worktree', () => {
     storeState.settings = { openLinksInApp: true }
 
     openHttpLink('https://example.com/', { worktreeId: FLOATING_TERMINAL_WORKTREE_ID })
@@ -103,7 +103,7 @@ describe('openHttpLink', () => {
     expect(createBrowserTabMock).not.toHaveBeenCalled()
   })
 
-  it('forceInApp opens a local link in Orca when the setting is off', () => {
+  it('forceInApp opens a local link in Argus when the setting is off', () => {
     storeState.settings = { openLinksInApp: false }
 
     openHttpLink('https://example.com/', {
@@ -118,7 +118,7 @@ describe('openHttpLink', () => {
     expect(openUrlMock).not.toHaveBeenCalled()
   })
 
-  it('does not force a remote link into the Orca browser', () => {
+  it('does not force a remote link into the Argus browser', () => {
     storeState.settings = { openLinksInApp: false }
 
     openHttpLink('https://example.com/', {
@@ -175,7 +175,7 @@ describe('openHttpLink', () => {
 
   // Why: runtimes bind per workspace, so activeRuntimeEnvironmentId is commonly
   // null while a pane is remote — ownership must come from the click source.
-  it('keeps a runtime-owned link out of Orca when no runtime is globally active', () => {
+  it('keeps a runtime-owned link out of Argus when no runtime is globally active', () => {
     storeState.settings = { openLinksInApp: true, activeRuntimeEnvironmentId: null }
 
     openHttpLink('https://example.com/', {
@@ -509,7 +509,7 @@ describe('openHttpLink', () => {
 })
 
 describe('openHttpLink modifier routing', () => {
-  it('forces the system browser when inverting is off and links open in Orca', () => {
+  it('forces the system browser when inverting is off and links open in Argus', () => {
     storeState.settings = { openLinksInApp: true, openLinksInAppModifierInverts: false }
 
     openHttpLink('https://example.com/', { worktreeId: 'wt-1', modifierHeld: true })
@@ -529,7 +529,7 @@ describe('openHttpLink modifier routing', () => {
     expect(createBrowserTabMock).not.toHaveBeenCalled()
   })
 
-  it('opens in Orca when inverting is on and links open externally', () => {
+  it('opens in Argus when inverting is on and links open externally', () => {
     storeState.settings = { openLinksInApp: false, openLinksInAppModifierInverts: true }
 
     openHttpLink('https://example.com/', { worktreeId: 'wt-1', modifierHeld: true })
@@ -541,7 +541,7 @@ describe('openHttpLink modifier routing', () => {
     expect(openUrlMock).not.toHaveBeenCalled()
   })
 
-  it('opens in the system browser when inverting is on and links open in Orca', () => {
+  it('opens in the system browser when inverting is on and links open in Argus', () => {
     storeState.settings = { openLinksInApp: true, openLinksInAppModifierInverts: true }
 
     openHttpLink('https://example.com/', { worktreeId: 'wt-1', modifierHeld: true })
@@ -559,8 +559,8 @@ describe('openHttpLink modifier routing', () => {
     expect(createBrowserTabMock).not.toHaveBeenCalled()
   })
 
-  // Why: remote-owned links must never land in an Orca tab that cannot reach them.
-  it('never routes a remote source into Orca even when inverting', () => {
+  // Why: remote-owned links must never land in an Argus tab that cannot reach them.
+  it('never routes a remote source into Argus even when inverting', () => {
     storeState.settings = { openLinksInApp: false, openLinksInAppModifierInverts: true }
 
     openHttpLink('https://example.com/', {

@@ -14,7 +14,7 @@ export function buildSshArgs(target: SshTarget, options?: SystemSshBuildArgsOpti
   args.push('-o', options?.gssapiOnly ? 'BatchMode=yes' : 'BatchMode=no')
   if (options?.gssapiOnly) {
     // Why: the probe must neither authenticate with a key nor open an OpenSSH
-    // credential prompt; failure belongs to Orca's existing ssh2 prompt path.
+    // credential prompt; failure belongs to Argus's existing ssh2 prompt path.
     args.push('-o', 'GSSAPIAuthentication=yes')
     args.push('-o', 'PreferredAuthentications=gssapi-with-mic')
   }
@@ -118,7 +118,7 @@ function shouldDisableOrcaControlMaster(
   target: SshTarget,
   options?: SystemSshBuildArgsOptions
 ): boolean {
-  // Why: unresolved ssh_config aliases could otherwise share one Orca socket
+  // Why: unresolved ssh_config aliases could otherwise share one Argus socket
   // while OpenSSH routes them through mutable HostName/ProxyJump settings.
   const unresolvedConfigBackedTarget =
     isOpenSshConfigBackedTarget(target) && options?.resolvedConfig == null
@@ -138,7 +138,7 @@ function hasUserConfiguredControlMaster(
     return false
   }
   // Why: ControlPersist/ControlPath alone can reuse a master someone else
-  // created, but they do not create the setup-burst master Orca needs.
+  // created, but they do not create the setup-burst master Argus needs.
   return (
     hasEnabledControlMaster(resolvedConfig.controlMaster) &&
     hasEnabledControlPath(resolvedConfig.controlPath)

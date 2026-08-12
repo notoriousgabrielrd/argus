@@ -21,7 +21,7 @@ import {
 
 const MANAGED_MARKER = getWslLauncherMarker()
 const BRIDGE_MANAGED_MARKER = getWslBridgeMarker()
-const WSL_COMMAND_NAME = 'orca-ide'
+const WSL_COMMAND_NAME = 'argus-ide'
 const LEGACY_WSL_COMMAND_NAME = 'orca'
 const WSL_COMMAND_TIMEOUT_MS = 10_000
 
@@ -74,7 +74,7 @@ export class WslCliInstaller {
         state: 'not_installed',
         currentTarget: null,
         pathConfigured: ready.pathConfigured,
-        detail: `Register ${ready.commandPath} to use Orca from WSL.`
+        detail: `Register ${ready.commandPath} to use Argus from WSL.`
       })
     }
 
@@ -86,7 +86,7 @@ export class WslCliInstaller {
         state: 'conflict',
         currentTarget: null,
         pathConfigured: ready.pathConfigured,
-        detail: `${ready.commandPath} exists but is not an Orca launcher script.`
+        detail: `${ready.commandPath} exists but is not an Argus launcher script.`
       })
     }
 
@@ -123,7 +123,7 @@ export class WslCliInstaller {
         detail:
           bridgeContent === null || bridgeManaged
             ? `${ready.commandPath} is missing its PowerShell bridge.`
-            : `${ready.bridgePath} exists but is not managed by Orca.`
+            : `${ready.bridgePath} exists but is not managed by Argus.`
       })
     }
 
@@ -139,10 +139,10 @@ export class WslCliInstaller {
       currentTarget,
       pathConfigured: ready.pathConfigured,
       detail: !managed
-        ? `${ready.commandPath} exists but is not managed by Orca.`
+        ? `${ready.commandPath} exists but is not managed by Argus.`
         : bridgeConflict
-          ? `${ready.bridgePath} exists but is not managed by Orca.`
-          : `${ready.commandPath} points to a different Orca launcher.`
+          ? `${ready.bridgePath} exists but is not managed by Argus.`
+          : `${ready.commandPath} points to a different Argus launcher.`
     })
   }
 
@@ -262,7 +262,7 @@ export class WslCliInstaller {
         `mv -f "$command_tmp" ${quoteShell(status.commandPath)}`,
         'committed=1',
         'rm -f "$bridge_backup"',
-        // Why: the command was renamed to avoid GNOME Orca; remove only the
+        // Why: the command was renamed to avoid GNOME Argus; remove only the
         // old Orca-managed WSL wrapper after the replacement has committed.
         buildManagedLegacyRemoveCommand('"$legacy_command_path"'),
         'trap - EXIT'
@@ -328,7 +328,7 @@ export class WslCliInstaller {
       return {
         status: this.unsupported(
           hostStatus.unsupportedReason ?? 'launcher_missing',
-          hostStatus.detail ?? 'The Windows Orca CLI launcher is missing.'
+          hostStatus.detail ?? 'The Windows Argus CLI launcher is missing.'
         )
       }
     }
@@ -351,13 +351,13 @@ export class WslCliInstaller {
       return {
         status: this.unsupported(
           'launcher_missing',
-          'WSL Windows interop is unavailable; Orca cannot launch the Windows CLI from WSL.'
+          'WSL Windows interop is unavailable; Argus cannot launch the Windows CLI from WSL.'
         )
       }
     }
 
     const pathDirectory = `${home}/.local/bin`
-    // Why: matches the Linux CLI rename to `orca-ide` (avoids GNOME Orca conflict).
+    // Why: matches the Linux CLI rename to `argus-ide` (avoids GNOME Argus conflict).
     const commandPath = `${pathDirectory}/${WSL_COMMAND_NAME}`
     const pathConfigured =
       (

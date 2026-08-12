@@ -120,7 +120,7 @@ function repo(overrides: Partial<Repo> = {}): Repo {
   return {
     id: 'repo-local',
     path: '/local/orca',
-    displayName: 'Orca',
+    displayName: 'Argus',
     badgeColor: '#737373',
     addedAt: 1,
     ...overrides
@@ -343,7 +343,7 @@ describe('GitLab IPC handlers', () => {
     const projects: ReturnType<Store['getProjects']> = [
       {
         id: 'project-1',
-        displayName: 'Orca',
+        displayName: 'Argus',
         badgeColor: 'blue',
         sourceRepoIds: ['repo-local'],
         localWindowsRuntimePreference: { kind: 'wsl', distro: 'Ubuntu' },
@@ -491,7 +491,7 @@ describe('GitLab IPC handlers', () => {
     const projects: ReturnType<Store['getProjects']> = [
       {
         id: 'project-1',
-        displayName: 'Orca',
+        displayName: 'Argus',
         badgeColor: 'blue',
         sourceRepoIds: ['repo-local'],
         localWindowsRuntimePreference: { kind: 'wsl', distro: 'Ubuntu' },

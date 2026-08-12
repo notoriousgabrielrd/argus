@@ -400,7 +400,7 @@ describe('WSL distro discovery cache', () => {
 
   // Why: an empty list is a real probe result and must keep driving the
   // `wsl-distro-missing` repair prompt even once stale. Going null instead fails
-  // open and silently spawns `wsl.exe -d <distro>` for a distro Orca saw was absent.
+  // open and silently spawns `wsl.exe -d <distro>` for a distro Argus saw was absent.
   it('keeps reporting an empty result after it goes stale', () => {
     vi.useFakeTimers()
     execFileSyncMock.mockReturnValue('')

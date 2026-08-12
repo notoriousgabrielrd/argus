@@ -217,13 +217,13 @@ describe('createManagedCommandMatcher', () => {
 
   it('matches commands containing the agent-hooks/<scriptFileName> path', () => {
     expect(
-      match('/bin/sh "/Users/alice/Library/Application Support/Orca/agent-hooks/claude-hook.sh"')
+      match('/bin/sh "/Users/alice/Library/Application Support/Argus/agent-hooks/claude-hook.sh"')
     ).toBe(true)
     expect(match('/bin/sh "/some/other/location/agent-hooks/claude-hook.sh"')).toBe(true)
   })
 
   it('normalizes Windows backslashes so cmd-style paths still match', () => {
-    expect(match('C:\\Users\\alice\\AppData\\Roaming\\Orca\\agent-hooks\\claude-hook.sh')).toBe(
+    expect(match('C:\\Users\\alice\\AppData\\Roaming\\Argus\\agent-hooks\\claude-hook.sh')).toBe(
       true
     )
   })
@@ -246,7 +246,7 @@ describe('createManagedCommandMatcher', () => {
     // still recognize them or reinstalling would retain a stale duplicate.
     expect(
       match(
-        'if [ -x "/Users/alice/Library/Application Support/Orca/agent-hooks/claude-hook.sh" ]; then /bin/sh "/Users/alice/Library/Application Support/Orca/agent-hooks/claude-hook.sh"; fi'
+        'if [ -x "/Users/alice/Library/Application Support/Argus/agent-hooks/claude-hook.sh" ]; then /bin/sh "/Users/alice/Library/Application Support/Argus/agent-hooks/claude-hook.sh"; fi'
       )
     ).toBe(true)
   })
@@ -285,12 +285,12 @@ describe('removeManagedCommands', () => {
       [
         {
           type: 'command',
-          bash: '/bin/sh "/Users/alice/Orca/agent-hooks/copilot-hook.sh"',
+          bash: '/bin/sh "/Users/alice/Argus/agent-hooks/copilot-hook.sh"',
           timeoutSec: 5
         },
         {
           type: 'command',
-          powershell: "& 'C:\\Users\\alice\\Orca\\agent-hooks\\copilot-hook.sh'",
+          powershell: "& 'C:\\Users\\alice\\Argus\\agent-hooks\\copilot-hook.sh'",
           timeoutSec: 5
         },
         {
@@ -375,7 +375,7 @@ describe('hookDefinitionHasManagedCommand', () => {
 
     expect(
       hookDefinitionHasManagedCommand(
-        { bash: '/bin/sh "/Users/alice/Orca/agent-hooks/copilot-hook.sh"' },
+        { bash: '/bin/sh "/Users/alice/Argus/agent-hooks/copilot-hook.sh"' },
         match
       )
     ).toBe(true)
@@ -424,7 +424,7 @@ describe('getSharedManagedScriptPath', () => {
     )
   })
 
-  it('does not depend on Electron app.getPath, so two Orca instances resolve to the same path', () => {
+  it('does not depend on Electron app.getPath, so two Argus instances resolve to the same path', () => {
     // Why: using userData here would reintroduce dev/prod settings thrash.
     const a = getSharedManagedScriptPath('claude-hook.sh')
     const b = getSharedManagedScriptPath('claude-hook.sh')
@@ -460,8 +460,8 @@ describe('wrapPosixHookCommand', () => {
     // Why: Electron's userData on macOS lives under "Application Support" with
     // a space. The guard must keep the path quoted so each file test and
     // `/bin/sh` see one argument.
-    const cmd = wrapPosixHookCommand('/Users/a/Library/Application Support/Orca/agent-hooks/x.sh')
-    expect(cmd).toContain("'/Users/a/Library/Application Support/Orca/agent-hooks/x.sh'")
+    const cmd = wrapPosixHookCommand('/Users/a/Library/Application Support/Argus/agent-hooks/x.sh')
+    expect(cmd).toContain("'/Users/a/Library/Application Support/Argus/agent-hooks/x.sh'")
   })
 
   it('escapes embedded single quotes so the wrapped command stays well-formed', () => {

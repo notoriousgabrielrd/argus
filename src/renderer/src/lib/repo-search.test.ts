@@ -38,7 +38,7 @@ describe('repo-search', () => {
       makeRepo({ id: '2', displayName: 'stablyai/noqa', path: '/repos/noqa' })
     ]
 
-    expect(searchRepos(repos, 'ORCA').map((repo) => repo.id)).toEqual(['1'])
+    expect(searchRepos(repos, 'ARGUS').map((repo) => repo.id)).toEqual(['1'])
   })
 
   it('falls back to matching repo paths', () => {

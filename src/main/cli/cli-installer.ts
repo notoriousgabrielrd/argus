@@ -29,7 +29,7 @@ import {
 const execFileAsync = promisify(execFile)
 const DEFAULT_MAC_COMMAND_PATH = '/usr/local/bin/orca'
 const DEV_COMMAND_NAME = 'orca-dev'
-const LINUX_COMMAND_NAME = 'orca-ide'
+const LINUX_COMMAND_NAME = 'argus-ide'
 const LEGACY_LINUX_COMMAND_NAME = 'orca'
 const DEV_LAUNCHER_DIR = ['cli', 'bin']
 const WINDOWS_PATH_WRITE_TIMEOUT_MS = 5_000
@@ -87,7 +87,7 @@ export class CliInstaller {
       // Why: development builds must not claim the production shell command.
       return DEV_COMMAND_NAME
     }
-    // Why: packaged Linux uses `orca-ide` to avoid shadowing GNOME Orca's /usr/bin/orca.
+    // Why: packaged Linux uses `argus-ide` to avoid shadowing GNOME Argus's /usr/bin/orca.
     return this.platform === 'linux' ? LINUX_COMMAND_NAME : 'orca'
   }
 
@@ -150,7 +150,7 @@ export class CliInstaller {
         this.isLinuxAppImage() && this.appImagePath
           ? `The AppImage file at ${this.appImagePath} is missing. Move it back or re-run CLI registration from the current AppImage location.`
           : this.isPackaged
-            ? 'The bundled CLI launcher is missing from this Orca build.'
+            ? 'The bundled CLI launcher is missing from this Argus build.'
             : 'Development mode uses a generated launcher for validation only.'
       return {
         platform: this.platform,
@@ -229,7 +229,7 @@ export class CliInstaller {
       throw new Error(`Refusing to remove non-Orca command at ${status.commandPath}.`)
     }
     if (status.state === 'stale') {
-      throw new Error(`Refusing to remove a command not owned by Orca at ${status.commandPath}.`)
+      throw new Error(`Refusing to remove a command not owned by Argus at ${status.commandPath}.`)
     }
 
     if (status.installMethod === 'symlink') {
@@ -340,7 +340,7 @@ export class CliInstaller {
         return join(this.homePath, '.local', 'bin', DEV_COMMAND_NAME)
       }
       if (this.platform === 'win32') {
-        return join(this.localAppDataPath, 'Programs', 'Orca Dev', 'bin', `${DEV_COMMAND_NAME}.cmd`)
+        return join(this.localAppDataPath, 'Programs', 'Argus Dev', 'bin', `${DEV_COMMAND_NAME}.cmd`)
       }
     }
 
@@ -350,7 +350,7 @@ export class CliInstaller {
 
     if (this.platform === 'linux') {
       // Why: Linux lacks a privileged global command flow; ~/.local/bin is the least-surprising user-scoped dir.
-      // Why `orca-ide`: GNOME Orca ships /usr/bin/orca, so avoid shadowing that screen reader.
+      // Why `argus-ide`: GNOME Argus ships /usr/bin/orca, so avoid shadowing that screen reader.
       return join(this.homePath, '.local', 'bin', LINUX_COMMAND_NAME)
     }
 
@@ -440,7 +440,7 @@ export class CliInstaller {
         return
       }
 
-      // Why: after the Linux command rename, the old `orca` symlink would keep shadowing GNOME Orca.
+      // Why: after the Linux command rename, the old `orca` symlink would keep shadowing GNOME Argus.
       await unlink(legacyCommandPath)
     } catch (error) {
       if (isMissingError(error)) {
@@ -497,7 +497,7 @@ export class CliInstaller {
           supported: true,
           state: 'conflict',
           currentTarget: null,
-          detail: `${commandPath} exists but is not an Orca launcher script.`
+          detail: `${commandPath} exists but is not an Argus launcher script.`
         })
       }
 
@@ -524,7 +524,7 @@ export class CliInstaller {
           supported: true,
           state: 'not_installed',
           currentTarget: null,
-          detail: `Register ${commandPath} to use Orca from the terminal.`
+          detail: `Register ${commandPath} to use Argus from the terminal.`
         })
       }
       throw error
@@ -549,7 +549,7 @@ export class CliInstaller {
               supported: true,
               state: 'stale',
               currentTarget: managedTarget,
-              detail: `${commandPath} contains an older Orca launcher.`
+              detail: `${commandPath} contains an older Argus launcher.`
             })
           }
         }
@@ -561,7 +561,7 @@ export class CliInstaller {
           supported: true,
           state: 'conflict',
           currentTarget: null,
-          detail: `${commandPath} exists but is not an Orca symlink.`
+          detail: `${commandPath} exists but is not an Argus symlink.`
         })
       }
 
@@ -581,7 +581,7 @@ export class CliInstaller {
         detail: isInstalled
           ? `Registered at ${commandPath}.`
           : isManagedStaleTarget
-            ? `${commandPath} points to an older Orca launcher.`
+            ? `${commandPath} points to an older Argus launcher.`
             : `${commandPath} points to a non-Orca launcher.`
       })
     } catch (error) {
@@ -593,7 +593,7 @@ export class CliInstaller {
           supported: true,
           state: 'not_installed',
           currentTarget: null,
-          detail: `Register ${commandPath} to use Orca from the terminal.`
+          detail: `Register ${commandPath} to use Argus from the terminal.`
         })
       }
       throw error
@@ -616,7 +616,7 @@ export class CliInstaller {
     }
 
     if (this.platform === 'darwin') {
-      // Why: reclaim symlinks to an older Orca.app launcher, but never replace arbitrary user-owned symlinks.
+      // Why: reclaim symlinks to an older Argus.app launcher, but never replace arbitrary user-owned symlinks.
       return /(?:^|[/\\])[^/\\]+\.app[/\\]Contents[/\\]Resources[/\\]bin[/\\][^/\\]+$/.test(
         resolvedTarget
       )
@@ -641,7 +641,7 @@ export class CliInstaller {
     const siblingDevUserDataPath = `${packagedUserDataPath}-dev`
     const siblingDevLauncherDir = resolve(siblingDevUserDataPath, ...DEV_LAUNCHER_DIR)
 
-    // Why: dev builds generate launchers under the sibling `*-dev` profile; packaged Orca must reclaim that command.
+    // Why: dev builds generate launchers under the sibling `*-dev` profile; packaged Argus must reclaim that command.
     return (
       basename(siblingDevUserDataPath) === `${basename(packagedUserDataPath)}-dev` &&
       isPathInsideOrEqual(siblingDevLauncherDir, resolvedTarget)
@@ -679,7 +679,7 @@ export class CliInstaller {
           supported: true,
           state: 'conflict',
           currentTarget: null,
-          detail: `${commandPath} exists but is not an Orca launcher script.`
+          detail: `${commandPath} exists but is not an Argus launcher script.`
         })
       }
 
@@ -718,7 +718,7 @@ export class CliInstaller {
           supported: true,
           state: 'not_installed',
           currentTarget: null,
-          detail: `Register ${commandPath} to use Orca from Command Prompt or PowerShell.`
+          detail: `Register ${commandPath} to use Argus from Command Prompt or PowerShell.`
         })
       }
       throw error
@@ -791,7 +791,7 @@ export class CliInstaller {
         pathConfigured,
         state: 'not_installed',
         currentTarget: null,
-        detail: `Register ${status.commandPath} to use Orca from Command Prompt or PowerShell.`
+        detail: `Register ${status.commandPath} to use Argus from Command Prompt or PowerShell.`
       }
     }
 
@@ -802,7 +802,7 @@ export class CliInstaller {
         pathConfigured,
         detail:
           pathProbe.detail ??
-          'The Orca launcher exists, but Orca could not check your Windows user PATH.'
+          'The Argus launcher exists, but Argus could not check your Windows user PATH.'
       }
     }
 
@@ -890,8 +890,8 @@ export class CliInstaller {
       }
       const guidance =
         action === 'add'
-          ? `Add this folder to your PATH manually: ${pathDirectory}. Or run Orca as an administrator and try again.`
-          : `Remove this folder from your PATH manually: ${pathDirectory}. Or run Orca as an administrator and try again.`
+          ? `Add this folder to your PATH manually: ${pathDirectory}. Or run Argus as an administrator and try again.`
+          : `Remove this folder from your PATH manually: ${pathDirectory}. Or run Argus as an administrator and try again.`
       throw new Error(
         `Windows blocked updating your user PATH (access denied). This usually means your PATH environment variable is managed by Group Policy or your organization's device management. ${guidance}`,
         { cause: error }
@@ -1008,7 +1008,7 @@ function extractManagedUnixLauncherTarget(content: string): string | null {
     return null
   }
 
-  // Why: only Orca's compiled CLI entrypoints count as managed; arbitrary Electron-launching scripts stay conflicts.
+  // Why: only Argus's compiled CLI entrypoints count as managed; arbitrary Electron-launching scripts stay conflicts.
   return /(?:^|[/\\])(?:out|app\.asar\.unpacked[/\\]out)[/\\]cli[/\\]index\.js$/.test(cliPath)
     ? cliPath
     : null

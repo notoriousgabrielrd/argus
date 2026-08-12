@@ -59,7 +59,7 @@ export async function prepareEphemeralVmWorkspaceTarget(
       await assertRuntimeEnvironmentCapability(
         provisioned.environment.id,
         PROJECT_HOST_SETUP_RUNTIME_CAPABILITY,
-        'The recipe-created Orca server does not support project setup.'
+        'The recipe-created Argus server does not support project setup.'
       )
     } catch (error) {
       await cleanupProvisionedRuntime(provisioned.runtime.id)

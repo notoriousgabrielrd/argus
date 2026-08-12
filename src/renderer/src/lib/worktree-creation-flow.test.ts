@@ -466,7 +466,7 @@ describe('staged background worktree creation', () => {
         provider: 'jira' as const,
         siteId: 'site-1',
         siteUrl: 'https://company.atlassian.net',
-        projectKey: 'ORCA'
+        projectKey: 'ARGUS'
       },
       accountLabel: 'dev@company.test'
     }

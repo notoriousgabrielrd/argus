@@ -22,12 +22,12 @@ describe('resolveAiVaultServiceEntryPath', () => {
   })
 
   it('uses app.asar.unpacked for packaged Electron', () => {
-    const appPath = join('C:', 'Orca', 'resources', 'app.asar')
+    const appPath = join('C:', 'Argus', 'resources', 'app.asar')
 
     expect(resolveAiVaultServiceEntryPath(appPath, true)).toBe(
       join(
         'C:',
-        'Orca',
+        'Argus',
         'resources',
         'app.asar.unpacked',
         'out',
@@ -38,7 +38,7 @@ describe('resolveAiVaultServiceEntryPath', () => {
   })
 
   it('uses resourcesPath from packaged Electron-as-Node runtimes', () => {
-    const resourcesPath = join('Applications', 'Orca.app', 'Contents', 'Resources')
+    const resourcesPath = join('Applications', 'Argus.app', 'Contents', 'Resources')
     const entry = join(
       resourcesPath,
       'app.asar.unpacked',

@@ -72,7 +72,7 @@ export function createElectronHomeIsolation({
   mkdirSync(requestedIsolatedHome, { recursive: true, mode: 0o700 })
   // Why: tmpdir-rooted paths are aliases (macOS /var symlink, Windows 8.3
   // short names). Git canonicalizes worktree paths, so a non-canonical HOME
-  // makes freshly created worktrees invisible to Orca's listing comparisons.
+  // makes freshly created worktrees invisible to Argus's listing comparisons.
   const isolatedHome = realpathSync.native(requestedIsolatedHome)
   // Why: a bad fixture path must fail before Electron can resolve a real Codex
   // home; userData isolation alone does not change app.getPath('home').

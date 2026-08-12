@@ -124,7 +124,7 @@ const CheckParams = z
     ack: OptionalString,
     compatibilityAck: OptionalString,
     compatibilityQuestionAck: OptionalString,
-    compatibilityCliCommand: z.enum(['orca', 'orca-ide', 'orca-dev']).optional(),
+    compatibilityCliCommand: z.enum(['orca', 'argus-ide', 'orca-dev']).optional(),
     run: OptionalString,
     wait: OptionalBoolean,
     timeoutMs: OptionalFiniteNumber
@@ -224,8 +224,8 @@ const AskParams = z
     timeoutMs: OptionalFiniteNumber,
     from: OptionalString,
     run: OptionalString,
-    compatibilityCliCommand: z.enum(['orca', 'orca-ide', 'orca-dev']).optional(),
-    compatibilityWindowsCommand: z.enum(['orca', 'orca-ide']).optional()
+    compatibilityCliCommand: z.enum(['orca', 'argus-ide', 'orca-dev']).optional(),
+    compatibilityWindowsCommand: z.enum(['orca', 'argus-ide']).optional()
   })
   .superRefine((params, ctx) => {
     if ((params.question ? 1 : 0) + (params.resume ? 1 : 0) !== 1) {
@@ -550,7 +550,7 @@ export const ORCHESTRATION_METHODS: RpcMethod[] = [
           ) {
             throw new OrchestrationError(
               'capability_unsupported',
-              `Federated Dispatch ${dispatchId} does not support coordinator control mail; start a fresh worker after updating its Orca server.`
+              `Federated Dispatch ${dispatchId} does not support coordinator control mail; start a fresh worker after updating its Argus server.`
             )
           }
           if (db.getWorkerDispatch(dispatchId)?.state !== 'ready') {

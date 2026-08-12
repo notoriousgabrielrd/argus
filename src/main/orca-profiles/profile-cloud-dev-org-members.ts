@@ -29,7 +29,7 @@ function devSelf(): OrcaOrgMember {
   return {
     userId: cleanEnvString(process.env.ORCA_CLOUD_DEV_USER_ID, 'dev-user'),
     email: cleanEnvString(process.env.ORCA_CLOUD_DEV_EMAIL, 'dev@orca.local'),
-    displayName: cleanEnvString(process.env.ORCA_CLOUD_DEV_DISPLAY_NAME, 'Orca Dev'),
+    displayName: cleanEnvString(process.env.ORCA_CLOUD_DEV_DISPLAY_NAME, 'Argus Dev'),
     role: 'owner'
   }
 }
@@ -44,7 +44,7 @@ function seedDevRoster(): DevOrgRoster {
         displayName: 'Dev Teammate',
         role: 'admin'
       },
-      // Why: userId null exercises the "hasn't signed in to Orca yet" disabled row.
+      // Why: userId null exercises the "hasn't signed in to Argus yet" disabled row.
       { userId: null, email: 'invited-member@orca.local', displayName: undefined, role: 'member' }
     ],
     pendingInvites: [{ email: 'pending@orca.local', role: 'member', createdAt: Date.now() }]

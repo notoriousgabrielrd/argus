@@ -837,7 +837,7 @@ describe('registerWorktreeHandlers', () => {
     ])
   }
 
-  it('strips Orca provenance fields from renderer metadata updates', () => {
+  it('strips Argus provenance fields from renderer metadata updates', () => {
     store.setWorktreeMeta.mockImplementation((_worktreeId, meta) => meta)
 
     const result = handlers['worktrees:updateMeta'](null, {

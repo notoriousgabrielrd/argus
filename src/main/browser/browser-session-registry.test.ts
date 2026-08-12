@@ -253,7 +253,7 @@ describe('BrowserSessionRegistry', () => {
     // Why: verify the parallel fix to the default partition — isolated/imported
     // profiles must also defer media permission checks to macOS instead of
     // denying outright, otherwise pages inside them still hit NotAllowedError
-    // after the user grants Camera/Microphone to Orca.
+    // after the user grants Camera/Microphone to Argus.
     browserSessionRegistry.createProfile('isolated', 'Media Test')
     const mockSession = sessionFromPartitionMock.mock.results[0]?.value
     const requestHandler = mockSession.setPermissionRequestHandler.mock.calls[0][0]
@@ -328,7 +328,7 @@ describe('BrowserSessionRegistry', () => {
     expect(webAuthnCallback).toHaveBeenCalledWith('credential-1')
   })
 
-  it('uses profile-owned partitions for non-default Orca profiles', () => {
+  it('uses profile-owned partitions for non-default Argus profiles', () => {
     const orcaProfileId = 'local-work'
     browserSessionRegistry.configureForOrcaProfile({
       orcaProfileId,

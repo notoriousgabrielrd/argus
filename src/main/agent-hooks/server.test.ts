@@ -6493,7 +6493,7 @@ describe('Endpoint file lifecycle', () => {
   })
 
   it('leaves the endpoint file in place on stop()', async () => {
-    // Why: stop() leaves the file (stale = fail-open); unlinking would race a concurrent Orca instance rewriting it between token-check and unlink (TOCTOU).
+    // Why: stop() leaves the file (stale = fail-open); unlinking would race a concurrent Argus instance rewriting it between token-check and unlink (TOCTOU).
     const server = new AgentHookServer()
     await server.start({ env: 'production', userDataPath })
     const filePath = server.endpointFilePath!
@@ -6518,12 +6518,12 @@ describe('Endpoint file lifecycle', () => {
     await server.start({
       env: 'development',
       userDataPath,
-      endpointNamespace: 'com.stablyai.orca.dev.test123'
+      endpointNamespace: 'dev.argus.desktop.dev.test123'
     })
     try {
       const env = server.buildPtyEnv()
       expect(env.ORCA_AGENT_HOOK_ENDPOINT).toBe(server.endpointFilePath)
-      expect(env.ORCA_AGENT_HOOK_ENDPOINT).toContain('com.stablyai.orca.dev.test123')
+      expect(env.ORCA_AGENT_HOOK_ENDPOINT).toContain('dev.argus.desktop.dev.test123')
       expect(env.ORCA_AGENT_HOOK_PORT).toBeTruthy()
       expect(env.ORCA_AGENT_HOOK_TOKEN).toBeTruthy()
     } finally {

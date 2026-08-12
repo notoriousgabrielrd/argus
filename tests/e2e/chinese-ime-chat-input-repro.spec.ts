@@ -415,7 +415,7 @@ async function dispatchOrphanLetterKeyup(session: CDPSession): Promise<void> {
 
 async function dispatchSogouEmptyCompositionUpdate(page: Page): Promise<void> {
   // Why: Sogou/fcitx emits empty compositionupdate data while its candidate
-  // popup is still open (#6765); Orca's tracker must not flip inactive on it.
+  // popup is still open (#6765); Argus's tracker must not flip inactive on it.
   await page.evaluate(() => {
     const active = document.activeElement
     if (!(active instanceof HTMLTextAreaElement)) {
@@ -427,7 +427,7 @@ async function dispatchSogouEmptyCompositionUpdate(page: Page): Promise<void> {
 
 async function dispatchSogouPostCompositionEnd(page: Page, data: string): Promise<void> {
   // Why: some Sogou/fcitx traces deliver the plain selector key after
-  // compositionend; target the terminal element so Orca's tracker sees the end
+  // compositionend; target the terminal element so Argus's tracker sees the end
   // without making xterm finalize a synthetic preedit string.
   await page.evaluate((data) => {
     const active = document.activeElement

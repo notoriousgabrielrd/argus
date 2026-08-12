@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Live freeze repro against a running Orca desktop + paired remote runtime.
+ * Live freeze repro against a running Argus desktop + paired remote runtime.
  *
  * Models bulk-open of remote sessions under multi-worktree load.
  *

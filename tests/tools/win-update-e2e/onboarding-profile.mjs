@@ -1,4 +1,4 @@
-// Persistence seed for a fresh packaged Orca profile: dismisses onboarding and
+// Persistence seed for a fresh packaged Argus profile: dismisses onboarding and
 // registers a throwaway git repo as a project so the harness can open a
 // workspace + terminal without the native "Add Project" folder dialog (which
 // Playwright cannot drive).
@@ -28,7 +28,7 @@ const ONBOARDING_FINAL_STEP = 5
 
 /**
  * Create a throwaway git repo under `dir` and return a persisted `Repo` entry
- * for it. A real checkout (init + one commit) is required — Orca treats a
+ * for it. A real checkout (init + one commit) is required — Argus treats a
  * project as a git repository.
  */
 export function createSeededRepo(dir) {

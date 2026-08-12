@@ -148,7 +148,7 @@ function verifyMacOSHelperApp() {
     'computer-use-macos',
     '.build',
     'release',
-    'Orca Computer Use.app'
+    'Argus Computer Use.app'
   )
   if (!existsSync(appPath)) {
     console.error(

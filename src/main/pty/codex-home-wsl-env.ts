@@ -1,4 +1,4 @@
-/** Guest-relative layout of Orca's managed WSL CODEX_HOME. Must stay in sync
+/** Guest-relative layout of Argus's managed WSL CODEX_HOME. Must stay in sync
  *  with getWslRuntimeHomePath (codex-accounts/runtime-home-service.ts), which
  *  builds the UNC twin of this path. */
 export const WSL_CODEX_RUNTIME_HOME_SEGMENTS = [

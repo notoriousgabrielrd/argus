@@ -7,8 +7,8 @@ import { tmpdir } from 'node:os'
 import { DEVICE_REGISTRY_FILENAME, E2EE_KEYPAIR_FILENAME } from './mobile-pairing-files'
 
 // Mutable userData the electron mock resolves. We flip it mid-test to simulate
-// app.setName('Orca') changing how app.getPath('userData') resolves (e.g. from
-// lowercase 'orca' to uppercase 'Orca' on a case-sensitive filesystem) — the
+// app.setName('Argus') changing how app.getPath('userData') resolves (e.g. from
+// lowercase 'orca' to uppercase 'Argus' on a case-sensitive filesystem) — the
 // divergence that drops paired devices. We use two genuinely distinct directory
 // names rather than case variants so the assertion is deterministic regardless
 // of whether the test host's filesystem is case-sensitive.
@@ -50,7 +50,7 @@ describe('mobile pairing userData path stability', () => {
     const { initDataPath, getCanonicalUserDataPath } = await import('../persistence')
     initDataPath()
 
-    // app.setName('Orca') happens later in startup, changing late resolution.
+    // app.setName('Argus') happens later in startup, changing late resolution.
     appState.userData = lateDir
 
     expect(getCanonicalUserDataPath()).toBe(canonicalDir)
@@ -63,7 +63,7 @@ describe('mobile pairing userData path stability', () => {
     const { initDataPath, getCanonicalUserDataPath } = await import('../persistence')
     initDataPath()
 
-    appState.userData = lateDir // app.setName('Orca') has run by the time the runtime starts
+    appState.userData = lateDir // app.setName('Argus') has run by the time the runtime starts
 
     const { DeviceRegistry } = await import('./device-registry')
     const { loadOrCreateE2EEKeypair } = await import('./e2ee-keypair')

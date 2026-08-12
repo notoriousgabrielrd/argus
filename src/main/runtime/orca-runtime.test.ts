@@ -8660,7 +8660,7 @@ describe('OrcaRuntimeService', () => {
   // Why: this pins the mechanism the refusals below exist for. cursor-agent emits only the
   // bare native title, and the tracker drops it on sight — so a pane can never hold it
   // because Cursor said so *now*. The one route into main's records is the stale-working
-  // clear stripping the spinner off Orca's synthesized title after 3s of quiet output, and
+  // clear stripping the spinner off Argus's synthesized title after 3s of quiet output, and
   // that fires whether Cursor parked idle or exited and the shell took the pane back. That
   // is exactly why the title cannot tell a live pane from a dead one.
   it('only records the bare Cursor native title via the stale-working clear', async () => {
@@ -8681,7 +8681,7 @@ describe('OrcaRuntimeService', () => {
       runtime.onPtyData(ptyId, '\x1b]0;Cursor Agent\x07', 100)
       expect((await runtime.listTerminals()).terminals[0].title).not.toBe('Cursor Agent')
 
-      // Orca's synthesized spinner, then quiet output: the clear strips it to the bare title.
+      // Argus's synthesized spinner, then quiet output: the clear strips it to the bare title.
       runtime.onPtyData(ptyId, '\x1b]0;⠋ Cursor Agent\x07', 101)
       runtime.onPtyData(ptyId, 'agent finished; shell prompt returns\r\n', 102)
       await vi.advanceTimersByTimeAsync(3_000)
@@ -13383,7 +13383,7 @@ describe('OrcaRuntimeService', () => {
   })
 
   // Why: `cursor` on PATH is the Cursor desktop launcher; only `cursor-agent` is
-  // the CLI Orca can host (issue #11926).
+  // the CLI Argus can host (issue #11926).
   it('launches the configured agent CLI for a startupAgent id, not the raw id', async () => {
     const spawn = vi.fn().mockResolvedValue({ id: 'pty-bg' })
     const runtimeStore = {
@@ -13455,7 +13455,7 @@ describe('OrcaRuntimeService', () => {
   // platform-aware rather than a fixed string.
   it.each([
     { platform: 'win32' as const, expected: 'orca.cmd claude-teams' },
-    { platform: 'linux' as const, expected: 'orca-ide claude-teams' },
+    { platform: 'linux' as const, expected: 'argus-ide claude-teams' },
     { platform: 'darwin' as const, expected: 'orca claude-teams' }
   ])(
     'resolves a startupAgent through the $platform launcher name',
@@ -38945,7 +38945,7 @@ describe('OrcaRuntimeService', () => {
     ).rejects.toThrow('selector_not_found')
   })
 
-  it('rejects SSH lineage updates when Orca worktree identity is missing', async () => {
+  it('rejects SSH lineage updates when Argus worktree identity is missing', async () => {
     const remoteRepo = {
       id: 'remote-repo',
       path: '/home/user/repo',
@@ -39012,7 +39012,7 @@ describe('OrcaRuntimeService', () => {
     expect(setWorktreeLineage).not.toHaveBeenCalled()
   })
 
-  it('rejects local lineage updates when Orca worktree identity is missing', async () => {
+  it('rejects local lineage updates when Argus worktree identity is missing', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'orca-runtime-lineage-'))
     const repoPath = join(tempRoot, 'repo')
     const childPath = join(tempRoot, 'child')
@@ -39263,7 +39263,7 @@ describe('OrcaRuntimeService', () => {
     expect(removeWorkspaceLineage).toHaveBeenCalledWith(`worktree:${childId}`)
   })
 
-  it('strips Orca provenance fields from runtime metadata updates', async () => {
+  it('strips Argus provenance fields from runtime metadata updates', async () => {
     const metaById: Record<string, WorktreeMeta> = {
       [TEST_WORKTREE_ID]: makeWorktreeMeta({ instanceId: 'child-instance' })
     }
@@ -41570,7 +41570,7 @@ describe('OrcaRuntimeService', () => {
       expect.objectContaining({
         code: 'LINEAGE_PARENT_CONTEXT_MISSING',
         message:
-          'Worktree created, but Orca could not validate the current directory as a parent context.'
+          'Worktree created, but Argus could not validate the current directory as a parent context.'
       })
     ])
   })
@@ -45176,7 +45176,7 @@ describe('OrcaRuntimeService', () => {
     })
     const runtime = new OrcaRuntimeService(runtimeStore as never)
     // Why: simulate a concurrent `git fetch origin` clobbering FETCH_HEAD with the
-    // default-branch tip. The resolved base must come from the durable Orca MR ref.
+    // default-branch tip. The resolved base must come from the durable Argus MR ref.
     const gitSpy = vi.spyOn(gitRunner, 'gitExecFileAsync').mockImplementation(async (args) => {
       if (args[0] === 'remote' && args[1] === 'get-url') {
         return { stdout: `${ORIGIN_REMOTE_URL}\n`, stderr: '' }
@@ -45283,7 +45283,7 @@ describe('OrcaRuntimeService', () => {
     ["fatal: couldn't find remote ref refs/merge-requests/42/head", 'deleted MR / cleaned fork'],
     ['Authentication failed. Check your remote credentials.', 'auth failure'],
     [
-      'This SSH host is running an older Orca relay that cannot fetch merge request heads. Reconnect to deploy the latest relay, then try again.',
+      'This SSH host is running an older Argus relay that cannot fetch merge request heads. Reconnect to deploy the latest relay, then try again.',
       'stale relay'
     ]
   ])('fails hard instead of soft-keeping the durable MR head on: %s', async (message) => {

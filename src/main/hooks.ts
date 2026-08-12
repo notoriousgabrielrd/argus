@@ -83,7 +83,7 @@ const RECOGNIZED_ORCA_YAML_KEYS = new Set([
   'worktree'
 ])
 
-/** True when `orca.yaml` has a top-level key this version of Orca does not handle. */
+/** True when `orca.yaml` has a top-level key this version of Argus does not handle. */
 export function hasUnrecognizedOrcaYamlKeys(repoPath: string): boolean {
   try {
     const content = readFileSync(join(repoPath, 'orca.yaml'), 'utf-8')
@@ -407,9 +407,9 @@ function getHookWslContext(
 // install`, `git submodule update`) before dying on the first bash-only line is worse than not
 // starting: half-applied setup looks like a working worktree.
 const WINDOWS_RUNNER_SHEBANG_REFUSAL = [
-  'echo Orca setup: this script starts with a "#!" interpreter line, so it needs a POSIX shell. 1>&2',
-  'echo Orca setup: this worktree runs setup through cmd.exe, which cannot execute it. 1>&2',
-  'echo Orca setup: set the Windows terminal shell to Git Bash, or rewrite the script in cmd syntax. 1>&2',
+  'echo Argus setup: this script starts with a "#!" interpreter line, so it needs a POSIX shell. 1>&2',
+  'echo Argus setup: this worktree runs setup through cmd.exe, which cannot execute it. 1>&2',
+  'echo Argus setup: set the Windows terminal shell to Git Bash, or rewrite the script in cmd syntax. 1>&2',
   'exit /b 1',
   ''
 ].join('\r\n')
@@ -664,7 +664,7 @@ export function resolveSetupRunnerShell(
     }
   }
 
-  // Why: existing Windows setup scripts were authored for Orca's cmd runner;
+  // Why: existing Windows setup scripts were authored for Argus's cmd runner;
   // PowerShell, wsl.exe-as-terminal, and Windows-host projects can invoke it
   // without changing syntax, so they intentionally stay on the cmd runner.
   return { family: 'cmd' }

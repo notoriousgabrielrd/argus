@@ -6344,7 +6344,7 @@ const WorktreeList = React.memo(function WorktreeList({
         toast.error(
           translate(
             'auto.components.sidebar.WorktreeList.b667b59632',
-            'Some projects could not be removed from Orca'
+            'Some projects could not be removed from Argus'
           ),
           {
             description: translate(

@@ -86,7 +86,7 @@ vi.mock('./MobilePageContent', () => ({
         Continue
       </button>
       <button type="button" onClick={() => props.handleConnectionModeChange('automatic')}>
-        Orca Relay
+        Argus Relay
       </button>
       <button type="button" onClick={() => props.handleConnectionModeChange('local-only')}>
         LAN
@@ -270,9 +270,9 @@ describe('MobilePage pairing connection mode', () => {
     await waitFor(() => expect(screen.getByTestId('pairing-qr')).toHaveTextContent('base64,qr'))
     getPairingQR.mockClear()
 
-    // Switching back to Orca Relay must clear the local QR, not remint a
+    // Switching back to Argus Relay must clear the local QR, not remint a
     // local-only code under the Relay label.
-    await user.click(screen.getByRole('button', { name: 'Orca Relay' }))
+    await user.click(screen.getByRole('button', { name: 'Argus Relay' }))
     await waitFor(() => expect(screen.getByTestId('mode')).toHaveTextContent('automatic'))
     await waitFor(() => expect(screen.getByTestId('pairing-qr')).toHaveTextContent('none'))
     await new Promise((resolve) => setTimeout(resolve, 20))

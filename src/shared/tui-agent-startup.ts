@@ -53,7 +53,7 @@ export function buildAgentStartupPlan(args: {
   sessionOptions?: Record<string, SessionOptionValue>
   sessionOptionsOverrideAgentArgs?: boolean
   /** Why: SSH remotes deploy the CLI shim as plain `orca`, so the Linux-only
-   * `orca-ide` rename must be skipped for remote launches. */
+   * `argus-ide` rename must be skipped for remote launches. */
   isRemote?: boolean
 }): AgentStartupPlan | null {
   const { agent, prompt, cmdOverrides, platform, allowEmptyPromptLaunch = false } = args
@@ -139,7 +139,7 @@ export function buildAgentStartupPlan(args: {
     }
     return {
       agent,
-      // Why: Hermes owns readiness and submission for `chat --query`; Orca
+      // Why: Hermes owns readiness and submission for `chat --query`; Argus
       // only bounds and quotes the native invocation before starting the TUI.
       launchCommand: queryPlan.command,
       expectedProcess: config.expectedProcess,

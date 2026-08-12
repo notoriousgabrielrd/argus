@@ -218,7 +218,7 @@ describe('registerNotificationHandlers', () => {
     const originalPlatform = process.platform
     const originalBundleId = process.env.ORCA_DEV_MACOS_BUNDLE_ID
     Object.defineProperty(process, 'platform', { value: 'darwin', configurable: true })
-    process.env.ORCA_DEV_MACOS_BUNDLE_ID = 'com.stablyai.orca.dev.fb5a47066f08'
+    process.env.ORCA_DEV_MACOS_BUNDLE_ID = 'dev.argus.desktop.dev.fb5a47066f08'
     try {
       registerNotificationHandlers({
         getSettings: () => ({
@@ -235,7 +235,7 @@ describe('registerNotificationHandlers', () => {
       handler({})
 
       expect(shellOpenExternalMock).toHaveBeenCalledWith(
-        'x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=com.stablyai.orca.dev.fb5a47066f08'
+        'x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=dev.argus.desktop.dev.fb5a47066f08'
       )
     } finally {
       Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true })
@@ -291,7 +291,7 @@ describe('registerNotificationHandlers', () => {
     expect(notificationCtorMock).not.toHaveBeenCalled()
   })
 
-  it('suppresses active-worktree notifications while Orca is focused', async () => {
+  it('suppresses active-worktree notifications while Argus is focused', async () => {
     getAllWindowsMock.mockReturnValue([
       {
         isDestroyed: () => false,
@@ -424,8 +424,8 @@ describe('registerNotificationHandlers', () => {
       const handler = getDispatchHandler()
       expect(await handler({}, { source: 'test' })).toEqual({ delivered: true })
       expect(notificationCtorMock).toHaveBeenCalledWith({
-        title: 'Orca notifications are on',
-        body: 'This is a test notification from Orca.',
+        title: 'Argus notifications are on',
+        body: 'This is a test notification from Argus.',
         sound: 'default'
       })
     } finally {
@@ -452,8 +452,8 @@ describe('registerNotificationHandlers', () => {
       const handler = getDispatchHandler()
       expect(await handler({}, { source: 'test' })).toEqual({ delivered: true })
       expect(notificationCtorMock).toHaveBeenCalledWith({
-        title: 'Orca notifications are on',
-        body: 'This is a test notification from Orca.',
+        title: 'Argus notifications are on',
+        body: 'This is a test notification from Argus.',
         silent: true
       })
     } finally {
@@ -1116,8 +1116,8 @@ describe('registerNotificationHandlers', () => {
     const handler = getDispatchHandler()
     expect(await handler({}, { source: 'test' })).toEqual({ delivered: true })
     expect(notificationCtorMock).toHaveBeenCalledWith({
-      title: 'Orca notifications are on',
-      body: 'This is a test notification from Orca.',
+      title: 'Argus notifications are on',
+      body: 'This is a test notification from Argus.',
       silent: true
     })
   })
@@ -1644,8 +1644,8 @@ describe('triggerStartupNotificationRegistration', () => {
 
     expect(store.updateUI).toHaveBeenCalledWith({ notificationPermissionRequested: true })
     expect(notificationCtorMock).toHaveBeenCalledWith({
-      title: 'Orca is ready to notify you',
-      body: 'Allow notifications so Orca can alert you when agents finish or terminals need attention.'
+      title: 'Argus is ready to notify you',
+      body: 'Allow notifications so Argus can alert you when agents finish or terminals need attention.'
     })
     expect(notificationShowMock).toHaveBeenCalledTimes(1)
   })

@@ -199,7 +199,7 @@ export function setupGrabShortcutForwarding(args: {
       if (!renderer) {
         return
       }
-      // Why: a focused guest swallows bare keys; during an active grab pick, plain C/S are Orca's copy/screenshot, not page typing.
+      // Why: a focused guest swallows bare keys; during an active grab pick, plain C/S are Argus's copy/screenshot, not page typing.
       event.preventDefault()
       renderer.send('browser:grabActionShortcut', { browserPageId: browserTabId, key: bareKey })
       return
@@ -298,7 +298,7 @@ export function setupGuestShortcutForwarding(args: {
   ): boolean => {
     const keybindings = getKeybindings?.()
     if (action?.type === 'zoom') {
-      // Why: focused guest key events never reach the renderer-owned webview ref that applies Orca's page zoom.
+      // Why: focused guest key events never reach the renderer-owned webview ref that applies Argus's page zoom.
       forwardBrowserPageZoom(event, action.direction)
       return true
     }

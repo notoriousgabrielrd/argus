@@ -75,8 +75,8 @@ function readHookTrustProvenance(
 }
 
 /**
- * Records the runtime config.toml trust state Orca leaves behind after an
- * install/refresh, so the next launch can tell "entry Orca wrote" apart from
+ * Records the runtime config.toml trust state Argus leaves behind after an
+ * install/refresh, so the next launch can tell "entry Argus wrote" apart from
  * "entry Codex wrote after a user approval". Call after all trust writes.
  */
 export function snapshotCodexRuntimeHookTrustProvenance(
@@ -138,7 +138,7 @@ function promoteCodexRuntimeHookApprovalsToSystemUnsafe(runtimeHomePath: string)
   if (!existsSync(runtimeTomlPath)) {
     return
   }
-  // Why: without a snapshot of what Orca last wrote (first launch after
+  // Why: without a snapshot of what Argus last wrote (first launch after
   // upgrading to a build with promotion, or a corrupted snapshot), a mirrored
   // copy of since-revoked system trust is indistinguishable from a genuine
   // in-Orca approval. Promoting would resurrect trust the user revoked in
@@ -177,7 +177,7 @@ function promoteCodexRuntimeHookApprovalsToSystemUnsafe(runtimeHomePath: string)
       previous.trustedHash === state.trustedHash &&
       (previous.enabled ?? true) === (state.enabled ?? true)
     ) {
-      // Orca wrote this entry and nothing touched it since — not an approval.
+      // Argus wrote this entry and nothing touched it since — not an approval.
       continue
     }
     const eventName = CODEX_EVENT_NAME_BY_LABEL[parsed.eventLabel]
@@ -188,8 +188,8 @@ function promoteCodexRuntimeHookApprovalsToSystemUnsafe(runtimeHomePath: string)
     const hook = Array.isArray(definition?.hooks)
       ? definition.hooks[parsed.handlerIndex]
       : undefined
-    // Why: never write trust for Orca's managed status hook into the user's
-    // real config — mutating ~/.codex for Orca's own hooks is exactly what the
+    // Why: never write trust for Argus's managed status hook into the user's
+    // real config — mutating ~/.codex for Argus's own hooks is exactly what the
     // runtime CODEX_HOME isolation exists to prevent.
     if (!definition || !hook?.command || isManagedCommand(hook.command)) {
       continue

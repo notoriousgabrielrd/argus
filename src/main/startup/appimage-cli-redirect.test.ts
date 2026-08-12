@@ -10,7 +10,7 @@ describe('AppImage CLI redirect', () => {
   it('detects direct AppImage CLI commands', () => {
     expect(
       getAppImageCliArgs(
-        ['orca-linux.AppImage', 'status', '--json'],
+        ['argus-linux.AppImage', 'status', '--json'],
         { APPIMAGE: '/opt/orca' },
         {
           platform: 'linux',
@@ -24,7 +24,7 @@ describe('AppImage CLI redirect', () => {
   it('allows CLI global flags before the command', () => {
     expect(
       getAppImageCliArgs(
-        ['orca-linux.AppImage', '--pairing-code', 'abc123', '--json', 'terminal', 'list'],
+        ['argus-linux.AppImage', '--pairing-code', 'abc123', '--json', 'terminal', 'list'],
         {
           APPIMAGE: '/opt/orca'
         },
@@ -89,24 +89,24 @@ describe('AppImage CLI redirect', () => {
     const spawn = vi.fn((..._args: unknown[]) => ({ status: 0 }))
 
     const result = maybeRedirectAppImageCliLaunch({
-      argv: ['orca-linux.AppImage', 'status', '--json'],
+      argv: ['argus-linux.AppImage', 'status', '--json'],
       env: {
-        APPIMAGE: '/opt/orca/orca-linux.AppImage',
+        APPIMAGE: '/opt/orca/argus-linux.AppImage',
         NODE_OPTIONS: '--inspect',
         NODE_REPL_EXTERNAL_MODULE: '/tmp/repl.js'
       },
       platform: 'linux',
       isPackaged: true,
       resourcesPath: root,
-      execPath: '/opt/orca/orca-ide',
+      execPath: '/opt/orca/argus-ide',
       commandNames,
       spawn: spawn as never
     })
 
     expect(result).toEqual({ redirected: true, status: 0 })
-    expect(spawn).toHaveBeenCalledWith('/opt/orca/orca-ide', [cliEntryPath, 'status', '--json'], {
+    expect(spawn).toHaveBeenCalledWith('/opt/orca/argus-ide', [cliEntryPath, 'status', '--json'], {
       env: expect.objectContaining({
-        APPIMAGE: '/opt/orca/orca-linux.AppImage',
+        APPIMAGE: '/opt/orca/argus-linux.AppImage',
         ELECTRON_RUN_AS_NODE: '1',
         ORCA_NODE_OPTIONS: '--inspect',
         ORCA_NODE_REPL_EXTERNAL_MODULE: '/tmp/repl.js'
@@ -126,18 +126,18 @@ describe('AppImage CLI redirect', () => {
     const spawn = vi.fn((..._args: unknown[]) => ({ status: 0 }))
 
     maybeRedirectAppImageCliLaunch({
-      argv: ['orca-linux.AppImage', '--no-sandbox', 'serve'],
-      env: { APPIMAGE: '/opt/orca/orca-linux.AppImage' },
+      argv: ['argus-linux.AppImage', '--no-sandbox', 'serve'],
+      env: { APPIMAGE: '/opt/orca/argus-linux.AppImage' },
       platform: 'linux',
       isPackaged: true,
       resourcesPath: root,
-      execPath: '/opt/orca/orca-ide',
+      execPath: '/opt/orca/argus-ide',
       commandNames,
       spawn: spawn as never
     })
 
     expect(spawn).toHaveBeenCalledWith(
-      '/opt/orca/orca-ide',
+      '/opt/orca/argus-ide',
       [cliEntryPath, 'serve'],
       expect.objectContaining({
         env: expect.objectContaining({ ORCA_APPIMAGE_NO_SANDBOX: '1' })

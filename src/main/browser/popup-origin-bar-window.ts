@@ -114,7 +114,7 @@ export function openPopupWithOriginBar(
     title: initialOrigin.label
   })
 
-  // Why: the origin bar renders only Orca's own data: URL and must stay
+  // Why: the origin bar renders only Argus's own data: URL and must stay
   // isolated from the (arbitrary) popup content below it.
   const originBarView = new WebContentsView({
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true }

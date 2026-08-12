@@ -417,7 +417,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         async (_args: unknown, callbacks: NonNullable<typeof subscriptionCallbacks>) => {
           attempt += 1
           if (attempt === 1) {
-            throw Object.assign(new Error('Could not connect to the remote Orca runtime.'), {
+            throw Object.assign(new Error('Could not connect to the remote Argus runtime.'), {
               code: 'remote_runtime_unavailable'
             })
           }
@@ -516,7 +516,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         queueMicrotask(() =>
           callbacks.onError?.({
             code: 'unauthorized',
-            message: 'Remote Orca runtime rejected the pairing token.'
+            message: 'Remote Argus runtime rejected the pairing token.'
           })
         )
         return { unsubscribe, sendBinary: subscriptionSendBinary }
@@ -549,7 +549,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       if (args.method === 'terminal.create') {
         createCalls += 1
         if (createCalls === 1) {
-          throw Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+          throw Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
             code: 'runtime_timeout'
           })
         }
@@ -603,7 +603,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         if (args.method === 'terminal.create') {
           createCalls += 1
           if (createCalls === 1) {
-            throw Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+            throw Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
               code: 'runtime_timeout'
             })
           }
@@ -634,7 +634,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       if (args.method === 'status.get') {
         return { ok: true, result: { capabilities: [] } }
       }
-      throw Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+      throw Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
         code: 'runtime_timeout'
       })
     })
@@ -659,7 +659,7 @@ describe('createRemoteRuntimePtyTransport', () => {
           code: 'unauthorized'
         })
       }
-      throw Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+      throw Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
         code: 'runtime_timeout'
       })
     })
@@ -687,7 +687,7 @@ describe('createRemoteRuntimePtyTransport', () => {
             return new Promise((_, reject) => {
               setTimeout(() => {
                 reject(
-                  Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+                  Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
                     code: 'runtime_timeout'
                   })
                 )
@@ -702,7 +702,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         if (args.method === 'terminal.create' && reachable) {
           return { ok: true, result: { terminal: { handle: 'terminal-recovered' } } }
         }
-        throw Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+        throw Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
           code: 'runtime_timeout'
         })
       })
@@ -778,7 +778,7 @@ describe('createRemoteRuntimePtyTransport', () => {
             }
           }
         }
-        throw Object.assign(new Error('Timed out waiting for the remote Orca runtime.'), {
+        throw Object.assign(new Error('Timed out waiting for the remote Argus runtime.'), {
           code: 'runtime_timeout'
         })
       })
@@ -863,7 +863,7 @@ describe('createRemoteRuntimePtyTransport', () => {
     let activateAttempts = 0
     runtimeCall.mockImplementation(async (request: { method: string; params?: unknown }) => {
       if (request.method === 'session.tabs.activate' && activateAttempts++ === 0) {
-        throw Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+        throw Object.assign(new Error('Remote Argus runtime closed the connection.'), {
           code: 'remote_runtime_unavailable'
         })
       }
@@ -905,7 +905,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       let activateAttempts = 0
       runtimeCall.mockImplementation(async (request: { method: string; params?: unknown }) => {
         if (request.method === 'session.tabs.activate' && activateAttempts++ === 0) {
-          throw Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+          throw Object.assign(new Error('Remote Argus runtime closed the connection.'), {
             code: 'remote_runtime_unavailable'
           })
         }
@@ -918,7 +918,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         return healthyRuntimeCall?.(request)
       })
       runtimeSubscribe.mockRejectedValue(
-        Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+        Object.assign(new Error('Remote Argus runtime closed the connection.'), {
           code: 'remote_runtime_unavailable'
         })
       )
@@ -957,7 +957,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         }
         activateAttempts += 1
         if (activateAttempts === 1) {
-          throw Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+          throw Object.assign(new Error('Remote Argus runtime closed the connection.'), {
             code: 'remote_runtime_unavailable'
           })
         }
@@ -1005,7 +1005,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         activateAttempts += 1
         if (activateAttempts === 1) {
           return Promise.reject(
-            Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+            Object.assign(new Error('Remote Argus runtime closed the connection.'), {
               code: 'remote_runtime_unavailable'
             })
           )
@@ -1032,7 +1032,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       expect(transport.getRecoveryState?.().phase).toBe('disconnected')
 
       rejectInFlight(
-        Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+        Object.assign(new Error('Remote Argus runtime closed the connection.'), {
           code: 'remote_runtime_unavailable'
         })
       )
@@ -1058,7 +1058,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       let activateAttempts = 0
       runtimeCall.mockImplementation(async (request: { method: string; params?: unknown }) => {
         if (request.method === 'session.tabs.activate' && activateAttempts++ === 0) {
-          throw Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+          throw Object.assign(new Error('Remote Argus runtime closed the connection.'), {
             code: 'remote_runtime_unavailable'
           })
         }
@@ -1089,7 +1089,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       expect(transport.getRecoveryState?.().phase).toBe('disconnected')
 
       rejectSubscription(
-        Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+        Object.assign(new Error('Remote Argus runtime closed the connection.'), {
           code: 'remote_runtime_unavailable'
         })
       )
@@ -1114,7 +1114,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       runtimeCall.mockImplementation((request: { method: string; params?: unknown }) => {
         if (request.method === 'session.tabs.activate' && activateAttempts++ === 0) {
           return Promise.reject(
-            Object.assign(new Error('Remote Orca runtime closed the connection.'), {
+            Object.assign(new Error('Remote Argus runtime closed the connection.'), {
               code: 'remote_runtime_unavailable'
             })
           )
@@ -5102,7 +5102,7 @@ describe('createRemoteRuntimePtyTransport', () => {
         transportCallbacks.push(callbacks)
         subscriptionCallbacks = callbacks
         if (subscribeAttempt === 2) {
-          throw new Error('Could not connect to the remote Orca runtime.')
+          throw new Error('Could not connect to the remote Argus runtime.')
         }
         queueMicrotask(emitMultiplexReady)
         return { unsubscribe: vi.fn(), sendBinary: subscriptionSendBinary }
@@ -5125,7 +5125,7 @@ describe('createRemoteRuntimePtyTransport', () => {
     })
     transportCallbacks[0].onError?.({
       code: 'remote_runtime_unavailable',
-      message: 'Remote Orca runtime stopped responding; the stream connection was reset.'
+      message: 'Remote Argus runtime stopped responding; the stream connection was reset.'
     })
 
     await vi.waitFor(() => expect(runtimeSubscribe).toHaveBeenCalledTimes(3))
@@ -5150,7 +5150,7 @@ describe('createRemoteRuntimePtyTransport', () => {
 
     subscriptionCallbacks?.onError?.({
       code: 'unauthorized',
-      message: 'Remote Orca runtime rejected the pairing token.'
+      message: 'Remote Argus runtime rejected the pairing token.'
     })
 
     expect(onError).toHaveBeenCalledTimes(1)
@@ -5230,7 +5230,7 @@ describe('createRemoteRuntimePtyTransport', () => {
       runtimeSubscribe.mockImplementation(
         async (_args: unknown, callbacks: NonNullable<typeof subscriptionCallbacks>) => {
           if (partitioned) {
-            throw Object.assign(new Error('Could not connect to the remote Orca runtime.'), {
+            throw Object.assign(new Error('Could not connect to the remote Argus runtime.'), {
               code: 'remote_runtime_unavailable'
             })
           }

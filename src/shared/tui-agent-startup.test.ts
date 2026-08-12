@@ -251,7 +251,7 @@ describe('tui agent startup plans', () => {
     expect(unwrapPosixShellScript(plan?.launchCommand)).toContain("'--profile' 'chat'")
   })
 
-  it('keeps Orca ownership of the Hermes startup query and TUI mode', () => {
+  it('keeps Argus ownership of the Hermes startup query and TUI mode', () => {
     const plan = buildAgentStartupPlan({
       agent: 'hermes',
       prompt: 'automation prompt',
@@ -407,7 +407,7 @@ describe('tui agent startup plans', () => {
     expect(plan?.followupPrompt).toBeNull()
   })
 
-  it('does not launch Codex with the Orca profile when agent status hooks are enabled', () => {
+  it('does not launch Codex with the Argus profile when agent status hooks are enabled', () => {
     const plan = buildAgentStartupPlan({
       agent: 'codex',
       prompt: 'fix it',
@@ -437,7 +437,7 @@ describe('tui agent startup plans', () => {
     })
   })
 
-  it('launches Claude without Orca settings injection', () => {
+  it('launches Claude without Argus settings injection', () => {
     const plan = buildAgentStartupPlan({
       agent: 'claude',
       prompt: 'fix it',
@@ -449,7 +449,7 @@ describe('tui agent startup plans', () => {
     expect(plan?.launchCommand).not.toContain('--settings')
   })
 
-  it('uses the Linux Orca CLI command for Claude Agent Teams launches', () => {
+  it('uses the Linux Argus CLI command for Claude Agent Teams launches', () => {
     const plan = buildAgentStartupPlan({
       agent: 'claude-agent-teams',
       prompt: '',
@@ -458,13 +458,13 @@ describe('tui agent startup plans', () => {
       allowEmptyPromptLaunch: true
     })
 
-    expect(plan?.launchCommand).toBe('orca-ide claude-teams')
+    expect(plan?.launchCommand).toBe('argus-ide claude-teams')
   })
 
   it('uses the plain orca shim for Claude Agent Teams on Linux SSH remotes', () => {
     // Why: the SSH relay deploys the CLI shim as `orca` (not the local-only
-    // `orca-ide` GNOME-screen-reader workaround), so a remote launch must not
-    // emit `orca-ide claude-teams` — that name is not on the remote PATH and
+    // `argus-ide` GNOME-screen-reader workaround), so a remote launch must not
+    // emit `argus-ide claude-teams` — that name is not on the remote PATH and
     // `claude-teams` is rejected by the relay's CLI switch (issue #6500).
     const plan = buildAgentStartupPlan({
       agent: 'claude-agent-teams',
@@ -493,9 +493,9 @@ describe('tui agent startup plans', () => {
     expect(plan?.launchCommand).toBe('orca.cmd claude-teams')
   })
 
-  it('keeps the Linux orca-ide wrapper for local (non-remote) Claude Agent Teams', () => {
-    // Why: the `orca-ide` rename is still required for a local Linux desktop
-    // install (avoids shadowing the GNOME Orca screen reader), so an explicit
+  it('keeps the Linux argus-ide wrapper for local (non-remote) Claude Agent Teams', () => {
+    // Why: the `argus-ide` rename is still required for a local Linux desktop
+    // install (avoids shadowing the GNOME Argus screen reader), so an explicit
     // isRemote:false must preserve it.
     const plan = buildAgentStartupPlan({
       agent: 'claude-agent-teams',
@@ -506,7 +506,7 @@ describe('tui agent startup plans', () => {
       allowEmptyPromptLaunch: true
     })
 
-    expect(plan?.launchCommand).toBe('orca-ide claude-teams')
+    expect(plan?.launchCommand).toBe('argus-ide claude-teams')
   })
 
   it('launches OpenClaude as a distinct argv agent', () => {

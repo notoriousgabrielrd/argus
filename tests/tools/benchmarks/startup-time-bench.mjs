@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Orca startup-time benchmark.
+ * Argus startup-time benchmark.
  *
  * Launches the built app (out/) against a synthetic userData fixture that
  * mimics a long-lived real profile (tens of thousands of Chromium cache

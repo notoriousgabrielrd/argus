@@ -23,7 +23,7 @@ function claudeProjectsDir(): string {
   return join(homedir(), '.claude', 'projects')
 }
 
-// Why: Orca launches Codex with ORCA_CODEX_HOME pointing at its own managed
+// Why: Argus launches Codex with ORCA_CODEX_HOME pointing at its own managed
 // runtime home, so Orca-started Codex rollout files land under
 // `<managed home>/sessions`, NOT `~/.codex/sessions`. Search the managed home
 // first (that's where this main process's Codex sessions actually live), then

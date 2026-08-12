@@ -671,7 +671,7 @@ describe('CodexRuntimeHomeService', () => {
       const baselinePath = join(wslRuntimeHomePath, '.orca-config-settings-baseline.json')
       expect(existsSync(baselinePath)).toBe(true)
 
-      // A direct WSL Codex edit wins and is mirrored into Orca's runtime before
+      // A direct WSL Codex edit wins and is mirrored into Argus's runtime before
       // the baseline advances, so later in-Orca changes remain promotable.
       const runtimeConfigPath = join(wslRuntimeHomePath, 'config.toml')
       writeFileSync(wslSystemConfigPath, 'model = "outside-edit"\n', 'utf-8')
@@ -679,7 +679,7 @@ describe('CodexRuntimeHomeService', () => {
       expect(readFileSync(runtimeConfigPath, 'utf-8')).toBe('model = "outside-edit"\n')
       expect(readFileSync(baselinePath, 'utf-8')).toContain('"model": "\\"outside-edit\\""')
 
-      // Codex now persists a /model change inside Orca's reconciled runtime.
+      // Codex now persists a /model change inside Argus's reconciled runtime.
       writeFileSync(
         runtimeConfigPath,
         readFileSync(runtimeConfigPath, 'utf-8').replace('model = "outside-edit"', 'model = "o4"'),
@@ -1127,7 +1127,7 @@ describe('CodexRuntimeHomeService', () => {
     process.env.ORCA_CODEX_HOME = getRuntimeCodexHomePath()
     try {
       // Background fetchers prefer ambient CODEX_HOME when passed null, so an
-      // explicit path proves nested Orca launches cannot poll the managed home.
+      // explicit path proves nested Argus launches cannot poll the managed home.
       expect(service.prepareForRateLimitFetch()).toBe(getSystemCodexHomePath())
       process.env.CODEX_HOME = getSystemCodexHomePath()
       delete process.env.ORCA_CODEX_HOME
@@ -3983,7 +3983,7 @@ describe('CodexRuntimeHomeService', () => {
     settings.activeCodexManagedAccountId = 'account-1'
     service.syncForCurrentSelection()
 
-    // A stale or external process overwrites runtime with auth Orca cannot
+    // A stale or external process overwrites runtime with auth Argus cannot
     // verify against the outgoing managed account.
     writeFileSync(runtimeAuthPath, '{"account":"external-login"}\n', 'utf-8')
 

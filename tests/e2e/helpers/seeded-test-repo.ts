@@ -1,5 +1,5 @@
 /**
- * Seeded git repo for Orca E2E fixtures: creation and validity checks for the
+ * Seeded git repo for Argus E2E fixtures: creation and validity checks for the
  * disposable test repo (plus its secondary worktree) that specs operate on.
  */
 
@@ -40,7 +40,7 @@ export function createSeededTestRepo(): string {
 
   writeFileSync(
     path.join(testRepoDir, 'README.md'),
-    '# Orca E2E Test Repo\n\nThis repo was created automatically for Playwright tests.\n'
+    '# Argus E2E Test Repo\n\nThis repo was created automatically for Playwright tests.\n'
   )
   writeFileSync(path.join(testRepoDir, 'CLAUDE.md'), '# CLAUDE.md\n\nTest instructions for E2E.\n')
   writeFileSync(

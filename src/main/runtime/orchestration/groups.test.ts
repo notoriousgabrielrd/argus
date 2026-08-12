@@ -220,7 +220,7 @@ describe('resolveGroupAddress', () => {
       expect(result).toEqual(['term_exe', 'term_cmd'])
     })
 
-    // Why: these are the titles cursor-agent natively emits and the ones Orca synthesizes
+    // Why: these are the titles cursor-agent natively emits and the ones Argus synthesizes
     // from Cursor hooks, so each must resolve.
     it('matches native and Orca-synthesized Cursor titles', () => {
       const terminals = [
@@ -263,7 +263,7 @@ describe('resolveGroupAddress', () => {
         makeSummary('term_claude_star', { title: '* cursor rendering done' }),
         makeSummary('term_codex', { title: '⠋ Codex: fix cursor offsets' }),
         makeSummary('term_grok', { title: '⠋ - restoring cursor state - grok' }),
-        makeSummary('term_shell', { title: 'Terminal Cursor and Orca slows down' })
+        makeSummary('term_shell', { title: 'Terminal Cursor and Argus slows down' })
       ]
 
       const result = resolveGroupAddress('@cursor', 'coordinator', terminals, noStatus)

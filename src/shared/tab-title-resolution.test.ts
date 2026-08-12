@@ -131,7 +131,7 @@ describe('tab title resolution', () => {
         {
           customTitle: null,
           aiVaultTitle,
-          generatedTitle: 'Orca generated',
+          generatedTitle: 'Argus generated',
           title: 'OC | OpenCode native'
         },
         true
@@ -139,10 +139,10 @@ describe('tab title resolution', () => {
     ).toBe('OC | OpenCode native')
     expect(
       resolveTerminalTabTitle(
-        { customTitle: null, generatedTitle: 'Orca generated', title: '⠋ albacore' },
+        { customTitle: null, generatedTitle: 'Argus generated', title: '⠋ albacore' },
         true
       )
-    ).toBe('Orca generated')
+    ).toBe('Argus generated')
   })
 
   it('uses the same priority for unified tab labels', () => {

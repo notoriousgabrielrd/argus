@@ -6,7 +6,7 @@ import { Session, type SubprocessHandle } from './session'
 // daemon-side ingest rate (Session.handleSubprocessData -> HeadlessEmulator
 // write + pending-output recording + client fanout) for the same workload
 // shapes as tests/tools/benchmarks/terminal-pipeline-bench.mjs. Bare headless
-// xterm parses these at ~80-100 MB/s; the end-to-end Orca pipeline measured
+// xterm parses these at ~80-100 MB/s; the end-to-end Argus pipeline measured
 // 2-15 MB/s (baseline-jul02) — this isolates the daemon layer's share.
 // Run with:
 //   ORCA_TERMINAL_PERF_BENCH=1 pnpm vitest run \

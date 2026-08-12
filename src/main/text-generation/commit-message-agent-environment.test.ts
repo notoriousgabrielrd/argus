@@ -113,13 +113,13 @@ describe('prepareLocalCommitMessageAgentEnv', () => {
   it('sets CODEX_HOME for host managed Codex accounts', async () => {
     const result = await prepareLocalCommitMessageAgentEnv('codex', {
       prepareForCodexLaunch: () =>
-        'C:\\Users\\tester\\AppData\\Roaming\\Orca\\codex-accounts\\a\\home'
+        'C:\\Users\\tester\\AppData\\Roaming\\Argus\\codex-accounts\\a\\home'
     })
 
     expect(result).toEqual({
       ok: true,
       env: expect.objectContaining({
-        CODEX_HOME: 'C:\\Users\\tester\\AppData\\Roaming\\Orca\\codex-accounts\\a\\home'
+        CODEX_HOME: 'C:\\Users\\tester\\AppData\\Roaming\\Argus\\codex-accounts\\a\\home'
       })
     })
   })

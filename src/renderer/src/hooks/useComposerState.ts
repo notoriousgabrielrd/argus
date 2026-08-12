@@ -583,7 +583,7 @@ export function getInitialAutoManagedWorkspaceName({
   initialName: string
   initialLinkedWorkItem?: LinkedWorkItemSummary | null
 }): string {
-  // Why: a prefilled name counts as user input unless it exactly matches the linked-item seed Orca generated.
+  // Why: a prefilled name counts as user input unless it exactly matches the linked-item seed Argus generated.
   const candidateName = draftName ?? initialName
   const seedName = getLinkedWorkItemSeedName(draftLinkedWorkItem ?? initialLinkedWorkItem)
   return candidateName && seedName && candidateName === seedName ? candidateName : ''
@@ -881,7 +881,7 @@ export function useComposerState(options: UseComposerStateOptions): UseComposerS
         )
     return getAgentLaunchPlatformForRepo(selectedRepo, projectRuntime)
   }, [activeRepoId, projects, repos, selectedRepo, settings, worktreesByRepo])
-  // Why: SSH remotes deploy the CLI shim as plain `orca`, so the Linux-only `orca-ide` rename must not apply to remote launch commands.
+  // Why: SSH remotes deploy the CLI shim as plain `orca`, so the Linux-only `argus-ide` rename must not apply to remote launch commands.
   const selectedRepoIsRemote = selectedRepo ? repoIsRemote(selectedRepo) : false
   const selectedRepoStartupShell = resolveLocalWindowsAgentStartupShell({
     platform: selectedRepoAgentLaunchPlatform,

@@ -299,7 +299,7 @@ const SCHEMA_VERSION = 26
 
 function hardenOrchestrationDatabaseFiles(dbPath: (string & {}) | ':memory:'): void {
   if (dbPath === ':memory:' || process.platform === 'win32') {
-    // Why: Windows protects these files through Orca's current-user-only userData DACL; POSIX mode bits are inert there.
+    // Why: Windows protects these files through Argus's current-user-only userData DACL; POSIX mode bits are inert there.
     return
   }
   for (const path of [dbPath, `${dbPath}-wal`, `${dbPath}-shm`]) {
@@ -3467,7 +3467,7 @@ export class OrchestrationDb {
     }
 
     const originalBody = message.body ? `\n\nOriginal body:\n${message.body}` : ''
-    const body = `Orca rejected this ${message.type}: ${reason}${originalBody}`
+    const body = `Argus rejected this ${message.type}: ${reason}${originalBody}`
     const payload = addLifecycleRejectionMarker(message.payload, code, reason)
     // Why: rejected lifecycle signals stay auditable but must not reach read paths as actionable completion/liveness events.
     this.db

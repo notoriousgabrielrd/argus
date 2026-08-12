@@ -147,7 +147,7 @@ async function readFromKeychain(configDir?: string): Promise<OAuthCredentialRead
       return scopedCredentials
     }
     const legacyCredentials = await readCredentialsFromStrictKeychain(undefined, 'legacy-keychain')
-    // Why: a real access token beats refresh-only creds (Orca can't refresh), so a stale scoped item can't shadow a working legacy token.
+    // Why: a real access token beats refresh-only creds (Argus can't refresh), so a stale scoped item can't shadow a working legacy token.
     if (legacyCredentials.token) {
       return legacyCredentials
     }

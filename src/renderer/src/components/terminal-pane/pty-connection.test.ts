@@ -2384,7 +2384,7 @@ describe('connectPanePty', () => {
 
     expect(deps.onPtyErrorRef.current).toHaveBeenCalledWith(
       1,
-      expect.stringContaining('Orca attempts background recovery for managed local and WSL homes')
+      expect.stringContaining('Argus attempts background recovery for managed local and WSL homes')
     )
   })
 
@@ -15308,7 +15308,7 @@ describe('connectPanePty', () => {
 
     expect(transport.serializeBuffer).toHaveBeenCalledTimes(1)
     expect(pane.terminal.write).not.toHaveBeenCalledWith(
-      expect.stringContaining('Orca skipped hidden terminal output'),
+      expect.stringContaining('Argus skipped hidden terminal output'),
       expect.any(Function)
     )
     expect(pane.terminal.write).not.toHaveBeenCalledWith(
@@ -15981,7 +15981,7 @@ describe('connectPanePty', () => {
       expect(getMainBufferSnapshot).toHaveBeenCalledTimes(4)
       expect(pane.terminal.write).toHaveBeenCalledWith(
         expect.stringContaining(
-          'Orca skipped hidden terminal output because main recovery was unavailable.'
+          'Argus skipped hidden terminal output because main recovery was unavailable.'
         ),
         expect.any(Function)
       )

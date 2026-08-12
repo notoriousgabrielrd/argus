@@ -234,7 +234,7 @@ function withPlatform<T>(platform: NodeJS.Platform, run: () => T): T {
 }
 
 describe('Windows managed hook stdin structure', () => {
-  it('exits immediately when Orca env is missing and keeps drain for other failures', () => {
+  it('exits immediately when Argus env is missing and keeps drain for other failures', () => {
     const home = mkdtempSync(join(tmpdir(), 'orca-hook-stdin-windows-'))
     homedirMock.mockReturnValue(home)
     const previousGrokHome = process.env.GROK_HOME
@@ -283,7 +283,7 @@ describe('Windows managed hook stdin structure', () => {
       }
 
       // Why (#11549): the Devin skip is the only remaining in-script jump to more.com, so it
-      // must sit below the env guards — otherwise a Devin session outside an Orca pane still
+      // must sit below the env guards — otherwise a Devin session outside an Argus pane still
       // parks there and strands the hook exactly like the pre-fix guards did.
       const claude = readFileSync(join(hooksDir, 'claude-hook.cmd'), 'utf8')
       expect(claude, 'claude devin guard present').toContain(
@@ -322,7 +322,7 @@ describe('Windows managed hook stdin structure', () => {
   })
 
   it.skipIf(process.platform !== 'win32')(
-    'exits 0 for every local script and missing-script launcher, dropping stdin only without Orca env',
+    'exits 0 for every local script and missing-script launcher, dropping stdin only without Argus env',
     async () => {
       const home = mkdtempSync(join(tmpdir(), 'orca-hook-stdin-windows-live-'))
       homedirMock.mockReturnValue(home)
@@ -361,7 +361,7 @@ describe('Windows managed hook stdin structure', () => {
           const result = await runHookProcess(executable, args, hookEnvironment())
           expect(result.exitCode, `${fileName} exit code`).toBe(0)
           // Why (#11549 class): every Windows-local hook exits before owning stdin when the
-          // Orca env is missing, so the writer may break — EPIPE, or ECONNRESET when Windows
+          // Argus env is missing, so the writer may break — EPIPE, or ECONNRESET when Windows
           // tears the pipe down first. hookEnvironment() strips every ORCA_* var, so this
           // relaxation only ever covers the missing-env path — a happy-path case added to
           // this loop must not reuse it.
@@ -414,7 +414,7 @@ describe.skipIf(process.platform === 'win32')('managed hook stdin lifecycle', ()
     }
   })
 
-  it('accepts a large payload without Orca environment or a broken writer', async () => {
+  it('accepts a large payload without Argus environment or a broken writer', async () => {
     const scripts = await generatePosixScripts()
     for (const [agent, script] of scripts) {
       const extraEnv = agent.startsWith('command-code')

@@ -2091,7 +2091,7 @@ describe('repos:add + repos:clone', () => {
         ? [
             {
               id: 'github:github.acme.test/acme/orca',
-              displayName: 'Orca',
+              displayName: 'Argus',
               providerIdentity: {
                 provider: 'github',
                 owner: 'acme',

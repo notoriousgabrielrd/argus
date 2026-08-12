@@ -37,7 +37,7 @@ describe('listReleaseBuilds', () => {
 
     const builds = await listReleaseBuilds('hourly')
 
-    expect(fetchMock.mock.calls[0][0]).toContain('stablyai/orca-hourly')
+    expect(fetchMock.mock.calls[0][0]).toContain('stablyai/argus-hourly')
     expect(builds.map((build) => build.version)).toEqual([
       '1.4.160-hourly.202607281400',
       '1.4.160-hourly.202607281000',
@@ -56,7 +56,7 @@ describe('listReleaseBuilds', () => {
 
     const builds = await listReleaseBuilds('daily')
 
-    expect(fetchMock.mock.calls[0][0]).toContain('stablyai/orca-daily')
+    expect(fetchMock.mock.calls[0][0]).toContain('stablyai/argus-daily')
     expect(builds.map((build) => build.version)).toEqual([
       '1.4.160-daily.202607291300',
       '1.4.160-daily.202607281300',
@@ -139,7 +139,7 @@ describe('resolveTargetBuild', () => {
       tag: 'v1.4.160-hourly.202607281400',
       version: '1.4.160-hourly.202607281400',
       feedUrl:
-        'https://github.com/stablyai/orca-hourly/releases/download/v1.4.160-hourly.202607281400'
+        'https://github.com/stablyai/argus-hourly/releases/download/v1.4.160-hourly.202607281400'
     })
   })
 
@@ -148,7 +148,7 @@ describe('resolveTargetBuild', () => {
       tag: 'v1.4.160-daily.202607281300',
       version: '1.4.160-daily.202607281300',
       feedUrl:
-        'https://github.com/stablyai/orca-daily/releases/download/v1.4.160-daily.202607281300'
+        'https://github.com/stablyai/argus-daily/releases/download/v1.4.160-daily.202607281300'
     })
   })
 

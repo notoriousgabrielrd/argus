@@ -172,7 +172,7 @@ function codexAuthIsMonotonicallyFresher(
 export class CodexRuntimeHomeService {
   // Which managed account runtime auth.json mirrors; null means it follows system-default ~/.codex instead of a managed account.
   private lastSyncedAccountId: string | null = null
-  // Last auth.json Orca wrote to the runtime home; a later diff signals an out-of-band change (Codex token refresh, or external login to adopt).
+  // Last auth.json Argus wrote to the runtime home; a later diff signals an out-of-band change (Codex token refresh, or external login to adopt).
   private lastWrittenAuthJson: string | null = null
   // Why: WSL terminals have per-distro runtime homes; sharing the host baseline can make stale WSL auth look newer than managed storage.
   private readonly lastWrittenWslAuthJsonByDistro = new Map<string, string | null>()
@@ -204,7 +204,7 @@ export class CodexRuntimeHomeService {
       settings.codexManagedAccounts,
       normalizeCodexRuntimeSelection(settings).host
     )
-    // Why: WSL-managed homes never touch host ~/.codex; treating one as "last synced" makes cold start mangle host auth Orca never touched.
+    // Why: WSL-managed homes never touch host ~/.codex; treating one as "last synced" makes cold start mangle host auth Argus never touched.
     this.lastSyncedAccountId = this.getWslManagedHomePath(activeAccount)
       ? null
       : normalizeCodexRuntimeSelection(settings).host
@@ -239,7 +239,7 @@ export class CodexRuntimeHomeService {
         return perAccountHome
       }
       // Why: only an untrusted home clears the selection; fall through to the
-      // system default without injecting a path Orca cannot prove it owns.
+      // system default without injecting a path Argus cannot prove it owns.
     }
     if (this.isHostSystemDefaultRealHome(launchEnv)) {
       // Why: the system default runs Codex on the user's own ~/.codex.
@@ -510,7 +510,7 @@ export class CodexRuntimeHomeService {
   getHostCodexHomePathsForSessionDiscovery(): string[] {
     const homes = [this.getRuntimeHomePath()]
     if (this.isHostSystemDefaultRealHome() || this.getSelfContainedManagedHostAccount()) {
-      // Why: nested Orca processes can retain an ambient managed CODEX_HOME.
+      // Why: nested Argus processes can retain an ambient managed CODEX_HOME.
       // Per-account lanes no longer bridge real-home history into the shared
       // mirror, so include the real root for both directly-routed host lanes.
       homes.push(getSystemCodexHomePath())
@@ -692,7 +692,7 @@ export class CodexRuntimeHomeService {
     }
     if (this.isHostSystemDefaultRealHome()) {
       // Why: null lets the fetcher fall back to the main process's inherited
-      // CODEX_HOME before ~/.codex. Nested Orca launches can inherit the
+      // CODEX_HOME before ~/.codex. Nested Argus launches can inherit the
       // managed home, restarting the background OAuth conflict (#5370), so
       // pin this non-interactive lane to the native home explicitly.
       if (hasRecordedLegacySharedCodexPane()) {
@@ -934,7 +934,7 @@ export class CodexRuntimeHomeService {
       const settings = this.store.getSettings()
       const selectedAccountId = getSelectedCodexAccountIdForTarget(settings, target)
       if (selectedAccountId === null) {
-        // Why: the system-default account changes outside Orca, so read its real home directly to avoid a stale cached runtime copy.
+        // Why: the system-default account changes outside Argus, so read its real home directly to avoid a stale cached runtime copy.
         return this.getWslSystemCodexHomePath(target)
       }
       const cachedRuntimeHomePath = this.wslRuntimeHomePathByDistro.get(distro)
@@ -1675,7 +1675,7 @@ export class CodexRuntimeHomeService {
         this.writeRuntimeAuth(runtimeAuth, { owner: 'system-default' })
         return
       }
-      // Why: mirror external logins/logouts into Orca's runtime home so unmanaged Codex sessions keep matching the current system-default state.
+      // Why: mirror external logins/logouts into Argus's runtime home so unmanaged Codex sessions keep matching the current system-default state.
       this.captureSystemDefaultSnapshot({ force: true })
       this.writeRuntimeAuth(systemDefaultAuth, { owner: 'system-default' })
     } catch (error) {
@@ -1763,7 +1763,7 @@ export class CodexRuntimeHomeService {
           : provenanceStatus.kind === 'missing'
             ? (this.lastWrittenAuthJson ?? snapshot?.authJson ?? null)
             : null
-      // Why: only bytes Orca can prove it wrote belong to the compatibility
+      // Why: only bytes Argus can prove it wrote belong to the compatibility
       // mirror; retained Codex or a managed transition owns every other value.
       if (knownSharedAuth === null) {
         return
@@ -1819,7 +1819,7 @@ export class CodexRuntimeHomeService {
     }
 
     if (options.detectExternalLogin && !existsSync(runtimeAuthPath)) {
-      // Why: with Orca owning CODEX_HOME, a deleted runtime auth.json is a local logout, not a cue to restore the user's real ~/.codex snapshot.
+      // Why: with Argus owning CODEX_HOME, a deleted runtime auth.json is a local logout, not a cue to restore the user's real ~/.codex snapshot.
       this.persistRuntimeLogoutMarker()
       this.lastWrittenAuthJson = null
       this.persistSharedRuntimeAuthProvenance({ owner: 'system-default', authJson: null })
@@ -1878,7 +1878,7 @@ export class CodexRuntimeHomeService {
   }
 
   private clearRuntimeAuthAfterSystemDefaultLogout(runtimeAuthPath: string): void {
-    // Why: a vanished ~/.codex auth means external logout for unmanaged sessions, even if runtime auth already refreshed in Orca's CODEX_HOME.
+    // Why: a vanished ~/.codex auth means external logout for unmanaged sessions, even if runtime auth already refreshed in Argus's CODEX_HOME.
     rmSync(runtimeAuthPath, { force: true })
     this.captureSystemDefaultSnapshot({ force: true })
     this.persistRuntimeLogoutMarker()

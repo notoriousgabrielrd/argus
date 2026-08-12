@@ -118,7 +118,7 @@ export class WebRuntimeClient {
       if (!this.sendEncrypted({ id, deviceToken: this.pairing.deviceToken, method, params })) {
         this.pending.delete(id)
         window.clearTimeout(timeout)
-        reject(new Error('Remote Orca runtime is not connected.'))
+        reject(new Error('Remote Argus runtime is not connected.'))
       }
     })
   }
@@ -329,7 +329,7 @@ export class WebRuntimeClient {
     this.subscriptions.set(id, subscription)
     if (!this.sendEncrypted({ id, deviceToken: this.pairing.deviceToken, method, params })) {
       this.subscriptions.delete(id)
-      throw new Error('Remote Orca runtime is not connected.')
+      throw new Error('Remote Argus runtime is not connected.')
     }
     return {
       unsubscribe: () => {
@@ -360,8 +360,8 @@ export class WebRuntimeClient {
     this.childClients.clear()
     this.fileWatchTeardownRetries.clear()
     this.clearTimers()
-    this.rejectAllPending('Remote Orca runtime connection closed.')
-    this.rejectAllWaiters(new Error('Remote Orca runtime connection closed.'))
+    this.rejectAllPending('Remote Argus runtime connection closed.')
+    this.rejectAllWaiters(new Error('Remote Argus runtime connection closed.'))
     if (shouldNotifySubscriptions) {
       this.notifySubscriptionsClosed()
     } else {
@@ -438,7 +438,7 @@ export class WebRuntimeClient {
         this.rejectAllWaiters(
           new Error(
             withRemoteRuntimeTailscaleHint(
-              'Could not connect to the remote Orca runtime.',
+              'Could not connect to the remote Argus runtime.',
               this.pairing.endpoint
             )
           )
@@ -595,7 +595,7 @@ export class WebRuntimeClient {
       return Promise.reject(createWebRuntimeUnauthorizedError())
     }
     if (this.intentionallyClosed) {
-      return Promise.reject(new Error('Remote Orca runtime connection closed.'))
+      return Promise.reject(new Error('Remote Argus runtime connection closed.'))
     }
     return new Promise((resolve, reject) => {
       const timeout = window.setTimeout(() => {
@@ -606,7 +606,7 @@ export class WebRuntimeClient {
         reject(
           new Error(
             withRemoteRuntimeTailscaleHint(
-              'Timed out while connecting to the remote Orca runtime.',
+              'Timed out while connecting to the remote Argus runtime.',
               this.pairing.endpoint
             )
           )
@@ -634,7 +634,7 @@ export class WebRuntimeClient {
     this.clearConnectTimer()
     this.clearHandshakeTimer()
     this.clearHeartbeatTimer()
-    this.rejectAllPending('Remote Orca runtime connection interrupted.')
+    this.rejectAllPending('Remote Argus runtime connection interrupted.')
     this.handleInterruptedSubscriptions()
     if (this.intentionallyClosed || this.state === 'auth-failed') {
       this.setState(this.state === 'auth-failed' ? 'auth-failed' : 'disconnected')

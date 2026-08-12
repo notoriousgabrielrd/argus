@@ -63,7 +63,7 @@ export function getGrokToolEventMatcherForTests(): string {
 function getConfigPath(): string {
   // Why: Grok loads trusted global hook files from $GROK_HOME/hooks/*.json
   // (or ~/.grok when unset). Honor GROK_HOME so install/status match the same
-  // home Grok and transcript lookup use; keep Orca entries in a dedicated file
+  // home Grok and transcript lookup use; keep Argus entries in a dedicated file
   // so user-authored hook files stay untouched.
   return join(resolveGrokHomeDir(), 'hooks', 'orca-status.json')
 }
@@ -155,7 +155,7 @@ function buildInstalledConfig(
   const isManagedCommand = createManagedCommandMatcher(scriptFileName)
   const managedEvents = new Set<string>(GROK_EVENTS.map((event) => event.eventName))
 
-  // Why: Orca owns only grok-hook.* entries. Sweep stale managed commands out
+  // Why: Argus owns only grok-hook.* entries. Sweep stale managed commands out
   // of retired events while preserving any user-authored hooks in this file.
   for (const [eventName, definitions] of Object.entries(nextHooks)) {
     if (managedEvents.has(eventName) || !Array.isArray(definitions)) {

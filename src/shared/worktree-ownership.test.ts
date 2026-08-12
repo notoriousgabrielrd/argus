@@ -96,7 +96,7 @@ function makeSettings(overrides: Partial<GlobalSettings> = {}): GlobalSettings {
 }
 
 describe('worktree ownership classification', () => {
-  it('treats explicit Orca metadata as managed even outside the workspace root', () => {
+  it('treats explicit Argus metadata as managed even outside the workspace root', () => {
     const repo = makeRepo()
     const settings = makeSettings()
     expect(
@@ -110,7 +110,7 @@ describe('worktree ownership classification', () => {
     ).toBe('orca-managed')
   })
 
-  it('treats nested Orca workspace paths without metadata as external', () => {
+  it('treats nested Argus workspace paths without metadata as external', () => {
     const repo = makeRepo()
     const settings = makeSettings()
     const layouts = buildKnownOrcaWorkspaceLayouts(settings, repo)
@@ -132,7 +132,7 @@ describe('worktree ownership classification', () => {
     ).toBe('external')
   })
 
-  it('treats explicit Orca creation layout metadata as managed', () => {
+  it('treats explicit Argus creation layout metadata as managed', () => {
     const repo = makeRepo()
     const settings = makeSettings()
     expect(
@@ -292,14 +292,14 @@ describe('worktree ownership classification', () => {
 
   it('handles Windows drive casing and separators', () => {
     const repo = makeRepo({ path: 'C:\\repos\\App' })
-    const settings = makeSettings({ workspaceDir: 'C:\\Orca\\Workspaces' })
+    const settings = makeSettings({ workspaceDir: 'C:\\Argus\\Workspaces' })
     expect(
       classifyWorktreeOwnership({
         repo,
         settings,
         worktree: makeWorktree({
-          id: 'repo-1::C:\\ORCA\\WORKSPACES\\App\\Feature',
-          path: 'C:\\ORCA\\WORKSPACES\\App\\Feature',
+          id: 'repo-1::C:\\ARGUS\\WORKSPACES\\App\\Feature',
+          path: 'C:\\ARGUS\\WORKSPACES\\App\\Feature',
           isMainWorktree: false
         }),
         knownOrcaLayouts: buildKnownOrcaWorkspaceLayouts(settings, repo)
@@ -463,7 +463,7 @@ describe('agent scratch worktrees', () => {
     ).toBe('agent-scratch')
   })
 
-  it('keeps strong Orca metadata authoritative over the scratch path match', () => {
+  it('keeps strong Argus metadata authoritative over the scratch path match', () => {
     const repo = makeRepo()
     const settings = makeSettings()
     expect(

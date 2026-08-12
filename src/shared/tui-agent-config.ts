@@ -56,12 +56,12 @@ export const TUI_AGENT_CONFIG: Record<TuiAgent, TuiAgentConfig> = {
     draftPromptFlag: '--prefill'
   },
   'claude-agent-teams': {
-    // Why: an Orca-provided launch mode, not a separate binary; detection follows the Orca CLI.
+    // Why: an Orca-provided launch mode, not a separate binary; detection follows the Argus CLI.
     detectCmd: 'orca',
-    detectCmdAliases: ['orca-dev', 'orca-ide'],
-    // Why: require Claude too so fresh installs (Orca shim always present) don't report Agent Teams without an agent CLI.
+    detectCmdAliases: ['orca-dev', 'argus-ide'],
+    // Why: require Claude too so fresh installs (Argus shim always present) don't report Agent Teams without an agent CLI.
     detectRequiredCommands: ['claude'],
-    // Why: Windows/WSL use Claude's in-process Agent Teams fallback, not this Orca native-pane/tmux-shim wrapper.
+    // Why: Windows/WSL use Claude's in-process Agent Teams fallback, not this Argus native-pane/tmux-shim wrapper.
     detectUnsupportedRuntimes: ['win32', 'wsl'],
     launchCmd: 'orca claude-teams',
     launchCmdByPlatform: {
@@ -286,7 +286,7 @@ export const TUI_AGENT_CONFIG: Record<TuiAgent, TuiAgentConfig> = {
   },
   hermes: {
     detectCmd: 'hermes',
-    // Why: bare `hermes` opens the classic REPL; `--tui` starts the full-screen agent UI Orca hosts.
+    // Why: bare `hermes` opens the classic REPL; `--tui` starts the full-screen agent UI Argus hosts.
     launchCmd: 'hermes --tui',
     expectedProcess: 'hermes',
     // Why: Hermes delivers the prompt via its startup-query contract, submitting only after the composer is ready.
@@ -343,7 +343,7 @@ export function getTuiAgentLaunchCommand(
   platform: NodeJS.Platform,
   opts?: { isRemote?: boolean }
 ): string {
-  // Why: local-only orca-ide rename (avoids GNOME Orca clash) must not leak to Linux remotes, whose relay shim is always `orca`.
+  // Why: local-only argus-ide rename (avoids GNOME Argus clash) must not leak to Linux remotes, whose relay shim is always `orca`.
   if (opts?.isRemote && platform === 'linux') {
     return config.launchCmd
   }

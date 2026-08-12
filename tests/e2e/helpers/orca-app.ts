@@ -1,5 +1,5 @@
 /**
- * Shared Electron fixture for Orca E2E tests.
+ * Shared Electron fixture for Argus E2E tests.
  *
  * Why: Playwright's native _electron.launch() is used instead of CDP.
  * It launches the Electron app directly from the built output, gives
@@ -57,7 +57,7 @@ type OrcaTestFixtures = {
   orcaAppExtraArgs: string[]
   // Why: a few IPC repro specs need to launch the Electron app with a scoped
   // PATH/token environment. Keep this fixture-owned so tests never mutate the
-  // developer's shell or already-running Orca instance.
+  // developer's shell or already-running Argus instance.
   launchEnv: NodeJS.ProcessEnv
 }
 
@@ -132,7 +132,7 @@ export function forwardElectronProcessLogs(app: ElectronApplication, testInfo: T
 /**
  * Extended Playwright test with Orca-specific fixtures.
  *
- * `orcaPage` — the main Orca renderer window.
+ * `orcaPage` — the main Argus renderer window.
  *
  * Test-scoped: each test gets a fresh Electron instance and isolated
  * userData directory so state cannot leak across specs through persistence.
@@ -199,7 +199,7 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
     }
     const headful = shouldLaunchHeadful(testInfo)
     // Why: strip ELECTRON_RUN_AS_NODE before spawning. Some host shells (e.g.
-    // Orca's own agent runtime) set it so Electron behaves as a plain Node
+    // Argus's own agent runtime) set it so Electron behaves as a plain Node
     // binary. Playwright's _electron.launch passes --remote-debugging-port,
     // which Node rejects with "bad option" and the process exits immediately.
     const { ELECTRON_RUN_AS_NODE: _unused, ...cleanEnv } = process.env

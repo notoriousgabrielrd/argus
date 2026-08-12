@@ -33,7 +33,7 @@ export type TrackedClaudeSubagent = {
   confirmedTeammate?: true
   /** The id came from a persisted snapshot or background_tasks, not live
    *  lifecycle events, so it may be a phantom whose SubagentStop was never
-   *  observed (Orca restart). A present complete task list omitting it
+   *  observed (Argus restart). A present complete task list omitting it
    *  removes it even when teammate-shaped, so it can't gate the pane
    *  'working' forever. Cleared once live activity re-tracks the id. */
   backgroundTasksAuthoritative?: boolean
@@ -142,7 +142,7 @@ export function stopClaudeSubagent(roster: ClaudeSubagentRoster, id: string): vo
  *  - an id-exact subagent-typed match that is running is trusted fully and
  *    tagged listedAsSubagentTask; one reported not running is removed;
  *  - an unmatched RUNNING subagent-typed entry is a one-shot this listener
- *    never saw start (Orca/relay restart mid-run) → recreate it;
+ *    never saw start (Argus/relay restart mid-run) → recreate it;
  *  - an unlisted entry is finished or dead (its SubagentStop was lost) →
  *    remove it — UNLESS it is teammate-shaped, live-tracked, never
  *    subagent-listed, the list still shows teammate-typed tasks, AND it is
@@ -247,7 +247,7 @@ export function foldClaudeBackgroundTasksIntoRoster(
 
 /** Second reap path for restored rows, used when the agent process that wrote
  *  the snapshot is gone. The inventory reap needs the parent to emit a complete
- *  `background_tasks` list; a parent that went idle before Orca restarted never
+ *  `background_tasks` list; a parent that went idle before Argus restarted never
  *  emits one, so an unconfirmed row would gate the pane 'working' forever and
  *  keep it out of hibernation. Rows confirmed by live activity are untouched.
  *  Returns whether anything was dropped. */

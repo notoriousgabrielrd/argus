@@ -1,5 +1,5 @@
 /**
- * Regression proof for #8291: a real alt-screen TUI survives an Orca quit/relaunch, and after the
+ * Regression proof for #8291: a real alt-screen TUI survives an Argus quit/relaunch, and after the
  * warm reattach a drag over it must still go to the TUI as mouse reports, not to xterm's row
  * selection. Drives the rendered surface only — no mocks, no direct mode assertions.
  */
@@ -32,7 +32,7 @@ const WHEEL_DOWN_REPORT = '\x1b[<65;10;10M'
 // Why not the shared seeded repo: a concurrent e2e globalTeardown deletes whatever repo the
 // machine-global pointer file names, which could be this one mid-restart.
 function createIsolatedProofRepo(): string {
-  // Why realpathSync: macOS tmpdir symlinks through /private and Orca canonicalizes repo.path.
+  // Why realpathSync: macOS tmpdir symlinks through /private and Argus canonicalizes repo.path.
   const repoDir = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'orca-mouse-reattach-repo-')))
   const git = (...args: string[]): void => {
     execFileSync('git', args, { cwd: repoDir, stdio: 'pipe' })
@@ -40,7 +40,7 @@ function createIsolatedProofRepo(): string {
   git('init', '-q')
   git('config', 'user.email', 'e2e@test.local')
   git('config', 'user.name', 'E2E Test')
-  writeFileSync(path.join(repoDir, 'README.md'), '# Orca mouse-mode reattach proof repo\n')
+  writeFileSync(path.join(repoDir, 'README.md'), '# Argus mouse-mode reattach proof repo\n')
   git('add', '-A')
   git('commit', '-q', '-m', 'Seed commit for the reattach mouse-mode proof')
   return repoDir
@@ -145,7 +145,7 @@ async function dragAcrossTuiRows(page: Page, screen: TerminalSurface['screen']):
   await page.mouse.up()
 }
 
-// Why: this suite quits and relaunches Orca against one userDataDir, and the
+// Why: this suite quits and relaunches Argus against one userDataDir, and the
 // second launch must find the daemon (and the TUI it owns) still alive.
 test.describe.configure({ mode: 'serial' })
 
@@ -215,7 +215,7 @@ test.describe('terminal reattach mouse mode', () => {
       // ── The reported symptom: drag now paints a selection over the TUI ──
       await dragAcrossTuiRows(secondLaunch.page, afterReattach.screen)
       const afterDrag = await readTerminalSurface(secondLaunch.page)
-      // Why a screenshot and not the video fixture: this spec quits and relaunches Orca,
+      // Why a screenshot and not the video fixture: this spec quits and relaunches Argus,
       // so the recorder's WebM never flushes. This frame IS the proof — on main the drag
       // paints an xterm row selection across the live TUI; here it must stay clean.
       const proofShot = process.env.ORCA_E2E_PROOF_SCREENSHOT

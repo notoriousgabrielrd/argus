@@ -138,8 +138,8 @@ describe('captureLinuxPackageArtifact', () => {
   })
 
   it('accepts an uppercase extension', () => {
-    capture({ downloadedFile: path.join(downloadDir, 'Orca.DEB') })
-    expect(recovery.getTrackedLinuxPackageArtifact()?.path).toBe(path.join(downloadDir, 'Orca.DEB'))
+    capture({ downloadedFile: path.join(downloadDir, 'Argus.DEB') })
+    expect(recovery.getTrackedLinuxPackageArtifact()?.path).toBe(path.join(downloadDir, 'Argus.DEB'))
   })
 
   it('requires a non-empty string version', () => {
@@ -157,8 +157,8 @@ describe('captureLinuxPackageArtifact', () => {
   })
 
   it('matches a percent-encoded relative URL against the decoded basename', () => {
-    const downloadedFile = path.join(downloadDir, 'Orca Setup 1.2.3.deb')
-    capture({ downloadedFile, files: [{ url: 'Orca%20Setup%201.2.3.deb', sha512: SHA512 }] })
+    const downloadedFile = path.join(downloadDir, 'Argus Setup 1.2.3.deb')
+    capture({ downloadedFile, files: [{ url: 'Argus%20Setup%201.2.3.deb', sha512: SHA512 }] })
     expect(recovery.getTrackedLinuxPackageArtifact()?.path).toBe(downloadedFile)
   })
 

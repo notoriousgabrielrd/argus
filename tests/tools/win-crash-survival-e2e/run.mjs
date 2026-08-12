@@ -1,6 +1,6 @@
 // win-crash-survival-e2e — packaged crash-survival proof harness.
 //
-// GitHub #7742: on Windows, when Orca's main/renderer process crashed, open
+// GitHub #7742: on Windows, when Argus's main/renderer process crashed, open
 // terminal PTYs were orphaned and PowerShell hard-crashed with a 0xE9 "No
 // process is on the other end of the pipe" FailFast, because the terminal daemon
 // (hosting the ConPTYs) died together with the main process and severed the
@@ -67,7 +67,7 @@ async function main() {
     return 0
   }
   // Assert win32 BEFORE surfacing arg errors so an off-win32 invocation gets the
-  // clear platform message, not a confusing "no Orca.exe found" default-resolution
+  // clear platform message, not a confusing "no Argus.exe found" default-resolution
   // failure.
   assertWin32('win-crash-survival-e2e')
   if (opts.errors?.length) {
@@ -302,7 +302,7 @@ async function waitForSentinel(file, expectedCanary, expectedShellPid, timeoutMs
 
 /**
  * Resolve THIS run's daemon, scoped to its isolated userData dir so unrelated
- * daemons on the machine (including the developer's live Orca) are ignored.
+ * daemons on the machine (including the developer's live Argus) are ignored.
  * The scoped live process scan is authoritative; PID files only contribute
  * metadata after their PID matches that process.
  */
@@ -343,7 +343,7 @@ function clearSingletonLocks(userDataDir) {
  * kill any pid captured earlier in the run — a captured pid can be recycled by the
  * OS onto an innocent process, so only pids re-verified as this run's daemon (by
  * scoped command-line match) are ever killed. Never installs/uninstalls and never
- * touches any other Orca on the box (a live user instance uses a different
+ * touches any other Argus on the box (a live user instance uses a different
  * userData and is out of scope by construction).
  */
 async function teardown({ app, userDataDir, keepProfile, runDir }) {

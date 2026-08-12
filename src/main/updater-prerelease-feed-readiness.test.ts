@@ -218,7 +218,7 @@ describe('fetchNewerReleaseTagsWithReadiness', () => {
               [
                 `version: ${version}`,
                 'files:',
-                '  - url: orca-windows-setup.exe',
+                '  - url: argus-windows-setup.exe',
                 '    sha512: test',
                 `  - url: Orca-${version}-mac.zip`,
                 '    sha512: test',
@@ -231,7 +231,7 @@ describe('fetchNewerReleaseTagsWithReadiness', () => {
       if (init?.method === 'HEAD') {
         const latest = url.includes('/v1.4.28/')
         const unavailable = latest && url.endsWith('/Orca-1.4.28-mac.zip')
-        const missing = latest && url.endsWith('/orca-windows-setup.exe')
+        const missing = latest && url.endsWith('/argus-windows-setup.exe')
         return Promise.resolve({
           ok: !missing && !unavailable,
           status: missing ? publishingIncident.missingWindowsAssetStatus : unavailable ? 503 : 200,
@@ -271,7 +271,7 @@ describe('fetchNewerReleaseTagsWithReadiness', () => {
               [
                 'version: 1.4.28',
                 'files:',
-                '  - url: orca-windows-setup.exe',
+                '  - url: argus-windows-setup.exe',
                 '    sha512: test',
                 '  - url: Orca-1.4.28-mac.zip',
                 '    sha512: test'
@@ -280,7 +280,7 @@ describe('fetchNewerReleaseTagsWithReadiness', () => {
         })
       }
       if (init?.method === 'HEAD') {
-        const isWindowsAsset = url.endsWith('/orca-windows-setup.exe')
+        const isWindowsAsset = url.endsWith('/argus-windows-setup.exe')
         return Promise.resolve({
           ok: false,
           status: isWindowsAsset ? publishingIncident.missingWindowsAssetStatus : 503,

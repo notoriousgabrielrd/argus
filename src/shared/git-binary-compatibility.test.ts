@@ -119,7 +119,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
 
     // Why: the `prunable` porcelain annotation landed in Git 2.31 — five
     // releases before `-z` (2.36) — so only Git <2.31 emits neither and needs
-    // Orca's path-existence fallback (issue #8389).
+    // Argus's path-existence fallback (issue #8389).
     await runGit(['worktree', 'add', '-b', 'compat-stale', 'stale-wt'])
     await rm(join(repoPath, 'stale-wt'), { recursive: true, force: true })
     const staleList = await runGit(['worktree', 'list', '--porcelain'])
@@ -138,7 +138,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
   })
 
   it('deregisters a worktree whose directory was renamed away', async () => {
-    // Orca renames the checkout into a trash directory and then clears the registration, so every
+    // Argus renames the checkout into a trash directory and then clears the registration, so every
     // supported Git must accept `worktree remove --force` on the now-missing path.
     await runGit(['worktree', 'add', '-b', 'compat-deferred', 'deferred-wt'])
     await rename(join(repoPath, 'deferred-wt'), join(repoPath, 'deferred-trash'))

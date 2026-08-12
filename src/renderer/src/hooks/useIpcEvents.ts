@@ -1189,7 +1189,7 @@ export function useIpcEvents(): void {
             id: 'unpaired-device-auth-failure',
             description: translate(
               'auto.hooks.useIpcEvents.11992d0337',
-              'If this was your phone or another Orca client, re-pair it from Settings → Mobile.'
+              'If this was your phone or another Argus client, re-pair it from Settings → Mobile.'
             ),
             // Why: main emits this recovery path once per session, so it must remain visible until acted on or dismissed.
             duration: Infinity,
@@ -2137,7 +2137,7 @@ export function useIpcEvents(): void {
         if (getRuntimeEnvironmentIdForWorktree(store, sourcePage.worktreeId)) {
           return
         }
-        // Why: only the renderer owns Orca's tab model, so main delegates link-open here.
+        // Why: only the renderer owns Argus's tab model, so main delegates link-open here.
         store.createBrowserTab(sourcePage.worktreeId, url, { title: url })
       })
     )

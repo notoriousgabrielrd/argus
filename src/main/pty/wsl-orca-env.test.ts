@@ -10,7 +10,7 @@ import {
 } from './wsl-orca-env'
 
 describe('addOrcaWslInteropEnv', () => {
-  it('marks the Orca terminal handle for Windows to WSL env import', () => {
+  it('marks the Argus terminal handle for Windows to WSL env import', () => {
     const env: Record<string, string> = { ORCA_TERMINAL_HANDLE: 'term_wsl' }
 
     addOrcaWslInteropEnv(env)
@@ -45,8 +45,8 @@ describe('addOrcaWslInteropEnv', () => {
   it('marks OMP status and hook env for Windows to WSL import', () => {
     const env: Record<string, string> = {
       ORCA_TERMINAL_HANDLE: 'term_wsl',
-      ORCA_USER_DATA_PATH: 'C:\\Users\\jin\\AppData\\Roaming\\Orca',
-      ORCA_CLI_COMMAND: 'orca-ide',
+      ORCA_USER_DATA_PATH: 'C:\\Users\\jin\\AppData\\Roaming\\Argus',
+      ORCA_CLI_COMMAND: 'argus-ide',
       ORCA_OMP_STATUS_EXTENSION: 'C:\\Users\\jin\\.omp\\agent\\extensions\\orca-agent-status.ts',
       ORCA_PRIME_AGENT_STATUS_EXTENSION: 'C:\\stale\\orca-agent-status.ts',
       ORCA_PANE_KEY: 'tab-1:leaf-1',
@@ -116,7 +116,7 @@ describe('addOrcaWslInteropEnv', () => {
 
   it('path-translates a Windows hook endpoint but passes a guest-side one untouched', () => {
     const windowsEnv: Record<string, string> = {
-      ORCA_AGENT_HOOK_ENDPOINT: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\agent-hooks\\endpoint.cmd'
+      ORCA_AGENT_HOOK_ENDPOINT: 'C:\\Users\\jin\\AppData\\Roaming\\Argus\\agent-hooks\\endpoint.cmd'
     }
     addOrcaWslInteropEnv(windowsEnv)
     expect(windowsEnv.WSLENV).toContain('ORCA_AGENT_HOOK_ENDPOINT/p')
@@ -209,10 +209,10 @@ describe('addOrcaWslInteropEnv', () => {
   it('never crosses a Windows OpenCode config dir into the guest', () => {
     // Why: the relay spawn env spreads process.env and the daemon inherits its
     // own — a /p entry here would deliver C:\... as /mnt/c and in-guest OpenCode
-    // would adopt Orca's Windows overlay as its config root.
+    // would adopt Argus's Windows overlay as its config root.
     const env: Record<string, string> = {
-      OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\opencode-overlays\\abc',
-      ORCA_OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\opencode-overlays\\abc'
+      OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Argus\\opencode-overlays\\abc',
+      ORCA_OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Argus\\opencode-overlays\\abc'
     }
     addOrcaWslInteropEnv(env)
     expect(env.WSLENV).not.toContain('OPENCODE_CONFIG_DIR')

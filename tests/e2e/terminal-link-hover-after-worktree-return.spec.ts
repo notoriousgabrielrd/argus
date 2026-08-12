@@ -81,7 +81,7 @@ async function locateHoverProbe(page: Page, needle: string): Promise<HoverProbe>
 /**
  * Dispatch a hover mousemove at the probe coordinates and return the text of
  * the link the linkifier considers active (or null). Callers poll this because
- * Orca's file-path provider resolves link candidates asynchronously.
+ * Argus's file-path provider resolves link candidates asynchronously.
  */
 async function hoverAndReadActiveLinkText(page: Page, probe: HoverProbe): Promise<string | null> {
   await page.evaluate(({ col, row, tabId }) => {

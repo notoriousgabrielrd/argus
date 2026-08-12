@@ -12,7 +12,7 @@ const STATUSLINE_CLEANUP_LABEL = 'orca_statusline_cleanup'
 const STATUSLINE_PROBE_LABEL = 'orca_statusline_probe'
 
 // Why: Claude Code pipes `rate_limits` to the statusLine command on every turn; forwarding
-// it gives Orca live usage without spending the OAuth usage endpoint's tight budget.
+// it gives Argus live usage without spending the OAuth usage endpoint's tight budget.
 // Emits no stdout so the in-terminal status line stays visually unchanged.
 export function getManagedStatusLineScript(target: 'local' | 'posix' = 'local'): string {
   if (target === 'local' && process.platform === 'win32') {
@@ -46,7 +46,7 @@ export function getManagedStatusLineScript(target: 'local' | 'posix' = 'local'):
       // Why: \" is the MSVC argv escape — findstr sees the quoted JSON key, so a cwd containing rate_limits can't false-match (POSIX guard parity).
       '"%SystemRoot%\\System32\\findstr.exe" /c:\\"rate_limits\\" "%ORCA_STATUSLINE_PAYLOAD_FILE%" >nul 2>nul',
       `if errorlevel 1 goto :${STATUSLINE_CLEANUP_LABEL}`,
-      // Why: call the endpoint file to refresh port/token — a PTY that survived an Orca restart carries stale env; falls through to PTY env if missing.
+      // Why: call the endpoint file to refresh port/token — a PTY that survived an Argus restart carries stale env; falls through to PTY env if missing.
       'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
       `if "%ORCA_AGENT_HOOK_PORT%"=="" goto :${STATUSLINE_CLEANUP_LABEL}`,
       `if "%ORCA_AGENT_HOOK_TOKEN%"=="" goto :${STATUSLINE_CLEANUP_LABEL}`,

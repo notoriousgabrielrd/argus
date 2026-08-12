@@ -11,7 +11,7 @@ import { useAppStore } from '@/store'
 import { MobileRelayBetaNotice } from './MobileRelayBetaNotice'
 export { getMobileSettingsPaneSearchEntries }
 
-const ORCA_IOS_APP_STORE_URL = 'https://apps.apple.com/app/orca-ide/id6766130217'
+const ORCA_IOS_APP_STORE_URL = 'https://apps.apple.com/app/argus-ide/id6766130217'
 const ORCA_ANDROID_APK_URL =
   'https://github.com/stablyai/orca/releases/download/mobile-android-v0.0.37/app-release.apk'
 
@@ -34,7 +34,7 @@ export function MobileSettingsPane(): React.JSX.Element {
           <p>
             {translate(
               'auto.components.settings.MobileSettingsPane.installIntro',
-              'Install Orca Mobile from the'
+              'Install Argus Mobile from the'
             )}{' '}
             <button
               type="button"
@@ -68,11 +68,11 @@ export function MobileSettingsPane(): React.JSX.Element {
       <SearchableSetting
         title={translate(
           'auto.components.settings.MobileSettingsPane.1de96ec8a6',
-          'Show Orca Mobile Button'
+          'Show Argus Mobile Button'
         )}
         description={translate(
           'auto.components.settings.MobileSettingsPane.682293cadf',
-          'Show the Orca Mobile button at the top of the left sidebar.'
+          'Show the Argus Mobile button at the top of the left sidebar.'
         )}
         keywords={getMobileSidebarShortcutSearchEntry().keywords}
       >
@@ -80,11 +80,11 @@ export function MobileSettingsPane(): React.JSX.Element {
         <SettingsSwitchRow
           label={translate(
             'auto.components.settings.MobileSettingsPane.1de96ec8a6',
-            'Show Orca Mobile Button'
+            'Show Argus Mobile Button'
           )}
           description={translate(
             'auto.components.settings.MobileSettingsPane.d4f2b65f30',
-            'Show the Orca Mobile shortcut in the sidebar.'
+            'Show the Argus Mobile shortcut in the sidebar.'
           )}
           checked={showMobileButton}
           onChange={() => updateSettings({ showMobileButton: !showMobileButton })}

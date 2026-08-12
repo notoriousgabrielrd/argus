@@ -51,7 +51,7 @@ export type CodexManagedTrustGrantPlan = {
   tomlPath: string
   /** Exact command string written to the managed hooks.json entries. */
   managedCommand: string
-  /** Managed trust identities Orca just wrote (no trustedHash). */
+  /** Managed trust identities Argus just wrote (no trustedHash). */
   managedEntries: readonly CodexTrustEntry[]
   host: CodexTrustGrantHost
   telemetryLane: CodexTrustGrantTelemetryLane
@@ -166,7 +166,7 @@ function findLedgerGrant(
 }
 
 /**
- * Grants trust for Orca's managed Codex hooks through codex's own app-server
+ * Grants trust for Argus's managed Codex hooks through codex's own app-server
  * RPCs, verified by re-list. Returns the granted entries carrying Codex's
  * verbatim hashes, or a fallback marker — the caller then runs the previous
  * computeTrustedHash lane, byte-identical to the pre-RPC behavior. Never

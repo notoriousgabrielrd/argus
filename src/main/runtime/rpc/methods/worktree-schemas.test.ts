@@ -50,7 +50,7 @@ describe('worktree RPC schemas', () => {
         provider: 'jira',
         siteId: 'site-1',
         siteUrl: 'https://company.atlassian.net',
-        projectKey: 'ORCA'
+        projectKey: 'ARGUS'
       }
     }
     const parsed = WorktreeCreate.parse({

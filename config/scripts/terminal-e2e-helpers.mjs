@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Terminal E2E helpers for agent-browser + CDP testing against a running Orca
+ * Terminal E2E helpers for agent-browser + CDP testing against a running Argus
  * dev build. Encapsulates patterns discovered during manual terminal testing:
  *
  *   - CDP key events do NOT work with xterm.js (canvas-based renderer)
@@ -53,7 +53,7 @@ function evalInRenderer(port, js) {
 }
 
 export class OrcaTerminal {
-  /** @param {number} cdpPort — the --remote-debugging-port used when launching Orca */
+  /** @param {number} cdpPort — the --remote-debugging-port used when launching Argus */
   constructor(cdpPort) {
     this.port = cdpPort
   }
@@ -182,7 +182,7 @@ export class OrcaTerminal {
   }
 
   /**
-   * Take a screenshot of the Orca window.
+   * Take a screenshot of the Argus window.
    *
    * @param {string} path — output file path
    * @returns {string} the screenshot path
@@ -193,7 +193,7 @@ export class OrcaTerminal {
   }
 
   /**
-   * Open a new terminal tab in Orca.
+   * Open a new terminal tab in Argus.
    * @returns {void}
    */
   newTerminal() {
@@ -226,7 +226,7 @@ if (process.argv[1]?.endsWith('terminal-e2e-helpers.mjs')) {
   const command = cmdIdx !== -1 ? args[cmdIdx + 1] : null
 
   const term = new OrcaTerminal(port)
-  console.log('Connecting to Orca on CDP port', port, '...')
+  console.log('Connecting to Argus on CDP port', port, '...')
   term.connect()
   console.log('Connected.')
 

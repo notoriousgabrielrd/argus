@@ -107,7 +107,7 @@ async function fetchDiscussions(
 // ── Pipeline jobs ──────────────────────────────────────────────────
 // Why: GitLab's `/pipelines/:id/jobs` only returns jobs owned by that pipeline.
 // Trigger/include bridges live under `/bridges` and their real CI jobs live on
-// the child pipeline — Orca used to show only the parent (often just SAST), so
+// the child pipeline — Argus used to show only the parent (often just SAST), so
 // Checks looked empty next to gitlab.com's full graph.
 
 const PIPELINE_JOB_PAGE_SIZE = 100
@@ -613,7 +613,7 @@ async function fetchIssueDetails(
     const full = mapIssueToWorkItem(issueRaw, projectRef.path, projectRef)
     // Why: omit repoId from the returned shape — the renderer stamps
     // it from the dialog's caller (TaskPage / picker) so the main
-    // process doesn't need to know Orca's Repo.id.
+    // process doesn't need to know Argus's Repo.id.
     const { repoId: _repoId, ...rest } = full
     return rest
   })()

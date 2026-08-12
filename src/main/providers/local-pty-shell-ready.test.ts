@@ -338,7 +338,7 @@ function expectZdotdirSourceContext(content: string, fileName: '.zprofile' | '.z
 }
 
 function expectFinalZdotdirRestoreContext(content: string) {
-  expect(content).toContain("after Orca's last wrapper file has loaded")
+  expect(content).toContain("after Argus's last wrapper file has loaded")
   expect(content).toContain('export ZDOTDIR="$_orca_home"')
 }
 
@@ -389,7 +389,7 @@ describePosix('local PTY shell-ready launch config', () => {
   })
 
   it('falls back to HOME for ORCA_ORIG_ZDOTDIR when inherited ZDOTDIR points at a wrapper dir', async () => {
-    // Why: mirrors the daemon path — guards the same zsh recursion loop for renderer/local PTYs spawned inside an Orca terminal.
+    // Why: mirrors the daemon path — guards the same zsh recursion loop for renderer/local PTYs spawned inside an Argus terminal.
     const previousZdotdir = process.env.ZDOTDIR
     const previousHome = process.env.HOME
     process.env.ZDOTDIR = '/some/other/orca/shell-ready/zsh'
@@ -413,7 +413,7 @@ describePosix('local PTY shell-ready launch config', () => {
     }
   })
 
-  it('uses inherited ORCA_ORIG_ZDOTDIR when ZDOTDIR is an Orca wrapper dir', async () => {
+  it('uses inherited ORCA_ORIG_ZDOTDIR when ZDOTDIR is an Argus wrapper dir', async () => {
     const previousZdotdir = process.env.ZDOTDIR
     const previousOrigZdotdir = process.env.ORCA_ORIG_ZDOTDIR
     const previousHome = process.env.HOME
@@ -803,7 +803,7 @@ path=(/custom/bin $path)
 `
       )
 
-      // Generate the Orca wrapper
+      // Generate the Argus wrapper
       const { getShellReadyLaunchConfig } = await importFreshLocalPtyShellReady()
       const config = getShellReadyLaunchConfig('/bin/zsh')
 
@@ -817,7 +817,7 @@ path=(/custom/bin $path)
       delete cleanEnv.ORCA_ORIG_ZDOTDIR
       // Why: this test isolates zsh top-level path scoping, not attribution shim ordering.
       delete cleanEnv.ORCA_ATTRIBUTION_SHIM_DIR
-      cleanEnv.ZDOTDIR = config.env.ZDOTDIR // Point to Orca wrapper dir
+      cleanEnv.ZDOTDIR = config.env.ZDOTDIR // Point to Argus wrapper dir
 
       const result = spawnSync(
         'zsh',
@@ -1035,7 +1035,7 @@ export ZDOTDIR="$HOME/.config/zsh"
       const cleanEnv: Record<string, string | undefined> = { ...process.env, HOME: testHome }
       delete cleanEnv.ZDOTDIR
       delete cleanEnv.ORCA_ORIG_ZDOTDIR
-      cleanEnv.ZDOTDIR = config.env.ZDOTDIR // Point to Orca wrapper dir
+      cleanEnv.ZDOTDIR = config.env.ZDOTDIR // Point to Argus wrapper dir
 
       const result = spawnSync(
         'zsh',
@@ -1068,7 +1068,7 @@ export MY_VAR=foo
       const cleanEnv: Record<string, string | undefined> = { ...process.env, HOME: testHome }
       delete cleanEnv.ZDOTDIR
       delete cleanEnv.ORCA_ORIG_ZDOTDIR
-      cleanEnv.ZDOTDIR = config.env.ZDOTDIR // Point to Orca wrapper dir
+      cleanEnv.ZDOTDIR = config.env.ZDOTDIR // Point to Argus wrapper dir
 
       const result = spawnSync('zsh', ['-c', 'echo "ORCA_ORIG_ZDOTDIR=${ORCA_ORIG_ZDOTDIR}"'], {
         env: cleanEnv as NodeJS.ProcessEnv,

@@ -22,7 +22,7 @@ import {
 } from '../agent-hooks/installer-utils-remote'
 
 const HERMES_PLUGIN_NAME = 'orca-status'
-const HERMES_PLUGIN_MARKER = 'Managed by Orca. Do not edit; changes may be overwritten.'
+const HERMES_PLUGIN_MARKER = 'Managed by Argus. Do not edit; changes may be overwritten.'
 
 const HERMES_EVENTS = [
   'on_session_start',
@@ -109,7 +109,7 @@ function enablePlugin(config: HermesConfig): HermesConfig {
   plugins.enabled = Array.from(new Set([...enabled, HERMES_PLUGIN_NAME])).sort()
   if (disabled === null) {
     // Why: Hermes treats a malformed disabled list as empty. Normalize it here
-    // so Orca's install status matches what the real Hermes loader will do.
+    // so Argus's install status matches what the real Hermes loader will do.
     plugins.disabled = []
   } else if (disabled.includes(HERMES_PLUGIN_NAME)) {
     const filtered = disabled.filter((name) => name !== HERMES_PLUGIN_NAME)
@@ -272,8 +272,8 @@ function getPluginManifest(): string {
     `# ${HERMES_PLUGIN_MARKER}`,
     `name: ${HERMES_PLUGIN_NAME}`,
     'version: 1.0.0',
-    'description: "Reports Hermes Agent lifecycle events to Orca."',
-    'author: "Orca"',
+    'description: "Reports Hermes Agent lifecycle events to Argus."',
+    'author: "Argus"',
     'kind: standalone',
     'provides_hooks:',
     ...HERMES_EVENTS.map((event) => `  - ${event}`),

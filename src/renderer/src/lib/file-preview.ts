@@ -8,8 +8,8 @@ import { findSiblingGroupId } from '@/store/slices/tabs'
 
 export type PreviewableLanguage = 'html'
 export const REMOTE_FILE_BROWSER_UNSUPPORTED_MESSAGE =
-  'Open in Orca Browser is only available for local files.'
-const FILE_BROWSER_OPEN_FAILED_MESSAGE = 'Unable to open this file in Orca Browser.'
+  'Open in Argus Browser is only available for local files.'
+const FILE_BROWSER_OPEN_FAILED_MESSAGE = 'Unable to open this file in Argus Browser.'
 
 function reportRemoteFileBrowserOpen(result: Promise<boolean>): void {
   void result.then((created) => {

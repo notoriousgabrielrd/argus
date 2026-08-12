@@ -3201,7 +3201,7 @@ export default function ChecksPanel(): React.JSX.Element {
           githubTarget && activeReview.provider === 'github'
             ? translate(
                 'auto.components.right.sidebar.ChecksPanel.5eb2163b6b',
-                'Review the prompt before starting an agent. After the prompt is delivered, Orca resolves the selected host threads and replies to comments it cannot resolve.'
+                'Review the prompt before starting an agent. After the prompt is delivered, Argus resolves the selected host threads and replies to comments it cannot resolve.'
               )
             : translate(
                 'auto.components.right.sidebar.ChecksPanel.abf59262fb',
@@ -3462,7 +3462,7 @@ export default function ChecksPanel(): React.JSX.Element {
     setCommentResolutionAckBusyNow(false)
   }, [setCommentResolutionAckBusyNow])
 
-  /** Prompt reached the agent: only now may Orca write to the host. */
+  /** Prompt reached the agent: only now may Argus write to the host. */
   const consumeClaimedCommentResolutionAfterDelivery = useCallback((): void => {
     const resolution =
       claimedCommentResolutionRef.current ??
@@ -4312,7 +4312,7 @@ export default function ChecksPanel(): React.JSX.Element {
       reviewState.autoRetryAt !== undefined && reviewState.autoRetryAt > Date.now()
         ? translate(
             'auto.components.right.sidebar.ChecksPanel.review.auto_retry',
-            'Orca will retry at {{time}}.',
+            'Argus will retry at {{time}}.',
             { time: new Date(reviewState.autoRetryAt).toLocaleTimeString() }
           )
         : null

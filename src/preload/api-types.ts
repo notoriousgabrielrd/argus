@@ -756,7 +756,7 @@ export type PtyManagementSession = {
   protocolVersion: number
 }
 
-// 'severed': macOS can no longer attribute daemon terminals to Orca, so Accessibility/
+// 'severed': macOS can no longer attribute daemon terminals to Argus, so Accessibility/
 // Automation grants silently stop applying until the daemon is restarted (STA-3491).
 export type PtyManagementMacTccAttributionHealth = 'intact' | 'severed' | 'unknown'
 
@@ -940,7 +940,7 @@ export type AppApi = {
   getFeatureWallAssetBaseUrl: () => Promise<string>
   /** Relaunches the app (app.relaunch() + app.exit(0)) for settings that need a full restart to apply. */
   relaunch: () => Promise<void>
-  /** Restarts Orca through the normal quit pipeline so daemon-backed terminal
+  /** Restarts Argus through the normal quit pipeline so daemon-backed terminal
    *  sessions survive and can reattach after the new process starts. */
   restart: () => Promise<void>
   /** Reloads the current app renderer through main so expected renderer
@@ -969,7 +969,7 @@ export type AppApi = {
   setUnreadDockBadgeCount: (count: number) => Promise<void>
   /** Resolves the launch directory for global Floating Terminal tabs. */
   getFloatingTerminalCwd: (args?: FloatingTerminalCwdRequest) => Promise<string>
-  /** Resolves Orca's app-owned directory for auto-created Floating Workspace
+  /** Resolves Argus's app-owned directory for auto-created Floating Workspace
    *  markdown notes. */
   getFloatingMarkdownDirectory: () => Promise<string>
   /** Opens a native picker for markdown documents, rooted in the floating
@@ -1402,7 +1402,7 @@ export type PreloadApi = {
       allowUnverifiedPtyStop?: boolean
       skipArchive?: boolean
     }) => Promise<RemoveWorktreeResult>
-    // Forget a workspace from Orca only (no remote Git/FS work) — for workspaces pinned to a removed/disconnected SSH host.
+    // Forget a workspace from Argus only (no remote Git/FS work) — for workspaces pinned to a removed/disconnected SSH host.
     forgetLocal: (args: {
       worktreeId: string
       hostId?: ExecutionHostId
@@ -2522,7 +2522,7 @@ export type PreloadApi = {
     onData: (callback: (payload: TerminalPreviewDataPayload) => void) => () => void
   }
   macosTccPrompts: {
-    /** Fires once macOS has raised its Nth consent dialog naming Orca (#9756). */
+    /** Fires once macOS has raised its Nth consent dialog naming Argus (#9756). */
     onThreshold: (callback: (payload: { promptCount: number }) => void) => () => void
     consumePending: () => Promise<{ claimId: number; promptCount: number } | null>
     acknowledgePending: (claimId: number) => Promise<void>

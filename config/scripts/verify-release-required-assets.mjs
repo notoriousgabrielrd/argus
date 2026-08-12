@@ -11,22 +11,22 @@ export function getRequiredReleaseAssetNames(tag) {
     'latest-linux-arm64.yml',
     'latest-mac.yml',
     'latest.yml',
-    'orca-linux.AppImage',
-    'orca-linux-arm64.AppImage',
+    'argus-linux.AppImage',
+    'argus-linux-arm64.AppImage',
     `orca-ide_${version}_amd64.deb`,
     `orca-ide_${version}_arm64.deb`,
-    `orca-ide-${version}.x86_64.rpm`,
-    `orca-ide-${version}.aarch64.rpm`,
-    'orca-windows-setup.exe',
-    'orca-windows-setup.exe.blockmap',
+    `argus-ide-${version}.x86_64.rpm`,
+    `argus-ide-${version}.aarch64.rpm`,
+    'argus-windows-setup.exe',
+    'argus-windows-setup.exe.blockmap',
     `Orca-${version}-mac.zip`,
     `Orca-${version}-mac.zip.blockmap`,
     `Orca-${version}-arm64-mac.zip`,
     `Orca-${version}-arm64-mac.zip.blockmap`,
-    'orca-macos-x64.dmg',
-    'orca-macos-x64.dmg.blockmap',
-    'orca-macos-arm64.dmg',
-    'orca-macos-arm64.dmg.blockmap'
+    'argus-macos-x64.dmg',
+    'argus-macos-x64.dmg.blockmap',
+    'argus-macos-arm64.dmg',
+    'argus-macos-arm64.dmg.blockmap'
   ]
 }
 

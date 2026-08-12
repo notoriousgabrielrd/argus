@@ -50,7 +50,7 @@ export function AutomationEditorPromptSection({
           .
         </p>
       </Field>
-      {/* Why: the Orca/Hermes target toggle changes form height; collapsing the
+      {/* Why: the Argus/Hermes target toggle changes form height; collapsing the
           Orca-only precheck row keeps the dialog from snapping vertically. */}
       <div
         className={cn(

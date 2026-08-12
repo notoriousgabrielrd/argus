@@ -62,7 +62,7 @@ export const NEVER_TRANSLATE_VALUES = new Set([
   'OpenClaw',
   'OpenCode',
   'OpenCode Go',
-  'Orca',
+  'Argus',
   'Pi',
   'PostHog',
   'Qwen Code',
@@ -329,7 +329,7 @@ function applyCjkLatinTermSpacing(localeValue, locale) {
     )
   if (locale === 'ko') {
     // Korean particles attach to the noun (no space) only when the particle is a complete token at a
-    // boundary — re-glue "Orca 에"/"PR 을"/"에서는" but keep "Jira 이슈"/"Orca 로고"/"agent 에뮬레이터".
+    // boundary — re-glue "Argus 에"/"PR 을"/"에서는" but keep "Jira 이슈"/"Argus 로고"/"agent 에뮬레이터".
     result = result.replace(
       new RegExp(
         `(${CJK_LATIN_SPACED_TERM_PATTERN}) ((?:에서|에게|에는|에선|으로|로서|로써|부터|까지|보다|처럼|은|는|이|가|을|를|와|과|의|에|로|도|만)+)(?=$|[\\s.,!?…·:;)\\]}"'」』])`,
@@ -407,11 +407,11 @@ export function repairTranslatedValue({ key, enValue, localeValue, locale }) {
     result = result.replace(/虎鲸:\/\//g, 'orca://')
   }
 
-  if (enValue === 'Orca' || enValue.startsWith('Orca ')) {
+  if (enValue === 'Argus' || enValue.startsWith('Argus ')) {
     result = result
-      .replaceAll('虎鲸', 'Orca')
-      .replaceAll('逆戟鲸', 'Orca')
-      .replaceAll('シャチ', 'Orca')
+      .replaceAll('虎鲸', 'Argus')
+      .replaceAll('逆戟鲸', 'Argus')
+      .replaceAll('シャチ', 'Argus')
   }
 
   if (enValue.includes('orca://')) {
@@ -478,22 +478,22 @@ export function repairCatalog(enCatalog, localeCatalog, locale) {
 
   if (localeCatalog.menu) {
     if (locale === 'zh') {
-      if (localeCatalog.menu.exploreOrca !== '探索 Orca') {
-        localeCatalog.menu.exploreOrca = '探索 Orca'
+      if (localeCatalog.menu.exploreOrca !== '探索 Argus') {
+        localeCatalog.menu.exploreOrca = '探索 Argus'
         repaired += 1
       }
-      if (localeCatalog.menu.gettingStarted !== 'Orca 入门') {
-        localeCatalog.menu.gettingStarted = 'Orca 入门'
+      if (localeCatalog.menu.gettingStarted !== 'Argus 入门') {
+        localeCatalog.menu.gettingStarted = 'Argus 入门'
         repaired += 1
       }
     }
     if (locale === 'ko') {
-      if (localeCatalog.menu.exploreOrca !== 'Orca 둘러보기') {
-        localeCatalog.menu.exploreOrca = 'Orca 둘러보기'
+      if (localeCatalog.menu.exploreOrca !== 'Argus 둘러보기') {
+        localeCatalog.menu.exploreOrca = 'Argus 둘러보기'
         repaired += 1
       }
-      if (localeCatalog.menu.gettingStarted !== 'Orca 시작하기') {
-        localeCatalog.menu.gettingStarted = 'Orca 시작하기'
+      if (localeCatalog.menu.gettingStarted !== 'Argus 시작하기') {
+        localeCatalog.menu.gettingStarted = 'Argus 시작하기'
         repaired += 1
       }
     }

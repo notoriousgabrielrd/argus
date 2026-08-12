@@ -222,7 +222,7 @@ describe('areTaskSourceContextsEqual', () => {
       provider: 'jira',
       siteId: 'site-1',
       siteUrl: 'https://company.atlassian.net',
-      projectKey: 'ORCA'
+      projectKey: 'ARGUS'
     }
   }
 
@@ -230,7 +230,7 @@ describe('areTaskSourceContextsEqual', () => {
     expect(
       areTaskSourceContextsEqual(base, {
         providerIdentity: {
-          projectKey: 'ORCA',
+          projectKey: 'ARGUS',
           siteUrl: 'https://company.atlassian.net',
           siteId: 'site-1',
           provider: 'jira'

@@ -376,7 +376,7 @@ test.describe('Terminal Panes', () => {
     await expect(orcaPage.locator('.pane-title-text', { hasText: title })).toHaveCount(1)
   })
 
-  test('Set Title editor renders in Orca overlay while terminal reserves title space', async ({
+  test('Set Title editor renders in Argus overlay while terminal reserves title space', async ({
     orcaPage
   }) => {
     const title = `Reserved overlay title ${Date.now()}`
@@ -889,7 +889,7 @@ test.describe('Terminal Panes', () => {
       { targetTabId: tabId, title: runtimeTitle }
     )
 
-    // Why: active agents continuously write OSC titles. Set Title is Orca's
+    // Why: active agents continuously write OSC titles. Set Title is Argus's
     // pane-local overlay and must remain visible while the tab runtime title
     // continues to follow the active PTY.
     await expect(orcaPage.locator('.pane-title-text', { hasText: paneTitle })).toBeVisible()

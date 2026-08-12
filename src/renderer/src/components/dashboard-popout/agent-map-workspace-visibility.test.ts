@@ -15,7 +15,7 @@ function card(overrides: Partial<DashboardCard> = {}): DashboardCard {
     worktreeId: 'occupied',
     tabId: 'tab-1',
     leafId: null,
-    repoName: 'Orca',
+    repoName: 'Argus',
     worktreeName: 'Occupied',
     executionHostId: 'local',
     startedAt: 0,
@@ -30,7 +30,7 @@ function workspace(overrides: Partial<DashboardWorkspace> = {}): DashboardWorksp
   return {
     repoId: 'repo-1',
     worktreeId: 'empty',
-    repoName: 'Orca',
+    repoName: 'Argus',
     worktreeName: 'Empty child',
     hostKind: 'local',
     executionHostId: 'local',

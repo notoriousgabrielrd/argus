@@ -942,7 +942,7 @@ describe('upsertHookTrustEntries', () => {
     expect(written).not.toContain('sha256:OLD')
   })
 
-  it('finds and replaces a legacy forward-slash block when Orca upserts with native backslash key', () => {
+  it('finds and replaces a legacy forward-slash block when Argus upserts with native backslash key', () => {
     // Why: Codex 0.140 exposes Windows keys with either separator depending on cwd, so replace both.
     const backslashPath = 'C:\\Users\\Rod\\AppData\\Roaming\\orca\\hooks.json'
     const legacyKey = `${backslashPath.replace(/\\/g, '/')}:session_start:0:0`
@@ -1010,7 +1010,7 @@ describe('upsertHookTrustEntries', () => {
     expect(written).not.toContain(`[hooks.state.'C:\\Users\\O'Connor`)
   })
 
-  it('finds a Codex-written block with lowercased username when Orca key has mixed-case username', () => {
+  it('finds a Codex-written block with lowercased username when Argus key has mixed-case username', () => {
     // Why: realpathSync.native casing can differ from what Codex wrote, so case-fold to replace not duplicate.
     const lowercasePath = 'C:\\Users\\rod\\AppData\\Roaming\\orca\\hooks.json'
     const mixedCasePath = 'C:\\Users\\Rod\\AppData\\Roaming\\orca\\hooks.json'
@@ -1131,7 +1131,7 @@ describe('upsertProjectTrustLevel', () => {
   })
 
   it('updates an existing legacy Windows forward-slash project block', () => {
-    // Why: older Orca builds normalized to forward slashes; backslash fixes must not duplicate them.
+    // Why: older Argus builds normalized to forward slashes; backslash fixes must not duplicate them.
     const original = [
       '[projects."C:/Users/nw/repo"]',
       'notes = "keep"',
@@ -1639,7 +1639,7 @@ describe('readHookTrustEntries', () => {
         'trusted_hash = "sha256:USER"',
         '',
         `[hooks.state.'${key}']`,
-        'trusted_hash = "sha256:ORCA"',
+        'trusted_hash = "sha256:ARGUS"',
         ''
       ].join('\n'),
       'utf-8'
@@ -1684,13 +1684,13 @@ describe('readHookTrustEntries', () => {
     const key = '/x/hooks.json:stop:0:0'
     const content = [
       `\uFEFF[hooks.state."${key}"]`,
-      'trusted_hash = "sha256:ORCA"',
+      'trusted_hash = "sha256:ARGUS"',
       '[other]',
       'value = true',
       ''
     ].join('\n')
 
-    expect(readHookTrustEntriesFromContent(content).get(key)?.trustedHash).toBe('sha256:ORCA')
+    expect(readHookTrustEntriesFromContent(content).get(key)?.trustedHash).toBe('sha256:ARGUS')
     expect(removeHookTrustEntriesFromContent(content, [key])).toBe('[other]\nvalue = true\n')
   })
 

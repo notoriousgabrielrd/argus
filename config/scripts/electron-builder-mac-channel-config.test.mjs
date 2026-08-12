@@ -46,12 +46,12 @@ const withAdhocEnv = (assert) => withEnv({ ORCA_MAC_ADHOC: '1' }, assert)
 describe('electron-builder mac channel config', () => {
   // Why: Squirrel.Mac swaps the .app in place only when the replacement carries the
   // same bundle id and a valid Developer ID signature. A hourly built on the local
-  // (com.stablyai.orca.local, ad-hoc) identity would be un-installable over a real
-  // Orca — the whole point of the channel.
+  // (dev.argus.desktop.local, ad-hoc) identity would be un-installable over a real
+  // Argus — the whole point of the channel.
   it('builds hourly artifacts with the release signing identity', () => {
     withHourlyEnv((config) => {
       expect(config.mac.appId).toBeUndefined()
-      expect(config.appId).toBe('com.stablyai.orca')
+      expect(config.appId).toBe('dev.argus.desktop')
       expect(config.mac.hardenedRuntime).toBe(true)
       expect(config.forceCodeSigning).toBe(true)
     })
@@ -76,10 +76,10 @@ describe('electron-builder mac channel config', () => {
   // break update checks for every real user.
   it('publishes hourly builds to the separate hourly repo', () => {
     withHourlyEnv((config) => {
-      expect(config.publish).toMatchObject({ repo: 'orca-hourly', releaseType: 'prerelease' })
+      expect(config.publish).toMatchObject({ repo: 'argus-hourly', releaseType: 'prerelease' })
     })
     expect(electronBuilderConfig.publish).toMatchObject({
-      repo: 'orca',
+      repo: 'argus',
       releaseType: 'release'
     })
   })
@@ -94,15 +94,15 @@ describe('electron-builder mac channel config', () => {
   })
 
   // Why adhoc carries the identical mac identity to hourly: it installs over a
-  // real Orca through the same updater path, so the same signing and the same TCC
+  // real Argus through the same updater path, so the same signing and the same TCC
   // argument apply. Only the destination repo differs.
   it('builds adhoc artifacts with the release identity and its own repo', () => {
     withAdhocEnv((config) => {
-      expect(config.appId).toBe('com.stablyai.orca')
+      expect(config.appId).toBe('dev.argus.desktop')
       expect(config.mac.hardenedRuntime).toBe(true)
       expect(config.mac.notarize).toBe(true)
       expect(config.forceCodeSigning).toBe(true)
-      expect(config.publish).toMatchObject({ repo: 'orca-adhoc', releaseType: 'prerelease' })
+      expect(config.publish).toMatchObject({ repo: 'argus-adhoc', releaseType: 'prerelease' })
     })
   })
 
@@ -117,11 +117,11 @@ describe('electron-builder mac channel config', () => {
 
   it('builds daily artifacts with the release identity and its own repo', () => {
     withDailyEnv((config) => {
-      expect(config.appId).toBe('com.stablyai.orca')
+      expect(config.appId).toBe('dev.argus.desktop')
       expect(config.mac.hardenedRuntime).toBe(true)
       expect(config.mac.notarize).toBe(true)
       expect(config.forceCodeSigning).toBe(true)
-      expect(config.publish).toMatchObject({ repo: 'orca-daily', releaseType: 'prerelease' })
+      expect(config.publish).toMatchObject({ repo: 'argus-daily', releaseType: 'prerelease' })
     })
   })
 
@@ -136,7 +136,7 @@ describe('electron-builder mac channel config', () => {
 
   // Why: the dev channels share every packaging decision except where they
   // publish, so a future edit that collapses them must not also collapse the
-  // repos — a branch or daily build landing in orca-hourly would be offered to
+  // repos — a branch or daily build landing in argus-hourly would be offered to
   // everyone riding main's hourlies.
   it('keeps the dev channels on separate repos', () => {
     withHourlyEnv((hourly) => {

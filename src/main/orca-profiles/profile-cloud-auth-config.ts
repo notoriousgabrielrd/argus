@@ -71,7 +71,7 @@ export function getOrcaCloudAuthConfig(
   // keeps DesktopRelayService from ever starting. Checked on process.env (not the env param)
   // so unit tests opt back in globally via the vitest setup file.
   if (process.env.ARGUS_ENABLE_ORCA_CLOUD !== '1') {
-    return { configured: false, setupMessage: 'Orca Cloud is disabled in this Argus build.' }
+    return { configured: false, setupMessage: 'Argus Cloud is disabled in this Argus build.' }
   }
   // Why: loopback HTTP endpoints are a local-development convenience only;
   // packaged builds must not accept plain-HTTP token endpoints via env vars.
@@ -90,7 +90,7 @@ export function getOrcaCloudAuthConfig(
   if (!apiBaseUrl || !clientId) {
     return {
       configured: false,
-      setupMessage: 'Orca Cloud sign-in is not configured for this build.'
+      setupMessage: 'Argus Cloud sign-in is not configured for this build.'
     }
   }
 

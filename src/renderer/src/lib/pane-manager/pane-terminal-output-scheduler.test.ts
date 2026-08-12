@@ -1456,7 +1456,7 @@ describe('pane terminal output scheduler', () => {
     vi.advanceTimersByTime(0)
 
     const output = terminal.write.mock.calls.map(([data]) => data).join('')
-    expect(output).toContain('Orca skipped hidden terminal output')
+    expect(output).toContain('Argus skipped hidden terminal output')
     expect(output).toContain('after-cap')
     expect(output).not.toContain('x'.repeat(1024))
   })
@@ -1478,7 +1478,7 @@ describe('pane terminal output scheduler', () => {
     vi.advanceTimersByTime(0)
 
     const output = terminal.write.mock.calls.map(([data]) => data).join('')
-    expect(output).toContain('Orca skipped a burst of terminal output')
+    expect(output).toContain('Argus skipped a burst of terminal output')
     expect(output).toContain('after-cap')
     expect(output).not.toContain('x'.repeat(1024))
   })
@@ -1518,7 +1518,7 @@ describe('pane terminal output scheduler', () => {
     vi.advanceTimersByTime(0)
 
     let output = terminal.write.mock.calls.map(([data]) => data).join('')
-    expect(output).not.toContain('Orca skipped')
+    expect(output).not.toContain('Argus skipped')
     expect(output).toContain('x'.repeat(1024))
 
     // But the scaled cap still bounds a runaway flood.
@@ -1528,7 +1528,7 @@ describe('pane terminal output scheduler', () => {
     }
     vi.advanceTimersByTime(0)
     output = terminal.write.mock.calls.map(([data]) => data).join('')
-    expect(output).toContain('Orca skipped a burst of terminal output')
+    expect(output).toContain('Argus skipped a burst of terminal output')
   })
 
   it('caps a held/coalesced foreground backlog as well', async () => {
@@ -1546,7 +1546,7 @@ describe('pane terminal output scheduler', () => {
     vi.advanceTimersByTime(1_000)
 
     const output = terminal.write.mock.calls.map(([data]) => data).join('')
-    expect(output).toContain('Orca skipped a burst of terminal output')
+    expect(output).toContain('Argus skipped a burst of terminal output')
     expect(output).not.toContain('y'.repeat(1024))
   })
 
@@ -1562,7 +1562,7 @@ describe('pane terminal output scheduler', () => {
     vi.advanceTimersByTime(0)
 
     const output = terminal.write.mock.calls.map(([data]) => data).join('')
-    expect(output).toContain('Orca skipped hidden terminal output')
+    expect(output).toContain('Argus skipped hidden terminal output')
     expect(output).not.toContain('x'.repeat(512))
   })
 

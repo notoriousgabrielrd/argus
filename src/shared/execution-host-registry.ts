@@ -80,7 +80,7 @@ function runtimeHealth(
   status: RuntimeStatus | null | undefined,
   compatibility: RuntimeCompatVerdict | null
 ): ExecutionHostHealth {
-  // Why: with no live status we have no evidence the Orca server is reachable, so
+  // Why: with no live status we have no evidence the Argus server is reachable, so
   // it must read 'disconnected' (like SSH) rather than defaulting to 'available'.
   // A configured-but-never-connected host was showing "Connected" otherwise.
   if (!status) {
@@ -162,7 +162,7 @@ function addRuntimeHost(
     id: hostId,
     kind: 'runtime',
     label,
-    detail: 'Orca server',
+    detail: 'Argus server',
     health: controlHealth ?? runtimeHealth(status, compatibility),
     compatibility: compatibility ?? undefined,
     capabilities: status?.capabilities,

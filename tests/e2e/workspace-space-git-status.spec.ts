@@ -10,7 +10,7 @@ test.describe('Workspace Space git status checks', () => {
     orcaPage,
     testRepoPath
   }) => {
-    // Why: on symlinked tmpdirs (/var→/private/var on macOS, /tmp→… on CI) Orca
+    // Why: on symlinked tmpdirs (/var→/private/var on macOS, /tmp→… on CI) Argus
     // registers worktrees under their realpath, so the parent must be canonical
     // before `git worktree add` or the recorded paths won't match and rows drop.
     const worktreeParent = realpathSync(
