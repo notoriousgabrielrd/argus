@@ -48,24 +48,28 @@ const SKIP_FILES = new Set([
 ])
 
 const OLD = 'Or' + 'ca'
-const OLD_UPPER = 'OR' + 'CA'
 // Why: the negative look-arounds exclude the name inside a hyphenated compound
 // (`X-Orca-Agent-Hook-Token`) or a word compound (`OrcaCloud`) — those are wire/protocol
 // identifiers whose two sides live in different files, so a one-sided rename silently
 // breaks a header or handshake match. Standalone display prose still renames.
 const WORD = new RegExp(`(?<![-\\w])${OLD}(?![-\\w])`, 'g')
-// Why: some UI uppercases the product name, so display assertions carry the upper form.
-// The same guard keeps `ORCA_CLOUD_API_URL` intact — an env var always has `_` next.
-const UPPER = new RegExp(`(?<![-\\w])${OLD_UPPER}(?![-\\w])`, 'g')
+// Why there is no all-caps rule: bare `ORCA` here is overwhelmingly fixture *data* — a
+// Jira project key, a repo search term matched against a lowercase fixture, a query whose
+// exact character count a bounds test asserts. The one label that uppercases the product
+// name does so at render time from the normal-case name.
 // Why: some matchers compare against a lowercased message ("remote orca runtime …"), so
 // the display rename would break classification unless the lowercase prose noun is renamed
 // in lockstep. Never the bare token (CLI binary, orca.yaml, onorca.dev, GitHub slug).
 const LOWER_PHRASE = /(?<![-\w])orca (runtime|cloud|relay)\b/g
 const BUNDLE_ID = /com\.stablyai\.orca/g
+// Why a second form: tests pin the bundle id inside a regex literal, where every dot is
+// backslash-escaped, so the plain-text rule above walks straight past it.
+const BUNDLE_ID_IN_REGEX = /com\\\.stablyai\\\.orca/g
 // Why: distributable file names and the dev-channel release repos are lowercase, so the
 // prose rules above miss them. The leading \b keeps `onorca.dev` out (its `orca` follows a
-// word char), and the explicit suffix list keeps bare `orca` paths (out/cli/orca) intact.
-const ARTIFACT = /\borca-(linux|macos|windows-setup|ide|hourly|daily|adhoc)\b/g
+// word char), and the explicit suffix list keeps the CLI binary names (`orca`, `orca-ide`,
+// whose on-disk assets this phase does not rename) intact.
+const ARTIFACT = /\borca-(linux|macos|windows-setup|hourly|daily|adhoc)\b/g
 
 function* walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -97,9 +101,9 @@ for (const dir of SWEEP_DIRS) {
     const before = readFileSync(file, 'utf8')
     const after = before
       .replace(WORD, 'Argus')
-      .replace(UPPER, 'ARGUS')
       .replace(LOWER_PHRASE, (_, kind) => `argus ${kind}`)
       .replace(BUNDLE_ID, 'dev.argus.desktop')
+      .replace(BUNDLE_ID_IN_REGEX, 'dev\\.argus\\.desktop')
       .replace(ARTIFACT, 'argus-$1')
     if (after !== before) {
       writeFileSync(file, after)

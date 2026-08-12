@@ -144,7 +144,7 @@ describe('useJiraUrlSource', () => {
         provider: 'jira',
         siteId: 'site-b',
         siteUrl: 'https://company.atlassian.net',
-        projectKey: 'ARGUS'
+        projectKey: 'ORCA'
       }
     })
   })

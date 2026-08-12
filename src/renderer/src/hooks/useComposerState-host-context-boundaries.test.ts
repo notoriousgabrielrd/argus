@@ -723,7 +723,7 @@ describe('useComposerState host-context boundaries', () => {
         provider: 'jira' as const,
         siteId: 'site-1',
         siteUrl: 'https://company.atlassian.net/jira',
-        projectKey: 'ARGUS'
+        projectKey: 'ORCA'
       }
     }
 

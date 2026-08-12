@@ -125,7 +125,7 @@ describe('automation-list-search', () => {
       prompt: 'Assign reviewers for open PRs'
     }
     expect(automationListSearchFieldsMatch(fields, 'assignment')).toBe(true)
-    expect(automationListSearchFieldsMatch(fields, 'ARGUS')).toBe(true)
+    expect(automationListSearchFieldsMatch(fields, 'ORCA')).toBe(true)
     expect(automationListSearchFieldsMatch(fields, 'reviewers')).toBe(true)
     expect(automationListSearchFieldsMatch(fields, 'missing')).toBe(false)
   })

@@ -214,10 +214,10 @@ describe('electron-builder config', () => {
   it('uses AppImage and deb as local Linux targets without changing existing artifact names', () => {
     expect(electronBuilderConfig.linux.target).toEqual(['AppImage', 'deb'])
     expect(electronBuilderConfig.appImage.artifactName).toBe('argus-linux.${ext}')
-    expect(electronBuilderConfig.deb.artifactName).toBe('argus-ide_${version}_${arch}.${ext}')
+    expect(electronBuilderConfig.deb.artifactName).toBe('orca-ide_${version}_${arch}.${ext}')
     expect(electronBuilderConfig.rpm).toMatchObject({
-      packageName: 'argus-ide',
-      artifactName: 'argus-ide-${version}.${arch}.${ext}'
+      packageName: 'orca-ide',
+      artifactName: 'orca-ide-${version}.${arch}.${ext}'
     })
   })
 
@@ -530,7 +530,7 @@ describe('electron-builder config', () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-electron-builder-config-'))
       try {
         const resourcesDir = join(root, 'linux-unpacked', 'resources')
-        const launcherPath = join(resourcesDir, 'bin', 'argus-ide')
+        const launcherPath = join(resourcesDir, 'bin', 'orca-ide')
         await mkdir(join(resourcesDir, 'bin'), { recursive: true })
         await cp(
           join(process.cwd(), 'resources', 'plugins', 'launch'),

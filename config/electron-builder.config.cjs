@@ -421,14 +421,14 @@ module.exports = {
   linux: {
     // Why: Ubuntu desktop ships GNOME Argus as the `orca` package and /usr/bin/orca.
     // The Linux installer should not claim those system package/file names.
-    executableName: 'argus-ide',
+    executableName: 'orca-ide',
     // Why: the icns source lets electron-builder emit standard hicolor PNG
     // sizes; a single 1024px PNG is ignored by some Linux docks/launchers.
     icon: 'resources/build/icon.icns',
     desktop: {
       entry: {
         // Why: Electron reports WM_CLASS=orca for the visible Linux window;
-        // GNOME docks need an exact match to group it with argus-ide.desktop.
+        // GNOME docks need an exact match to group it with orca-ide.desktop.
         StartupWMClass: 'orca'
       }
     },
@@ -437,8 +437,8 @@ module.exports = {
       ...createPackagedRuntimeNodeModuleResources('linux'),
       linuxSpeechNativeResource,
       {
-        from: 'resources/linux/bin/argus-ide',
-        to: 'bin/argus-ide'
+        from: 'resources/linux/bin/orca-ide',
+        to: 'bin/orca-ide'
       },
       {
         from: 'node_modules/agent-browser/bin/agent-browser-linux-${arch}',
@@ -458,8 +458,8 @@ module.exports = {
     artifactName: isLinuxArm64Release ? 'argus-linux-arm64.${ext}' : 'argus-linux.${ext}'
   },
   deb: {
-    packageName: 'argus-ide',
-    artifactName: 'argus-ide_${version}_${arch}.${ext}',
+    packageName: 'orca-ide',
+    artifactName: 'orca-ide_${version}_${arch}.${ext}',
     // Why: xvfb lets the bundled `orca serve` CLI run browser panes on a headless
     // Linux host — Chromium needs a display server even for offscreen rendering,
     // and serve starts Xvfb itself when present (see ensure-virtual-display.ts).
@@ -472,7 +472,7 @@ module.exports = {
       'xclip',
       'xvfb'
     ],
-    // Why: symlink the bundled CLI onto PATH at install time so `argus-ide serve`
+    // Why: symlink the bundled CLI onto PATH at install time so `orca-ide serve`
     // works on a headless host. The in-app CLI registration (CliInstaller) is
     // GUI-triggered and can never run on a server, so without this the CLI is
     // unreachable from the shell on exactly the hosts that need it.
@@ -480,8 +480,8 @@ module.exports = {
     afterRemove: 'resources/linux/packaging/after-remove.sh'
   },
   rpm: {
-    packageName: 'argus-ide',
-    artifactName: 'argus-ide-${version}.${arch}.${ext}',
+    packageName: 'orca-ide',
+    artifactName: 'orca-ide-${version}.${arch}.${ext}',
     // Why: see deb depends. RPM distros ship Xvfb as xorg-x11-server-Xvfb (there
     // is no `xvfb` package), so the name differs from the deb here.
     depends: [
@@ -516,7 +516,7 @@ function chmodUnixCliLaunchers(resourcesDir, electronPlatformName) {
   if (electronPlatformName === 'win32') {
     return
   }
-  for (const launcherName of ['orca', 'argus-ide']) {
+  for (const launcherName of ['orca', 'orca-ide']) {
     const launcherPath = join(resourcesDir, 'bin', launcherName)
     if (!existsSync(launcherPath)) {
       continue

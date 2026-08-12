@@ -21,7 +21,7 @@ const JIRA_CONTEXT: TaskSourceContext = {
     provider: 'jira',
     siteId: 'site-1',
     siteUrl: 'https://company.atlassian.net/jira',
-    projectKey: 'ARGUS'
+    projectKey: 'ORCA'
   }
 }
 
