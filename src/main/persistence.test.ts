@@ -11543,13 +11543,13 @@ describe('Store', () => {
   // ── Telemetry cohort migration ─────────────────────────────────────
   // Why: keys on `existsSync(dataFile)`, not the new `telemetry` field, so pre-telemetry installs aren't misclassified as fresh and flipped default-on.
 
-  it('classifies a truly fresh install as new-user cohort (file absent → optedIn=true)', async () => {
-    // No data file written — truly fresh install of the telemetry release.
+  it('classifies a truly fresh install as new-user cohort (file absent → optedIn=null, Argus fails closed)', async () => {
+    // No data file written — truly fresh install. Argus fork: consent defaults to pending, never on.
     const store = await createStore()
     const t = store.getSettings().telemetry
     expect(t).toBeDefined()
     expect(t!.existedBeforeTelemetryRelease).toBe(false)
-    expect(t!.optedIn).toBe(true)
+    expect(t!.optedIn).toBeNull()
     expect(t!.installId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
     )

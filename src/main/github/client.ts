@@ -330,6 +330,11 @@ function isNoPullRequestError(err: unknown): boolean {
  * Returns true if starred, false if not, null if unable to determine (gh unavailable).
  */
 export async function checkOrcaStarred(): Promise<boolean | null> {
+  // Why: Argus fork — never probe the upstream repo's star state; reporting "starred"
+  // keeps Landing/Settings quiet and suppresses the nag as a second layer of defense.
+  if (process.env.ARGUS_ENABLE_STAR_PROBE !== '1') {
+    return true
+  }
   await acquire()
   try {
     const { stdout, stderr } = await execFileAsync(

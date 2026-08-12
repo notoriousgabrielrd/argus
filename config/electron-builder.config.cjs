@@ -506,8 +506,8 @@ module.exports = {
   npmRebuild: true,
   publish: {
     provider: 'github',
-    owner: 'stablyai',
-    repo: devChannelRepo ?? 'orca',
+    owner: 'notoriousgabrielrd',
+    repo: devChannelRepo ?? 'argus',
     releaseType: devChannelRepo ? 'prerelease' : 'release'
   }
 }

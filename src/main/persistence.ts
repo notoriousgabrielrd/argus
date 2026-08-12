@@ -3890,13 +3890,12 @@ export class Store {
         telemetry: {
           ...existing,
           existedBeforeTelemetryRelease: resolvedExistedBefore,
-          // Why: preserve any explicit opt-in/out; fall back to cohort default only when optedIn is undefined, never when false.
+          // Why: preserve any explicit opt-in/out; Argus fork fails closed — fresh installs
+          // default to null (pending consent) instead of upstream's opt-out-by-default true.
           optedIn:
             existing?.optedIn === true || existing?.optedIn === false || existing?.optedIn === null
               ? existing.optedIn
-              : resolvedExistedBefore
-                ? null
-                : true,
+              : null,
           installId:
             typeof existing?.installId === 'string' && existing.installId.length > 0
               ? existing.installId

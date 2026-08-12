@@ -19,7 +19,11 @@ export default defineConfig({
     // Why --expose-gc: retention tests need a deterministic collection point to measure what a queue really holds.
     execArgv: ['--no-experimental-webstorage', '--expose-gc'],
     // Why: happy-dom drops MutationObserver callbacks on GC; keep them alive like a browser does.
-    setupFiles: [resolve('config/scripts/happy-dom-mutation-observer-retention.ts')],
+    setupFiles: [
+      resolve('config/scripts/happy-dom-mutation-observer-retention.ts'),
+      // Why: re-enable Argus-disabled egress paths so upstream unit suites still run.
+      resolve('config/scripts/argus-upstream-test-env.ts')
+    ],
     include: [
       'src/**/*.test.ts',
       'src/**/*.test.tsx',

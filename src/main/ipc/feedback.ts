@@ -1,5 +1,6 @@
 import os from 'node:os'
 import { app, ipcMain, net } from 'electron'
+import { assertArgusFeedbackUploadAllowed } from './argus-egress-gate'
 import {
   appendFeedbackImagesToFormData,
   readFeedbackImagesDelivered,
@@ -109,6 +110,7 @@ async function postFeedback(
   timeoutMs = FEEDBACK_REQUEST_TIMEOUT_MS,
   readResponse?: (response: Response) => Promise<void>
 ): Promise<Response> {
+  assertArgusFeedbackUploadAllowed()
   const controller = new AbortController()
   // Why: a silent endpoint must not leave feedback IPC pending forever.
   const timeout = setTimeout(() => controller.abort(), timeoutMs)

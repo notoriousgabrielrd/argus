@@ -67,6 +67,12 @@ export function getOrcaCloudAuthConfig(
   env: NodeJS.ProcessEnv = process.env,
   packaged: boolean = isPackagedOrcaBuild()
 ): { configured: true; config: OrcaCloudAuthConfig } | { configured: false; setupMessage: string } {
+  // Why: Argus ships without Stably's cloud (login.onorca.dev, relay.onorca.dev); this also
+  // keeps DesktopRelayService from ever starting. Checked on process.env (not the env param)
+  // so unit tests opt back in globally via the vitest setup file.
+  if (process.env.ARGUS_ENABLE_ORCA_CLOUD !== '1') {
+    return { configured: false, setupMessage: 'Orca Cloud is disabled in this Argus build.' }
+  }
   // Why: loopback HTTP endpoints are a local-development convenience only;
   // packaged builds must not accept plain-HTTP token endpoints via env vars.
   const allowLoopbackHttp = !packaged

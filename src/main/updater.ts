@@ -2178,6 +2178,12 @@ export function setupAutoUpdater(
   if (is.dev) {
     return
   }
+  // Why: Argus fork must never contact stablyai release infrastructure (release feed,
+  // nudge poll, changelog). Status APIs above stay wired so the UI reports idle.
+  // Set ARGUS_ENABLE_UPDATER=1 only after repointing the feed to an Argus repo.
+  if (process.env.ARGUS_ENABLE_UPDATER !== '1') {
+    return
+  }
 
   const autoUpdater = getAutoUpdater()
   autoUpdater.autoDownload = false

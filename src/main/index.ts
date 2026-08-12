@@ -2792,7 +2792,7 @@ void app.whenReady().then(async () => {
     emitPluginWorktreeLifecycle(event)
   })
   starNag = new StarNagService(store, stats)
-  starNag.start()
+  // Why: Argus fork — star-nag prompts stay off; handlers stay registered so renderer IPC resolves.
   starNag.registerIpcHandlers()
   runtimeService.setAgentBrowserBridge(
     new AgentBrowserBridge(browserManager, {
