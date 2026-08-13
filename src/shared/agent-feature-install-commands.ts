@@ -4,8 +4,10 @@ import { isSkillsCliAgentKeyShaped } from './skills-cli-agent-keys'
 // pointing it upstream installs that project's skills — whose topic names differ — over
 // the ones this build bundles, so the freshness check can never converge and the update
 // dialog reports "still out of date" after every run.
-export const ARGUS_SKILLS_REPOSITORY_URL =
-  process.env.ARGUS_SKILLS_REPOSITORY_URL?.trim() || 'https://github.com/notoriousgabrielrd/argus'
+// Why no env override here: this module is imported by the renderer, where `process` does
+// not exist — reading it at module scope throws during import and takes the whole React
+// tree down with it. A per-machine override belongs in the main process, not in shared.
+export const ARGUS_SKILLS_REPOSITORY_URL = 'https://github.com/notoriousgabrielrd/argus'
 
 export const ORCA_CLI_SKILL_NAME = 'argus-cli'
 export const COMPUTER_USE_SKILL_NAME = 'computer-use'
