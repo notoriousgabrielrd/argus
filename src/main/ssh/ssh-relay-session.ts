@@ -89,7 +89,7 @@ import {
   isSshOwnerAdmissionBlockedError,
   SshOwnerAdmissionBlockedError
 } from './ssh-owner-admission-blocked-error'
-import { runRemoteOrcaCli } from './ssh-remote-orca-cli'
+import { runRemoteOrcaCli } from './ssh-remote-argus-cli'
 import {
   acknowledgeRemoteOrcaCliPostOutput,
   parseRemoteOrcaCliPostOutput

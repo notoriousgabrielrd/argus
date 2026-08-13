@@ -158,7 +158,7 @@ function parseArgs(argv: string[]): {
       i++
     } else if (argv[i] === '--connect') {
       connectMode = true
-    } else if (argv[i] === '--orca-cli') {
+    } else if (argv[i] === '--argus-cli') {
       cliMode = true
     } else if (argv[i] === '--detached') {
       detached = true
@@ -483,7 +483,7 @@ async function runOrcaCliMode(
   })
 
   const connectTimeout = setTimeout(() => {
-    process.stderr.write(`[orca-cli] Relay connection timed out after ${CONNECT_TIMEOUT_MS}ms\n`)
+    process.stderr.write(`[argus-cli] Relay connection timed out after ${CONNECT_TIMEOUT_MS}ms\n`)
     sock.destroy()
     process.exit(1)
   }, CONNECT_TIMEOUT_MS)
@@ -510,7 +510,7 @@ async function runOrcaCliMode(
 
   sock.on('error', (err) => {
     clearTimeout(connectTimeout)
-    process.stderr.write(`[orca-cli] Relay socket error: ${err.message}\n`)
+    process.stderr.write(`[argus-cli] Relay socket error: ${err.message}\n`)
     process.exit(1)
   })
 }
@@ -546,7 +546,7 @@ async function main(): Promise<void> {
     return
   }
   if (cliMode) {
-    const marker = process.argv.indexOf('--orca-cli')
+    const marker = process.argv.indexOf('--argus-cli')
     await runOrcaCliMode(
       sockPath,
       marker !== -1 ? process.argv.slice(marker + 1) : [],

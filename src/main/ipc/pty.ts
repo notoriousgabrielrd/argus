@@ -114,7 +114,7 @@ import {
   applyTerminalAttributionEnv,
   resolveAttributionShellFamily
 } from '../attribution/terminal-attribution'
-import { ensureLinuxTerminalOrcaCliShimDir } from '../cli/linux-terminal-orca-cli-shim'
+import { ensureLinuxTerminalOrcaCliShimDir } from '../cli/linux-terminal-argus-cli-shim'
 import { registerPty, unregisterPty } from '../memory/pty-registry'
 import { advertisedUrlWatcher } from '../ports/advertised-url-watcher'
 import { track } from '../telemetry/client'

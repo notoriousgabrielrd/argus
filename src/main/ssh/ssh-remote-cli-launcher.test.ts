@@ -41,7 +41,7 @@ describe('SSH remote Argus CLI launcher', () => {
     expect(plan.files).toHaveLength(1)
     expect(plan.files[0]?.path).toBe('C:/Users/me user/.orca-relay/bin/orca-launcher.cs')
     expect(plan.files[0]?.contents).toContain('ProcessStartInfo')
-    expect(plan.files[0]?.contents).toContain('"--orca-cli"')
+    expect(plan.files[0]?.contents).toContain('"--argus-cli"')
     expect(plan.files[0]?.contents).toContain('socketPath + ".credential"')
     expect(plan.files[0]?.contents).toContain("value[index] == '\"'")
     expect(plan.files[0]?.contents).toContain("character == '\\\\'")
@@ -143,7 +143,7 @@ describe('SSH remote Argus CLI launcher', () => {
         sockPath,
         '--credential-file',
         credentialFile,
-        '--orca-cli',
+        '--argus-cli',
         'orchestration',
         'send',
         '--body',
@@ -167,7 +167,7 @@ describe('SSH remote Argus CLI launcher', () => {
         sockPath,
         '--credential-file',
         `${sockPath}.credential`,
-        '--orca-cli',
+        '--argus-cli',
         'status'
       ])
     } finally {
@@ -234,7 +234,7 @@ describe('SSH remote Argus CLI launcher', () => {
     expect(plan.files).toEqual([
       expect.objectContaining({
         path: '/home/me/.orca-relay/bin/orca',
-        contents: expect.stringContaining('--orca-cli "$@"')
+        contents: expect.stringContaining('--argus-cli "$@"')
       })
     ])
   })

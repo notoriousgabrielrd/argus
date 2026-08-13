@@ -136,7 +136,7 @@ describe('CLI remote WebSocket transport', () => {
   it('connects through a saved environment selector', async () => {
     const runtime = await startTestRuntime('runtime-env-1')
     servers.push(runtime)
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-cli-env-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'argus-cli-env-'))
     addEnvironmentFromPairingCode(userDataPath, {
       name: 'remote-dev',
       pairingCode: encodePairingOffer({

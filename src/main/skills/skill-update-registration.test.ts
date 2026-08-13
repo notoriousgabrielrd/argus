@@ -59,9 +59,9 @@ describe('global skill update registration', () => {
       JSON.stringify({
         version: 3,
         skills: {
-          'orca-cli': {
+          'argus-cli': {
             skillFolderHash: 'hash',
-            skillPath: 'skills/orca-cli/SKILL.md',
+            skillPath: 'skills/argus-cli/SKILL.md',
             source: 'stablyai/orca'
           }
         }
@@ -69,7 +69,7 @@ describe('global skill update registration', () => {
     )
 
     await expect(readGloballyUpdatableSkillNames({ homeDir: root, stateHome })).resolves.toEqual(
-      new Set(['orca-cli'])
+      new Set(['argus-cli'])
     )
   })
 })

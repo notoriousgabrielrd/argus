@@ -202,9 +202,9 @@ vi.mock('../telemetry/classify-error', () => ({
 }))
 
 // Why: the real ensure writes to process.resourcesPath (absent under vitest); env assembly only needs the returned dir path.
-vi.mock('../cli/linux-terminal-orca-cli-shim', () => ({
+vi.mock('../cli/linux-terminal-argus-cli-shim', () => ({
   ensureLinuxTerminalOrcaCliShimDir: (options: { userDataPath: string }) =>
-    join(options.userDataPath, 'linux-orca-cli-shim')
+    join(options.userDataPath, 'linux-argus-cli-shim')
 }))
 
 vi.mock('../memory/pty-registry', () => ({
@@ -4416,7 +4416,7 @@ describe('registerPtyHandlers', () => {
             PATH: ['/usr/local/bin', '/usr/bin'].join(delimiter)
           })
           const entries = env.PATH.split(delimiter)
-          const shimDir = join('/tmp/orca-user-data', 'linux-orca-cli-shim')
+          const shimDir = join('/tmp/orca-user-data', 'linux-argus-cli-shim')
           // Why: bare `orca` must resolve to the Argus CLI before /usr/bin/orca (the GNOME screen reader) in Argus terminals (#7904).
           expect(entries.indexOf(shimDir)).toBeGreaterThanOrEqual(0)
           expect(entries.indexOf(shimDir)).toBeLessThan(entries.indexOf('/usr/bin'))

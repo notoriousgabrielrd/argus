@@ -43,7 +43,7 @@ async function makeFixture(): Promise<{
   userDataPath: string
   appPath: string
 }> {
-  const root = await mkdtemp(join(tmpdir(), 'orca-cli-installer-'))
+  const root = await mkdtemp(join(tmpdir(), 'argus-cli-installer-'))
   const userDataPath = join(root, 'userData')
   const appPath = join(root, 'app')
   const cliEntryPath = join(appPath, 'out', 'cli', 'index.js')

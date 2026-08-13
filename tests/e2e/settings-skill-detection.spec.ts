@@ -14,7 +14,7 @@ type MockSkillDiscoveryGlobal = typeof globalThis & {
 
 function makeSkill(sourceKind: SkillSourceKind, directoryPath: string): DiscoveredSkill {
   return {
-    id: `${sourceKind}-orca-cli`,
+    id: `${sourceKind}-argus-cli`,
     name: 'orchestration',
     description: null,
     providers: ['agent-skills'],

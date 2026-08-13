@@ -67,7 +67,7 @@ function deferred<T>(): {
   return { promise, resolve, reject }
 }
 
-const LINEAR_AGENT_SKILL_NAMES = ['orca-linear', 'linear-tickets'] as const
+const LINEAR_AGENT_SKILL_NAMES = ['argus-linear', 'linear-tickets'] as const
 
 const projectWslRuntime: ProjectExecutionRuntimeResolution = {
   status: 'resolved',
@@ -304,7 +304,7 @@ describe('useInstalledAgentSkill', () => {
     await renderProbe()
     expect(latestState?.settled).toBe(false)
 
-    firstScan.resolve(discoveryResult([skill({ name: 'orca-linear' })]))
+    firstScan.resolve(discoveryResult([skill({ name: 'argus-linear' })]))
     await act(async () => {
       await firstScan.promise
     })
@@ -320,7 +320,7 @@ describe('useInstalledAgentSkill', () => {
     expect(latestState?.settled).toBe(true)
     expect(latestState?.installed).toBe(true)
 
-    focusScan.resolve(discoveryResult([skill({ name: 'orca-linear' })]))
+    focusScan.resolve(discoveryResult([skill({ name: 'argus-linear' })]))
     await act(async () => {
       await focusScan.promise
     })
@@ -330,7 +330,7 @@ describe('useInstalledAgentSkill', () => {
   it('reuses cached discovery when another surface finishes re-checking', async () => {
     const discover = vi
       .fn<(target?: SkillDiscoveryTarget) => Promise<SkillDiscoveryResult>>()
-      .mockResolvedValue(discoveryResult([skill({ name: 'orca-linear' })]))
+      .mockResolvedValue(discoveryResult([skill({ name: 'argus-linear' })]))
     Object.defineProperty(window, 'api', {
       configurable: true,
       value: { skills: { discover } }
@@ -364,7 +364,7 @@ describe('useInstalledAgentSkill', () => {
     })
 
     await renderProbe()
-    firstScan.resolve(discoveryResult([skill({ name: 'orca-linear' })]))
+    firstScan.resolve(discoveryResult([skill({ name: 'argus-linear' })]))
     await act(async () => {
       await firstScan.promise
     })
@@ -382,7 +382,7 @@ describe('useInstalledAgentSkill', () => {
     await flushMicrotasks()
     expect(latestState?.loading).toBe(false)
 
-    focusScan.resolve(discoveryResult([skill({ name: 'orca-linear' })]))
+    focusScan.resolve(discoveryResult([skill({ name: 'argus-linear' })]))
     await act(async () => {
       await focusScan.promise
     })
@@ -402,7 +402,7 @@ describe('useInstalledAgentSkill', () => {
     })
 
     await renderProbe()
-    hostScan.resolve(discoveryResult([skill({ name: 'orca-linear' })]))
+    hostScan.resolve(discoveryResult([skill({ name: 'argus-linear' })]))
     await act(async () => {
       await hostScan.promise
     })

@@ -25,7 +25,7 @@ export const SKILL_COMMAND_SPECS: CommandSpec[] = [
       'Use --full to include bundled reference documents when the guide provides them.',
       'Use --json for a deterministic object containing canonical topic metadata and content.'
     ],
-    examples: ['argus skills get orca-cli', 'argus skills get orchestration --full']
+    examples: ['argus skills get argus-cli', 'argus skills get orchestration --full']
   },
   {
     path: ['skills', 'install'],
@@ -55,9 +55,9 @@ export const SKILL_COMMAND_SPECS: CommandSpec[] = [
     ],
     examples: [
       'argus skills install',
-      'argus skills install --skill orca-cli --skill orchestration',
-      'argus skills install --skill orca-cli --local',
-      'argus skills install --skill orca-cli --agent claude-code,codex',
+      'argus skills install --skill argus-cli --skill orchestration',
+      'argus skills install --skill argus-cli --local',
+      'argus skills install --skill argus-cli --agent claude-code,codex',
       'argus skills install --all --dry-run'
     ]
   },
@@ -82,8 +82,8 @@ export const SKILL_COMMAND_SPECS: CommandSpec[] = [
     ],
     examples: [
       'argus skills update',
-      'argus skills update --skill orca-cli --skill orchestration',
-      'argus skills update --skill orca-cli --local',
+      'argus skills update --skill argus-cli --skill orchestration',
+      'argus skills update --skill argus-cli --local',
       'argus skills update --all --dry-run'
     ]
   }

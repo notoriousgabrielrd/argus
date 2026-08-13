@@ -7811,7 +7811,7 @@
       "oracle": "Drive Run create, Task create, and worker-start through production Electron runtimes with a deterministic Codex fixture. Require append-only ledgers with one still-live PID and no interruption, a visible inactive worker tab while the coordinator stays active, Run delivery through stable pane identity, and stable PTY/incarnation, tab, leaf, worktree, Task, and Dispatch across workspace re-entry. In a restart journey, retain the original daemon PTY and PID, remove renderer ownership, retain sleeping-session evidence, mark the Dispatch legacy, relaunch, and require exact inactive tab adoption, readable ACK output, cleared resume state, one spawn, and no resume argv or Conversation interrupted text after another workspace round trip. The service oracle removes renderer lookup identity from current-contract callers while retaining real restored-PTY and hook commitments, replays authenticated completion and takeover across fresh runtimes, and requires one Task, Dispatch, terminal authority, message, mutation, ordinary-mail delivery, remote process fencing, and unchanged fixture marker bytes while foreign pane evidence remains rejected. Unit tests separately remint a creator pane and process from Run A into Run B, require the nested Run A worker to fall back to its current coordinator, require indexed query plans, and bound 300 Task reads with 50,000 retained Runs. They also assert authority-specific legacy affordances, exact identity and owner matching, retained-output fallback, pane-stable routing, federated non-activation, and SSH fallback parity.",
       "commands": [
         "pnpm exec vitest run --config config/vitest.config.ts src/main/runtime/rpc/orchestration-runtime-update-settlement.test.ts --reporter=dot",
-        "pnpm exec vitest run --config config/vitest.config.ts src/cli/handlers/orchestration.test.ts src/cli/handlers/orchestration-check-identity.test.ts src/cli/handlers/orchestration-worker-cli.test.ts src/main/runtime/rpc/methods/orchestration.test.ts src/main/ssh/ssh-remote-orca-cli.test.ts",
+        "pnpm exec vitest run --config config/vitest.config.ts src/cli/handlers/orchestration.test.ts src/cli/handlers/orchestration-check-identity.test.ts src/cli/handlers/orchestration-worker-cli.test.ts src/main/runtime/rpc/methods/orchestration.test.ts src/main/ssh/ssh-remote-argus-cli.test.ts",
         "pnpm exec vitest run --config config/vitest.config.ts src/cli/handlers/orchestration-lifecycle-rejection.test.ts src/cli/handlers/orchestration-lifecycle-json-rejection.test.ts src/cli/handlers/orchestration-migration.test.ts",
         "pnpm exec vitest run --config config/vitest.config.ts src/main/runtime/orchestration/formatter.test.ts src/main/runtime/rpc/methods/orchestration-federation.test.ts",
         "pnpm exec vitest run --config config/vitest.config.ts src/main/runtime/rpc/methods/orchestration-federation-lifecycle-settlement.test.ts --reporter=dot",
@@ -7837,7 +7837,7 @@
         "src/main/runtime/rpc/methods/orchestration.test.ts",
         "src/main/runtime/rpc/methods/orchestration-federation.test.ts",
         "src/main/runtime/rpc/methods/orchestration-federation-lifecycle-settlement.test.ts",
-        "src/main/ssh/ssh-remote-orca-cli.test.ts",
+        "src/main/ssh/ssh-remote-argus-cli.test.ts",
         "tests/e2e/orchestration-worker-terminal-visibility.spec.ts",
         "tests/e2e/orchestration-legacy-worker-restart-recovery.spec.ts",
         "tests/e2e/orchestration-worker-settlement-release-cli.spec.ts"
@@ -7946,7 +7946,7 @@
           "assertions": ["federated worker placement explicitly sets activate=false"]
         },
         {
-          "file": "src/main/ssh/ssh-remote-orca-cli.test.ts",
+          "file": "src/main/ssh/ssh-remote-argus-cli.test.ts",
           "assertions": [
             "implicit SSH fallback checks retain stable pane identity",
             "explicit legacy SSH inspection does not inherit the caller pane key"
@@ -8032,7 +8032,7 @@
           "date": "2026-07-28",
           "runner": "local",
           "platform": "macos",
-          "command": "pnpm exec vitest run --config config/vitest.config.ts src/cli/handlers/orchestration.test.ts src/cli/handlers/orchestration-check-identity.test.ts src/cli/handlers/orchestration-worker-cli.test.ts src/main/runtime/rpc/methods/orchestration.test.ts src/main/ssh/ssh-remote-orca-cli.test.ts",
+          "command": "pnpm exec vitest run --config config/vitest.config.ts src/cli/handlers/orchestration.test.ts src/cli/handlers/orchestration-check-identity.test.ts src/cli/handlers/orchestration-worker-cli.test.ts src/main/runtime/rpc/methods/orchestration.test.ts src/main/ssh/ssh-remote-argus-cli.test.ts",
           "result": "passed",
           "durationSeconds": 5.27,
           "summary": "Five focused files passed with 216 tests, covering visible inactive local worker creation, reveal-failure warnings, stable-pane mailbox routing, live-handle precedence, and SSH fallback parity."

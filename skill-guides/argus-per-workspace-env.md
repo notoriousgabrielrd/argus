@@ -1,5 +1,5 @@
 ---
-name: orca-per-workspace-env
+name: argus-per-workspace-env
 description: >-
   Set up, review, debug, or validate Argus per-workspace environment recipes —
   on-demand, disposable runtimes (cloud sandboxes, VMs, or local) created fresh

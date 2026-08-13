@@ -1,10 +1,10 @@
 ---
-name: orca-emulator
+name: argus-emulator
 description: >
   Control a mobile (iOS) emulator / simulator stream from inside Argus using the `orca` CLI.
   Use for taps, gestures, typing, hardware buttons, camera injection, permissions, accessibility tree, and more — all while seeing the live view in Argus's emulator pane.
   Prefer this over raw `npx serve-sim` or direct simctl when running agents inside Argus (the argus surface handles device scoping, helper lifecycle, and worktree context).
-  Complements the orca-cli skill for terminals, worktrees, and the built-in browser.
+  Complements the argus-cli skill for terminals, worktrees, and the built-in browser.
 license: Apache-2.0
 ---
 
@@ -36,7 +36,7 @@ shell-neutral for POSIX shells, PowerShell, and cmd.exe.
 - The agent should use Argus's preview pane instead of external Simulator.app or raw serve-sim URLs.
 
 **When NOT to use**
-- Android emulators → use the `orca-emulator-android` skill (same `ORCA emulator` namespace, cross-platform via adb/emulator).
+- Android emulators → use the `argus-emulator-android` skill (same `ORCA emulator` namespace, cross-platform via adb/emulator).
 - Building or installing the app itself → use `xcodebuild`, `xcrun simctl install`, `expo run:ios`, etc. (launch the app, then use `ORCA emulator` to drive it).
 - In-app debugging (state, network, views) → use the app's own tools or the browser pane if it's a webview.
 - Remote/SSH worktrees for emulator control (currently out of scope / unsupported; simulator hardware is local to a Mac).
@@ -70,7 +70,7 @@ An active emulator "session" for the worktree is required for most commands. Use
           │ (state + lifecycle)
 ┌────────────────────┐
 │ argus CLI (agents)  │  e.g. ORCA emulator tap 0.5 0.7
-│ orca-emulator skill│
+│ argus-emulator skill│
 └────────────────────┘
 ```
 
@@ -164,6 +164,6 @@ After changes, re-snapshot / wait as needed (analogous to browser snapshot-inter
 
 Confirm `ORCA status --json` and `ORCA emulator list --json`, then drive the emulator while the live view is visible in Argus.
 
-See also: orca-cli skill (terminals, worktrees, built-in browser), computer-use for desktop outside the simulator.
+See also: argus-cli skill (terminals, worktrees, built-in browser), computer-use for desktop outside the simulator.
 
 This skill is the Orca-native replacement for raw serve-sim when you want the visual + control integrated in the IDE.

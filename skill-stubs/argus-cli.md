@@ -1,19 +1,3 @@
----
-name: orca-cli
-description: >-
-  Use the public `orca` CLI to operate Argus-managed worktrees, folder contexts,
-  terminals, repos, automations, artifacts, worktree comments, and the browser
-  embedded inside the Argus app. Use when the user says "$orca-cli", "use argus cli",
-  "Argus worktree", "child worktree", "cardStatus", "spawn codex/claude in a worktree",
-  "read/wait/send Argus terminal", "terminal send", "full handoff", "handover",
-  "give this to another agent", "another worktree", "Argus browser", "argus artifacts",
-  "share HTML/Markdown", "public artifact link", or "control the browser inside
-  Argus". Prefer this over raw `git worktree`, ad hoc
-  PTYs, Playwright, or Computer Use when the task touches Argus-managed state.
-  Use Computer Use for browser windows, webviews, or desktop UI outside Argus's
-  embedded browser.
----
-
 # Argus CLI
 
 This file is a discovery stub, not the usage guide. The full, version-matched Argus CLI
@@ -22,7 +6,7 @@ can never drift from the binary that will actually run your commands.
 
 Engage Argus whenever its running editor/runtime is the source of truth: Argus-managed
 worktrees, folder contexts, terminals, repos, automations, worktree comments, and the
-browser embedded inside the Argus app. Triggers include "$orca-cli", "Argus worktree",
+browser embedded inside the Argus app. Triggers include "$argus-cli", "Argus worktree",
 "child worktree", "spawn codex/claude in a worktree", "read/wait/send Argus terminal",
 "full handoff" / "handover" / "give this to another agent", and "control the browser
 inside Argus". Use plain shell tools when Argus state does not matter.
@@ -49,7 +33,7 @@ to another executable, which could silently target a different Argus build.
 ## Load the full guide before running Argus commands
 
 ```text
-ORCA skills get orca-cli
+ORCA skills get argus-cli
 ```
 
 That prints the complete, version-matched guide for the exact binary that will handle your
@@ -75,5 +59,5 @@ ORCA terminal list --json
 ```
 
 Then tell the user that updating Argus restores the full, version-matched guide via
-`ORCA skills get orca-cli`. Beyond these commands, ask the user rather than guessing a
+`ORCA skills get argus-cli`. Beyond these commands, ask the user rather than guessing a
 command surface this older binary may not support.

@@ -98,7 +98,7 @@ export function useModalReturnFocus(visible: boolean): {
     if (focusCapturedElement()) {
       return
     }
-    focusFirstMatchingSurface(['[data-orca-emulator-frame="true"] [tabindex]'])
+    focusFirstMatchingSurface(['[data-argus-emulator-frame="true"] [tabindex]'])
   }, [focusCapturedElement, focusFirstMatchingSurface])
 
   const focusFallbackSurface = useCallback((): void => {

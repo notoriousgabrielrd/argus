@@ -1,14 +1,25 @@
-# Argus Emulator (Android)
+---
+name: argus-emulator
+description: >
+  Control a mobile (iOS) emulator / simulator stream from inside Argus using the `orca` CLI.
+  Use for taps, gestures, typing, hardware buttons, camera injection, permissions, accessibility tree, and more — all while seeing the live view in Argus's emulator pane.
+  Prefer this over raw `npx serve-sim` or direct simctl when running agents inside Argus (the argus surface handles device scoping, helper lifecycle, and worktree context).
+  Complements the argus-cli skill for terminals, worktrees, and the built-in browser.
+license: Apache-2.0
+---
 
-This file is a discovery stub, not the usage guide. The full, version-matched Argus Android
-emulator reference is served by the `orca` binary itself — kept out of this file on purpose
-so it can never drift from the binary that will actually run your commands.
+# Argus Emulator
 
-Engage Argus whenever you drive an adb-connected Android emulator or device from inside the
-Argus app: listing/booting AVDs, taps, swipes, typing, hardware buttons (including Back and
-Recents), rotation, app install/launch, runtime permissions, the accessibility tree, and
-logcat. It is cross-platform (Windows, Linux, macOS) and complements the orca-emulator (iOS)
-and orca-cli skills.
+This file is a discovery stub, not the usage guide. The full, version-matched Argus emulator
+reference is served by the `orca` binary itself — kept out of this file on purpose so it can
+never drift from the binary that will actually run your commands.
+
+Engage Argus whenever you drive a mobile (iOS) emulator / simulator stream from inside the
+Argus app: taps, gestures, typing, hardware buttons, camera injection, runtime permissions,
+the accessibility tree, and more — all while the live view stays in Argus's emulator pane.
+Prefer this over raw `serve-sim` or direct `simctl` when running agents inside Argus, which
+handles device scoping, helper lifecycle, and worktree context for you. It complements the
+argus-cli skill for terminals, worktrees, and the built-in browser.
 
 ## Resolve the CLI for this session
 
@@ -32,12 +43,12 @@ to another executable, which could silently target a different Argus build.
 ## Load the full guide before running Argus commands
 
 ```text
-ORCA skills get orca-emulator-android
+ORCA skills get argus-emulator
 ```
 
 That prints the complete, version-matched guide for the exact binary that will handle your
-next commands — booting AVDs, taps and swipes, typing, hardware buttons, app lifecycle,
-permissions, the accessibility tree, and logcat. Read it first, then run the specific
+next commands — booting devices, taps and gestures, typing, hardware buttons, camera
+injection, permissions, and the accessibility tree. Read it first, then run the specific
 command you need.
 
 Don't guess subcommands or flags from memory or from a cached copy of this stub. They
@@ -54,9 +65,9 @@ read-only bootstrap to orient. Do not dead-end and do not invent commands:
 
 ```text
 ORCA status --json
-ORCA emulator devices --json
+ORCA emulator list --json
 ```
 
 Then tell the user that updating Argus restores the full, version-matched guide via
-`ORCA skills get orca-emulator-android`. Beyond these commands, ask the user rather than
-guessing a command surface this older binary may not support.
+`ORCA skills get argus-emulator`. Beyond these commands, ask the user rather than guessing a
+command surface this older binary may not support.

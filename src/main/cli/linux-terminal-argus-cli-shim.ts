@@ -2,7 +2,7 @@ import { chmodSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { buildBareOrcaCliScript } from './linux-bare-orca-dispatcher'
 
-const SHIM_DIR_NAME = 'linux-orca-cli-shim'
+const SHIM_DIR_NAME = 'linux-argus-cli-shim'
 
 // Why: rewriting the shim on every PTY spawn is wasted fs work; the target only
 // changes with the install itself, so one successful write per process is enough.

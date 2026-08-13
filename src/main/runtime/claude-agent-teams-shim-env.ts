@@ -8,7 +8,7 @@ import {
   isDirectClaudeCommand,
   type ClaudeAgentTeamsMode
 } from '../../shared/claude-agent-teams-tmux-compat'
-import { getOrcaCliCommandNameForPlatform } from '../../shared/orca-cli-command-name'
+import { getOrcaCliCommandNameForPlatform } from '../../shared/argus-cli-command-name'
 
 export type ClaudeAgentTeamsLaunchPlan = {
   command: string

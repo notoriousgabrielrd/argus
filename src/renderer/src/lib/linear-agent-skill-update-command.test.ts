@@ -26,17 +26,17 @@ function skill(name: string): DiscoveredSkill {
 describe('getLinearAgentSkillUpdateTarget', () => {
   it('targets the canonical skill for missing, canonical, and dual-name installs', () => {
     expect(getLinearAgentSkillUpdateTarget([], false)).toEqual({
-      skillName: 'orca-linear',
+      skillName: 'argus-linear',
       command: ORCA_LINEAR_SKILL_UPDATE_COMMAND
     })
-    expect(getLinearAgentSkillUpdateTarget([skill('orca-linear')], true)).toEqual({
-      skillName: 'orca-linear',
+    expect(getLinearAgentSkillUpdateTarget([skill('argus-linear')], true)).toEqual({
+      skillName: 'argus-linear',
       command: ORCA_LINEAR_SKILL_UPDATE_COMMAND
     })
     expect(
-      getLinearAgentSkillUpdateTarget([skill('orca-linear'), skill('linear-tickets')], true)
+      getLinearAgentSkillUpdateTarget([skill('argus-linear'), skill('linear-tickets')], true)
     ).toEqual({
-      skillName: 'orca-linear',
+      skillName: 'argus-linear',
       command: ORCA_LINEAR_SKILL_UPDATE_COMMAND
     })
   })

@@ -1,15 +1,3 @@
----
-name: orca-per-workspace-env
-description: >-
-  Set up, review, debug, or validate Argus per-workspace environment recipes —
-  on-demand, disposable runtimes (cloud sandboxes, VMs, or local) created fresh
-  for each workspace. Covers first-time setup (provider prerequisites, the
-  reusable base snapshot, the coding-agent auth snapshot, credentials, and
-  state), not just the per-workspace lifecycle scripts. Use to stand up
-  per-workspace environments, fix an `environmentRecipes` entry in `orca.yaml`, scaffold
-  provider lifecycle scripts, or resolve an `argus vm recipe doctor` failure.
----
-
 # Per-Workspace Environments
 
 This file is a discovery stub, not the usage guide. The full, version-matched per-workspace
@@ -48,7 +36,7 @@ to another executable, which could silently target a different Argus build.
 ## Load the full guide before running Argus commands
 
 ```text
-ORCA skills get orca-per-workspace-env
+ORCA skills get argus-per-workspace-env
 ```
 
 That prints the complete, version-matched guide for the exact binary that will handle your
@@ -77,5 +65,5 @@ The doctor command above is the free static check. Never add `--provision` witho
 user's explicit approval because it creates provider resources and may spend money.
 
 Then tell the user that updating Argus restores the full, version-matched guide via
-`ORCA skills get orca-per-workspace-env`. Beyond these commands, ask the user rather than
+`ORCA skills get argus-per-workspace-env`. Beyond these commands, ask the user rather than
 guessing a command surface this older binary may not support.

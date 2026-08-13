@@ -33,7 +33,7 @@ export function MobileEmulatorAgentSetupGuideSteps({
   // Why: skill detection here scans the local host only, so keep building host
   // commands; routing them to a WSL runtime would install where we never look.
   const skillInstallCommand = buildSkillCommandForRuntime(ORCA_CLI_SKILL_INSTALL_COMMAND)
-  const terminalWorktreeId = `mobile-emulator-${worktreeId}-orca-cli-skill-terminal`
+  const terminalWorktreeId = `mobile-emulator-${worktreeId}-argus-cli-skill-terminal`
   const showSkillPreInstallNotice = shouldShowMobileEmulatorSkillPreInstallNotice({
     cliEnabled: setup.cliEnabled,
     cliSkillInstalled: setup.cliSkillInstalled

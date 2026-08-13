@@ -8,7 +8,7 @@
 // protocol tokens, and lowercase wire/binary names are intentionally untouched
 // (see the guards on each pattern below).
 // Deliberately out of scope (deferred): mobile/, docs/, README, and the skill *topic*
-// names (orca-cli, orca-linear, …), which are identifiers with a compatibility ledger.
+// names (argus-cli, argus-linear, …), which are identifiers with a compatibility ledger.
 
 import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
@@ -26,7 +26,7 @@ const SWEEP_DIRS = [
   'config/scripts'
 ]
 // Agent-facing instructions: an un-renamed command here makes an agent type a binary that
-// does not exist. Topic names (orca-cli, orca-linear, …) are identifiers and stay.
+// does not exist. Topic names (argus-cli, argus-linear, …) are identifiers and stay.
 const SWEEP_DOC_DIRS = ['skill-guides', 'skills', 'skill-stubs']
 const SWEEP_EXTS = new Set(['.ts', '.tsx', '.mts', '.mjs', '.cjs', '.json', '.html', '.md'])
 const SKIP_DIRS = new Set(['node_modules', 'dist', 'out', '.git'])

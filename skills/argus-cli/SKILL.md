@@ -1,25 +1,31 @@
 ---
-name: orca-emulator
-description: >
-  Control a mobile (iOS) emulator / simulator stream from inside Argus using the `orca` CLI.
-  Use for taps, gestures, typing, hardware buttons, camera injection, permissions, accessibility tree, and more — all while seeing the live view in Argus's emulator pane.
-  Prefer this over raw `npx serve-sim` or direct simctl when running agents inside Argus (the argus surface handles device scoping, helper lifecycle, and worktree context).
-  Complements the orca-cli skill for terminals, worktrees, and the built-in browser.
-license: Apache-2.0
+name: argus-cli
+description: >-
+  Use the public `orca` CLI to operate Argus-managed worktrees, folder contexts,
+  terminals, repos, automations, artifacts, worktree comments, and the browser
+  embedded inside the Argus app. Use when the user says "$argus-cli", "use argus cli",
+  "Argus worktree", "child worktree", "cardStatus", "spawn codex/claude in a worktree",
+  "read/wait/send Argus terminal", "terminal send", "full handoff", "handover",
+  "give this to another agent", "another worktree", "Argus browser", "argus artifacts",
+  "share HTML/Markdown", "public artifact link", or "control the browser inside
+  Argus". Prefer this over raw `git worktree`, ad hoc
+  PTYs, Playwright, or Computer Use when the task touches Argus-managed state.
+  Use Computer Use for browser windows, webviews, or desktop UI outside Argus's
+  embedded browser.
 ---
 
-# Argus Emulator
+# Argus CLI
 
-This file is a discovery stub, not the usage guide. The full, version-matched Argus emulator
-reference is served by the `orca` binary itself — kept out of this file on purpose so it can
-never drift from the binary that will actually run your commands.
+This file is a discovery stub, not the usage guide. The full, version-matched Argus CLI
+reference is served by the `argus` binary itself — kept out of this file on purpose so it
+can never drift from the binary that will actually run your commands.
 
-Engage Argus whenever you drive a mobile (iOS) emulator / simulator stream from inside the
-Argus app: taps, gestures, typing, hardware buttons, camera injection, runtime permissions,
-the accessibility tree, and more — all while the live view stays in Argus's emulator pane.
-Prefer this over raw `serve-sim` or direct `simctl` when running agents inside Argus, which
-handles device scoping, helper lifecycle, and worktree context for you. It complements the
-orca-cli skill for terminals, worktrees, and the built-in browser.
+Engage Argus whenever its running editor/runtime is the source of truth: Argus-managed
+worktrees, folder contexts, terminals, repos, automations, worktree comments, and the
+browser embedded inside the Argus app. Triggers include "$argus-cli", "Argus worktree",
+"child worktree", "spawn codex/claude in a worktree", "read/wait/send Argus terminal",
+"full handoff" / "handover" / "give this to another agent", and "control the browser
+inside Argus". Use plain shell tools when Argus state does not matter.
 
 ## Resolve the CLI for this session
 
@@ -43,13 +49,12 @@ to another executable, which could silently target a different Argus build.
 ## Load the full guide before running Argus commands
 
 ```text
-ORCA skills get orca-emulator
+ORCA skills get argus-cli
 ```
 
 That prints the complete, version-matched guide for the exact binary that will handle your
-next commands — booting devices, taps and gestures, typing, hardware buttons, camera
-injection, permissions, and the accessibility tree. Read it first, then run the specific
-command you need.
+next commands — worktrees, handoffs, terminals, automations, and the built-in browser.
+Read it first, then run the specific command you need.
 
 Don't guess subcommands or flags from memory or from a cached copy of this stub. They
 change between Argus releases, and this file deliberately no longer lists them. Confirm the
@@ -65,9 +70,10 @@ read-only bootstrap to orient. Do not dead-end and do not invent commands:
 
 ```text
 ORCA status --json
-ORCA emulator list --json
+ORCA worktree ps --json
+ORCA terminal list --json
 ```
 
 Then tell the user that updating Argus restores the full, version-matched guide via
-`ORCA skills get orca-emulator`. Beyond these commands, ask the user rather than guessing a
+`ORCA skills get argus-cli`. Beyond these commands, ask the user rather than guessing a
 command surface this older binary may not support.

@@ -158,7 +158,7 @@ export const FEATURE_WALL_TILES: readonly FeatureWallTile[] = [
     gifPath: 'tile-09.gif',
     posterPath: 'tile-09.poster.jpg',
     recordedAtPath: 'tile-09.recorded-at.json',
-    owner: 'orca-cli',
+    owner: 'argus-cli',
     docsUrl: 'https://www.onorca.dev/docs/cli/overview'
   },
   {

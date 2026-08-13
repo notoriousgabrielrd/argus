@@ -850,7 +850,7 @@ function App(): React.JSX.Element {
     }
 
     featureTipsPromptedThisSessionRef.current = true
-    if (featureTipsDecision.tipId === 'orca-cli') {
+    if (featureTipsDecision.tipId === 'argus-cli') {
       trackOrcaCliFeatureTipShown('app_open')
     } else if (featureTipsDecision.tipId === 'cmd-j-palette') {
       trackCmdJPaletteFeatureTipShown('app_open')

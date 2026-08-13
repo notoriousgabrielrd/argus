@@ -1,18 +1,25 @@
-# Per-Workspace Environments
+---
+name: argus-emulator-android
+description: >
+  Control an Android emulator / device from inside Argus using the `orca` CLI.
+  Use for listing/booting AVDs, taps, swipes, typing, hardware buttons (incl. Back
+  and Recents), rotation, app install/launch, runtime permissions, the accessibility
+  tree, and logcat — driving a real adb-connected device or emulator. Cross-platform
+  (Windows, Linux, macOS). Complements the argus-emulator (iOS) and argus-cli skills.
+license: Apache-2.0
+---
 
-This file is a discovery stub, not the usage guide. The full, version-matched per-workspace
-environment reference is served by the `orca` binary itself — kept out of this file on
-purpose so it can never drift from the binary that will actually run your commands.
+# Argus Emulator (Android)
 
-Engage Argus whenever you set up, review, debug, or validate a per-workspace environment
-recipe — the on-demand, disposable runtimes (cloud sandboxes, VMs, or local) created fresh
-for each workspace. This covers first-time setup (provider prerequisites, the reusable base
-snapshot, the coding-agent auth snapshot, credentials, and state), not just the
-per-workspace lifecycle scripts. Use it to stand up per-workspace environments, fix an
-`environmentRecipes` entry in `orca.yaml`, scaffold provider lifecycle scripts, or resolve
-an `argus vm recipe doctor` failure. Argus is a thin wrapper: you guide, detect, and scaffold;
-you never own the user's cloud account, billing, images, or credentials, and never spend
-money without an explicit user OK.
+This file is a discovery stub, not the usage guide. The full, version-matched Argus Android
+emulator reference is served by the `orca` binary itself — kept out of this file on purpose
+so it can never drift from the binary that will actually run your commands.
+
+Engage Argus whenever you drive an adb-connected Android emulator or device from inside the
+Argus app: listing/booting AVDs, taps, swipes, typing, hardware buttons (including Back and
+Recents), rotation, app install/launch, runtime permissions, the accessibility tree, and
+logcat. It is cross-platform (Windows, Linux, macOS) and complements the argus-emulator (iOS)
+and argus-cli skills.
 
 ## Resolve the CLI for this session
 
@@ -36,13 +43,13 @@ to another executable, which could silently target a different Argus build.
 ## Load the full guide before running Argus commands
 
 ```text
-ORCA skills get orca-per-workspace-env
+ORCA skills get argus-emulator-android
 ```
 
 That prints the complete, version-matched guide for the exact binary that will handle your
-next commands — provider setup, base and auth snapshots, `environmentRecipes` in
-`orca.yaml`, lifecycle scripts, and `argus vm recipe doctor`. Read it first, then run the
-specific command you need.
+next commands — booting AVDs, taps and swipes, typing, hardware buttons, app lifecycle,
+permissions, the accessibility tree, and logcat. Read it first, then run the specific
+command you need.
 
 Don't guess subcommands or flags from memory or from a cached copy of this stub. They
 change between Argus releases, and this file deliberately no longer lists them. Confirm the
@@ -58,12 +65,9 @@ read-only bootstrap to orient. Do not dead-end and do not invent commands:
 
 ```text
 ORCA status --json
-ORCA vm recipe doctor <recipe-id> --repo-path <repo> --json
+ORCA emulator devices --json
 ```
 
-The doctor command above is the free static check. Never add `--provision` without the
-user's explicit approval because it creates provider resources and may spend money.
-
 Then tell the user that updating Argus restores the full, version-matched guide via
-`ORCA skills get orca-per-workspace-env`. Beyond these commands, ask the user rather than
+`ORCA skills get argus-emulator-android`. Beyond these commands, ask the user rather than
 guessing a command surface this older binary may not support.

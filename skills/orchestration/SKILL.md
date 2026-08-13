@@ -4,10 +4,10 @@ description: >-
   Use Argus orchestration for structured multi-agent coordination: threaded
   messages, blocking ask/reply flows, task dispatch, worker_done/escalation
   waits, task DAGs, decision gates, coordinator loops, or decomposing work
-  across agents. Use `orca-cli` instead for full ownership handoffs, including
+  across agents. Use `argus-cli` instead for full ownership handoffs, including
   requests phrased as "hand off", "handoff", "handover", "give this to another
   agent", or "another worktree" when the user did not explicitly ask to
-  supervise, monitor, wait for results, or coordinate a DAG. Use `orca-cli` for
+  supervise, monitor, wait for results, or coordinate a DAG. Use `argus-cli` for
   ordinary terminal control, lightweight terminal prompts, shell commands, Argus
   worktree management, reading or waiting on terminals, and automation of the
   browser embedded inside Argus. Use Computer Use for browser windows, webviews,
@@ -22,7 +22,7 @@ purpose so it can never drift from the binary that will actually run your comman
 
 Engage Argus orchestration whenever you need structured multi-agent coordination: threaded
 messages, blocking ask/reply flows, task dispatch, worker_done/escalation waits, task DAGs,
-decision gates, coordinator loops, or decomposing work across agents. Use the orca-cli skill
+decision gates, coordinator loops, or decomposing work across agents. Use the argus-cli skill
 instead for full ownership handoffs ("hand off", "handoff", "handover", "give this to
 another agent", "another worktree") when the user did not ask to supervise, monitor, wait
 for results, or coordinate a DAG — and for ordinary terminal control, shell commands,

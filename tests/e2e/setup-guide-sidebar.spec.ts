@@ -120,7 +120,7 @@ async function installBlockedCompletedCapabilityFakes(
       await waitForSkillDiscoveryRelease()
       return {
         skills: [
-          makeSkill('orca-cli', 'e2e-orca-cli'),
+          makeSkill('argus-cli', 'e2e-argus-cli'),
           makeSkill('computer-use', 'e2e-computer-use'),
           makeSkill('orchestration', 'e2e-orchestration')
         ],

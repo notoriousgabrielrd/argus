@@ -1,15 +1,14 @@
-# Argus CLI
+# Argus Emulator (Android)
 
-This file is a discovery stub, not the usage guide. The full, version-matched Argus CLI
-reference is served by the `argus` binary itself — kept out of this file on purpose so it
-can never drift from the binary that will actually run your commands.
+This file is a discovery stub, not the usage guide. The full, version-matched Argus Android
+emulator reference is served by the `orca` binary itself — kept out of this file on purpose
+so it can never drift from the binary that will actually run your commands.
 
-Engage Argus whenever its running editor/runtime is the source of truth: Argus-managed
-worktrees, folder contexts, terminals, repos, automations, worktree comments, and the
-browser embedded inside the Argus app. Triggers include "$orca-cli", "Argus worktree",
-"child worktree", "spawn codex/claude in a worktree", "read/wait/send Argus terminal",
-"full handoff" / "handover" / "give this to another agent", and "control the browser
-inside Argus". Use plain shell tools when Argus state does not matter.
+Engage Argus whenever you drive an adb-connected Android emulator or device from inside the
+Argus app: listing/booting AVDs, taps, swipes, typing, hardware buttons (including Back and
+Recents), rotation, app install/launch, runtime permissions, the accessibility tree, and
+logcat. It is cross-platform (Windows, Linux, macOS) and complements the argus-emulator (iOS)
+and argus-cli skills.
 
 ## Resolve the CLI for this session
 
@@ -33,12 +32,13 @@ to another executable, which could silently target a different Argus build.
 ## Load the full guide before running Argus commands
 
 ```text
-ORCA skills get orca-cli
+ORCA skills get argus-emulator-android
 ```
 
 That prints the complete, version-matched guide for the exact binary that will handle your
-next commands — worktrees, handoffs, terminals, automations, and the built-in browser.
-Read it first, then run the specific command you need.
+next commands — booting AVDs, taps and swipes, typing, hardware buttons, app lifecycle,
+permissions, the accessibility tree, and logcat. Read it first, then run the specific
+command you need.
 
 Don't guess subcommands or flags from memory or from a cached copy of this stub. They
 change between Argus releases, and this file deliberately no longer lists them. Confirm the
@@ -54,10 +54,9 @@ read-only bootstrap to orient. Do not dead-end and do not invent commands:
 
 ```text
 ORCA status --json
-ORCA worktree ps --json
-ORCA terminal list --json
+ORCA emulator devices --json
 ```
 
 Then tell the user that updating Argus restores the full, version-matched guide via
-`ORCA skills get orca-cli`. Beyond these commands, ask the user rather than guessing a
-command surface this older binary may not support.
+`ORCA skills get argus-emulator-android`. Beyond these commands, ask the user rather than
+guessing a command surface this older binary may not support.

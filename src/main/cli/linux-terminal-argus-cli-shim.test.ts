@@ -8,7 +8,7 @@ vi.mock('electron', () => ({
   app: { isPackaged: true }
 }))
 
-import { ensureLinuxTerminalOrcaCliShimDir } from './linux-terminal-orca-cli-shim'
+import { ensureLinuxTerminalOrcaCliShimDir } from './linux-terminal-argus-cli-shim'
 
 const created: string[] = []
 
@@ -36,7 +36,7 @@ describe('ensureLinuxTerminalOrcaCliShimDir', () => {
       appImagePath: null
     })
 
-    expect(shimDir).toBe(join(userDataPath, 'linux-orca-cli-shim'))
+    expect(shimDir).toBe(join(userDataPath, 'linux-argus-cli-shim'))
     const content = readFileSync(join(shimDir!, 'orca'), 'utf8')
     // Single-quoted so a resources path with shell metacharacters can't break out.
     expect(content).toContain(`exec '${join(resourcesPath, 'bin', 'argus')}' "$@"`)
@@ -61,9 +61,9 @@ describe('ensureLinuxTerminalOrcaCliShimDir', () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-terminal-cli-shim-2-'))
     created.push(root)
     const otherUserData = join(root, 'user-data')
-    mkdirSync(join(otherUserData, 'linux-orca-cli-shim'), { recursive: true })
-    writeFileSync(join(otherUserData, 'linux-orca-cli-shim', 'orca'), 'stale contents', 'utf8')
-    chmodSync(join(otherUserData, 'linux-orca-cli-shim', 'orca'), 0o644)
+    mkdirSync(join(otherUserData, 'linux-argus-cli-shim'), { recursive: true })
+    writeFileSync(join(otherUserData, 'linux-argus-cli-shim', 'orca'), 'stale contents', 'utf8')
+    chmodSync(join(otherUserData, 'linux-argus-cli-shim', 'orca'), 0o644)
 
     const healed = ensureLinuxTerminalOrcaCliShimDir({
       userDataPath: otherUserData,
@@ -113,6 +113,6 @@ describe('ensureLinuxTerminalOrcaCliShimDir', () => {
       resourcesPath,
       appImagePath: null
     })
-    expect(recovered).toBe(join(userDataPath, 'linux-orca-cli-shim'))
+    expect(recovered).toBe(join(userDataPath, 'linux-argus-cli-shim'))
   })
 })

@@ -161,7 +161,7 @@ export function MobileEmulatorAgentControlRow(): React.JSX.Element {
             installedCommand={cliSkillUpdateCommand}
             terminalTitle="Argus CLI skill setup"
             terminalAriaLabel="Argus CLI skill install terminal"
-            terminalWorktreeId="settings-mobile-emulator-orca-cli-skill-terminal"
+            terminalWorktreeId="settings-mobile-emulator-argus-cli-skill-terminal"
             terminalShellOverride={activeSkillRuntime.terminalShellOverride}
             installed={setup.cliSkillInstalled}
             loading={setup.cliSkillLoading}

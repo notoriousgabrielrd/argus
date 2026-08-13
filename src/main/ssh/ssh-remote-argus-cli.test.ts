@@ -14,7 +14,7 @@ vi.mock('../persistence', () => ({
 import { OrchestrationDb } from '../runtime/orchestration/db'
 import { OrcaRuntimeService } from '../runtime/orca-runtime'
 import type { HostCliPassthroughOptions } from './ssh-remote-cli-host-passthrough'
-import { runRemoteOrcaCli } from './ssh-remote-orca-cli'
+import { runRemoteOrcaCli } from './ssh-remote-argus-cli'
 
 // Why: pointing the passthrough at a missing CLI entry forces the legacy
 // in-process fallback, which is what these dispatch tests exercise.

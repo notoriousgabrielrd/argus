@@ -17,7 +17,7 @@ function makeProjectWithCli(
   content,
   { mode = 0o755, rootPackageType, writeOutPackageJson = true } = {}
 ) {
-  const projectDir = mkdtempSync(path.join(tmpdir(), 'orca-cli-bin-'))
+  const projectDir = mkdtempSync(path.join(tmpdir(), 'argus-cli-bin-'))
   const cliPath = path.join(projectDir, 'out', 'cli', 'index.js')
   const outPackageJsonPath = path.join(projectDir, 'out', 'package.json')
   mkdirSync(path.dirname(cliPath), { recursive: true })

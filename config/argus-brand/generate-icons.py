@@ -190,7 +190,11 @@ def main() -> None:
 
     build = REPO / "resources" / "build"
     shipped.save(build / "icon.png")
-    shipped.save(
+    # Why the crop: macOS wants the squircle inset with a margin, Windows wants the tile to
+    # fill its canvas — the repo asserts a >=0.92 fill fraction on the committed .ico.
+    side = round(TILE * (1 - 2 * MARGIN))
+    origin = (TILE - side) // 2
+    shipped.crop((origin, origin, origin + side, origin + side)).save(
         build / "icon.ico",
         sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
     )

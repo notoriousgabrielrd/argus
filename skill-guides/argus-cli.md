@@ -1,9 +1,9 @@
 ---
-name: orca-cli
+name: argus-cli
 description: >-
   Use the public `orca` CLI to operate Argus-managed worktrees, folder contexts,
   terminals, repos, automations, artifacts, worktree comments, and the browser
-  embedded inside the Argus app. Use when the user says "$orca-cli", "use argus cli",
+  embedded inside the Argus app. Use when the user says "$argus-cli", "use argus cli",
   "Argus worktree", "child worktree", "cardStatus", "spawn codex/claude in a worktree",
   "read/wait/send Argus terminal", "terminal send", "full handoff", "handover",
   "give this to another agent", "another worktree", "Argus browser", "argus artifacts",
@@ -347,7 +347,7 @@ Confirm `argus status --json` unless already checked this turn, then choose the 
 
 The mobile emulator surface is workspace-scoped like browser tabs (active per worktree for unqualified; explicit --worktree/--device/--emulator for targeting). Always prefer `argus emulator ...` over raw `npx serve-sim` or simctl when inside Argus (the bridge owns lifecycle, scoping, and registration with the live pane).
 
-See the dedicated `orca-emulator` skill for the full table (tap/type/gesture/button/rotate/camera/permissions/ax/list/attach/exec/kill + --json + gotchas like tap preferred, normalized 0-1, name->UDID early resolve in bridge, US ASCII type, camera one-time builds, stale state cleanup, no auto-focus on attach except --focus flag mirroring browser exactly, AX via HTTP endpoint from state).
+See the dedicated `argus-emulator` skill for the full table (tap/type/gesture/button/rotate/camera/permissions/ax/list/attach/exec/kill + --json + gotchas like tap preferred, normalized 0-1, name->UDID early resolve in bridge, US ASCII type, camera one-time builds, stale state cleanup, no auto-focus on attach except --focus flag mirroring browser exactly, AX via HTTP endpoint from state).
 
 Common:
 
@@ -368,7 +368,7 @@ Rules (mirror browser):
 - Explicit: --device <udid|name> or --emulator <OrcaId from list> (bridge resolves names early to avoid serve-sim control bug).
 - --worktree all only for list.
 - Recoveries: 'emulator_no_active' → argus emulator attach or open pane; stale → list/kill/attach.
-- No raw serve-sim in agent prompts/skills (use argus wrappers; see orca-emulator skill).
+- No raw serve-sim in agent prompts/skills (use argus wrappers; see argus-emulator skill).
 
 The live pane (when implemented) registers its stream with the bridge for default targeting (seamless, recommended option per design).
 

@@ -51,8 +51,8 @@ try {
 
   await run(['--help'])
   const list = JSON.parse((await run(['skills', 'list', '--json'])).stdout)
-  assert(list.topics.some((topic) => topic.name === 'orca-cli'))
-  assert.match((await run(['skills', 'get', 'orca-cli'])).stdout, /name: orca-cli/)
+  assert(list.topics.some((topic) => topic.name === 'argus-cli'))
+  assert.match((await run(['skills', 'get', 'argus-cli'])).stdout, /name: argus-cli/)
   assert.match((await run(['skills', 'get', 'computer-use'])).stdout, /name: computer-use/)
   const install = JSON.parse(
     (
@@ -60,7 +60,7 @@ try {
         'skills',
         'install',
         '--skill',
-        'orca-cli',
+        'argus-cli',
         '--agent',
         'codex',
         '--dry-run',
@@ -69,7 +69,7 @@ try {
     ).stdout
   )
   const update = JSON.parse(
-    (await run(['skills', 'update', '--skill', 'orca-cli', '--dry-run', '--json'])).stdout
+    (await run(['skills', 'update', '--skill', 'argus-cli', '--dry-run', '--json'])).stdout
   )
   assert.equal(install.executed, false)
   assert.equal(update.executed, false)

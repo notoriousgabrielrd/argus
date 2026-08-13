@@ -92,7 +92,7 @@ internal static class OrcaRemoteCliLauncher
         AppendArgument(commandLine, socketPath);
         AppendArgument(commandLine, "--credential-file");
         AppendArgument(commandLine, credentialFile);
-        AppendArgument(commandLine, "--orca-cli");
+        AppendArgument(commandLine, "--argus-cli");
         foreach (string arg in args)
         {
             AppendArgument(commandLine, arg);
@@ -236,7 +236,7 @@ export function createRemoteCliInstallPlan(env: RemoteCliInstallEnv): RemoteCliI
           '  echo "Argus SSH CLI bridge cannot find the relay socket: $ORCA_RELAY_SOCKET_PATH" >&2',
           '  exit 1',
           'fi',
-          'exec "$ORCA_RELAY_NODE_PATH" "$ORCA_RELAY_DIR/relay.js" --sock-path "$ORCA_RELAY_SOCKET_PATH" --credential-file "$ORCA_RELAY_CREDENTIAL_FILE" --orca-cli "$@"',
+          'exec "$ORCA_RELAY_NODE_PATH" "$ORCA_RELAY_DIR/relay.js" --sock-path "$ORCA_RELAY_SOCKET_PATH" --credential-file "$ORCA_RELAY_CREDENTIAL_FILE" --argus-cli "$@"',
           ''
         ].join('\n')
       }

@@ -67,7 +67,7 @@ async function runBuiltCli(
 
 describeIfBuilt('argus orchestration check --wait subprocess (§3.4)', () => {
   it('emits newline-flushed JSON keepalives to stderr while waiting', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-cli-sub-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'argus-cli-sub-'))
     const runtime = new OrcaRuntimeService()
     const db = new OrchestrationDb(':memory:')
     runtime.setOrchestrationDb(db)
@@ -194,7 +194,7 @@ describeIfBuilt('argus orchestration check --wait subprocess (§3.4)', () => {
 
 describeIfBuilt('argus orchestration reset subprocess', () => {
   it('validates reset scopes against an isolated runtime through the built CLI', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-cli-reset-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'argus-cli-reset-'))
     const runtime = new OrcaRuntimeService()
     const db = new OrchestrationDb(':memory:')
     runtime.setOrchestrationDb(db)

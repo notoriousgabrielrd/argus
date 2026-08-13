@@ -1,5 +1,5 @@
 ---
-name: orca-linear
+name: argus-linear
 description: >-
   Use Argus's Linear CLI through `argus linear ...` commands to read linked
   ticket context with `argus linear issue --current --full --json`, post
@@ -16,7 +16,7 @@ description: >-
 
 Use `argus linear` when Linear is the source of task context or ticket updates. On Linux, use `argus` wherever this file says `orca`.
 
-`orca-linear` and `linear-tickets` are skill names, not CLI namespaces. Always run `argus linear ...` commands.
+`argus-linear` and `linear-tickets` are skill names, not CLI namespaces. Always run `argus linear ...` commands.
 
 Prefer `--json` for agent-driven calls. Use plain chat updates when no Linear-linked task exists or when the user did not ask to touch Linear.
 
