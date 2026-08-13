@@ -16,7 +16,7 @@ vi.mock('./AgentSkillSetupPanel', () => ({
 describe('BrowserUseSkillStep', () => {
   it('forwards a single-skill installed command even when setup installs a bundle', () => {
     const bundleInstallCommand =
-      'npx skills add https://github.com/stablyai/orca --skill argus-cli --skill orchestration --global'
+      'npx skills add https://github.com/notoriousgabrielrd/argus --skill argus-cli --skill orchestration --global'
     const updateCommand = 'npx skills update argus-cli --global'
 
     renderToStaticMarkup(

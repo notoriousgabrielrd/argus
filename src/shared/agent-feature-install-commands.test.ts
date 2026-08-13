@@ -17,24 +17,24 @@ import {
 describe('agent feature skill commands', () => {
   it('builds a global install command by default', () => {
     expect(buildAgentFeatureSkillInstallCommand(['argus-cli'])).toBe(
-      'npx skills add https://github.com/stablyai/orca --skill argus-cli --global'
+      'npx skills add https://github.com/notoriousgabrielrd/argus --skill argus-cli --global'
     )
   })
 
   it('drops --global when installing locally', () => {
     expect(buildAgentFeatureSkillInstallCommand(['argus-cli'], { global: false })).toBe(
-      'npx skills add https://github.com/stablyai/orca --skill argus-cli'
+      'npx skills add https://github.com/notoriousgabrielrd/argus --skill argus-cli'
     )
   })
 
   it('repeats --skill per name for multi-skill installs', () => {
     expect(buildAgentFeatureSkillInstallCommand(['argus-cli', 'orchestration'])).toBe(
-      'npx skills add https://github.com/stablyai/orca --skill argus-cli --skill orchestration --global'
+      'npx skills add https://github.com/notoriousgabrielrd/argus --skill argus-cli --skill orchestration --global'
     )
     expect(buildAgentFeatureSkillInstallArgs(['argus-cli', 'orchestration'])).toEqual([
       'skills',
       'add',
-      'https://github.com/stablyai/orca',
+      'https://github.com/notoriousgabrielrd/argus',
       '--skill',
       'argus-cli',
       '--skill',
@@ -76,7 +76,7 @@ describe('agent feature skill commands', () => {
     expect(
       buildAgentFeatureSkillInstallCommand(['argus-cli'], { yes: true, agents: ['universal'] })
     ).toBe(
-      'npx skills add https://github.com/stablyai/orca --skill argus-cli --global --agent universal -y'
+      'npx skills add https://github.com/notoriousgabrielrd/argus --skill argus-cli --global --agent universal -y'
     )
     expect(buildAgentFeatureSkillUpdateCommand(['argus-cli'], { global: false, yes: true })).toBe(
       'npx skills update argus-cli --project -y'

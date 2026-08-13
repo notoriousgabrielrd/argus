@@ -7,7 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AgentSkillSetupPanel } from './AgentSkillSetupPanel'
 import { TooltipProvider } from '../ui/tooltip'
 
-const INSTALL_COMMAND = 'npx skills add https://github.com/stablyai/orca --skill argus-cli --global'
+const INSTALL_COMMAND =
+  'npx skills add https://github.com/notoriousgabrielrd/argus --skill argus-cli --global'
 const UPDATE_COMMAND = 'npx skills update argus-cli --global'
 
 const mocks = vi.hoisted(() => ({

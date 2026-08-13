@@ -1,6 +1,11 @@
 import { isSkillsCliAgentKeyShaped } from './skills-cli-agent-keys'
 
-export const ORCA_SKILLS_REPOSITORY_URL = 'https://github.com/stablyai/orca'
+// The repository `skills add` clones to install these skills. It must be the Argus repo:
+// pointing it upstream installs that project's skills — whose topic names differ — over
+// the ones this build bundles, so the freshness check can never converge and the update
+// dialog reports "still out of date" after every run.
+export const ARGUS_SKILLS_REPOSITORY_URL =
+  process.env.ARGUS_SKILLS_REPOSITORY_URL?.trim() || 'https://github.com/notoriousgabrielrd/argus'
 
 export const ORCA_CLI_SKILL_NAME = 'argus-cli'
 export const COMPUTER_USE_SKILL_NAME = 'computer-use'
@@ -44,7 +49,7 @@ export function buildAgentFeatureSkillInstallArgs(
   return [
     'skills',
     'add',
-    ORCA_SKILLS_REPOSITORY_URL,
+    ARGUS_SKILLS_REPOSITORY_URL,
     ...skillArgs,
     ...(global ? ['--global'] : []),
     // Why: an explicit --agent stops `skills add` calling its own detection, whose
