@@ -11,10 +11,12 @@ describe('tui agent detection commands', () => {
       (command) => command.id === 'claude-agent-teams'
     )
 
+    // Why the legacy names stay probed: a shim installed before the rename is still on
+    // PATH, and dropping it would stop reporting Agent Teams on those machines.
     expect(commands).toEqual([
       {
         id: 'claude-agent-teams',
-        cmd: 'orca',
+        cmd: 'argus',
         requiredCommands: ['claude'],
         unsupportedRuntimes: ['win32', 'wsl']
       },
@@ -26,19 +28,26 @@ describe('tui agent detection commands', () => {
       },
       {
         id: 'claude-agent-teams',
-        cmd: 'argus',
+        cmd: 'orca',
+        requiredCommands: ['claude'],
+        unsupportedRuntimes: ['win32', 'wsl']
+      },
+      {
+        id: 'claude-agent-teams',
+        cmd: 'orca-ide',
         requiredCommands: ['claude'],
         unsupportedRuntimes: ['win32', 'wsl']
       }
     ])
     expect(getTuiAgentDetectionProbeCommands(commands, 'linux')).toEqual([
-      'orca',
+      'argus',
       'claude',
       'argus-dev',
-      'argus'
+      'orca',
+      'orca-ide'
     ])
-    expect(resolveDetectedTuiAgentIds(commands, new Set(['orca']), 'linux')).toEqual([])
-    expect(resolveDetectedTuiAgentIds(commands, new Set(['orca', 'claude']), 'linux')).toEqual([
+    expect(resolveDetectedTuiAgentIds(commands, new Set(['argus']), 'linux')).toEqual([])
+    expect(resolveDetectedTuiAgentIds(commands, new Set(['argus', 'claude']), 'linux')).toEqual([
       'claude-agent-teams'
     ])
     expect(getTuiAgentDetectionProbeCommands(commands, 'win32')).toEqual([])

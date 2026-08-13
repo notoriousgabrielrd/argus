@@ -29,7 +29,15 @@ const SWEEP_DIRS = [
 // does not exist. Topic names (argus-cli, argus-linear, …) are identifiers and stay.
 const SWEEP_DOC_DIRS = ['skill-guides', 'skills', 'skill-stubs']
 const SWEEP_EXTS = new Set(['.ts', '.tsx', '.mts', '.mjs', '.cjs', '.json', '.html', '.md'])
-const SKIP_DIRS = new Set(['node_modules', 'dist', 'out', '.git'])
+const SKIP_DIRS = new Set([
+  'node_modules',
+  'dist',
+  'out',
+  '.git',
+  // A cached checkout of an older upstream release, used to prove wire compatibility.
+  // Rewriting it would make the test compare this build against itself.
+  '.cross-version-checkouts'
+])
 
 // Why: these suites use the upstream name as sample *data* — repo slugs (`acme/orca`),
 // project ids (`local-orca`), CLI search terms — where the assertion is about case-folding
