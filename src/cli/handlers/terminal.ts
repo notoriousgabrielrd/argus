@@ -1,7 +1,9 @@
 import type {
+  RuntimeProjectAgentSeatList,
   RuntimeTerminalClose,
   RuntimeTerminalCreate,
   RuntimeTerminalFocus,
+  RuntimeTerminalSeatAssign,
   RuntimeTerminalListResult,
   RuntimeTerminalRead,
   RuntimeTerminalRename,
@@ -13,12 +15,15 @@ import type {
 import type { CommandHandler } from '../dispatch'
 import { shouldUseRendererBackedInteractiveTerminal } from '../codex-command-classification'
 import {
+  formatProjectAgentSeats,
   formatTerminalClose,
   formatTerminalCreate,
   formatTerminalFocus,
   formatTerminalList,
   formatTerminalRead,
   formatTerminalRename,
+  formatTerminalSeatAssign,
+  formatTerminalSeatClear,
   formatTerminalSend,
   formatTerminalShow,
   formatTerminalSplit,
@@ -158,6 +163,26 @@ export const TERMINAL_HANDLERS: Record<string, CommandHandler> = {
       terminal: await getTerminalHandle(flags, cwd, client)
     })
     printResult(result, json, formatTerminalClose)
+  },
+  'terminal assign': async ({ flags, client, cwd, json }) => {
+    const result = await client.call<{ seat: RuntimeTerminalSeatAssign }>('terminal.assignSeat', {
+      terminal: await getTerminalHandle(flags, cwd, client),
+      seat: getRequiredStringFlag(flags, 'seat'),
+      force: flags.get('force') === true
+    })
+    printResult(result, json, formatTerminalSeatAssign)
+  },
+  'terminal unassign': async ({ flags, client, cwd, json }) => {
+    const result = await client.call<{ seat: RuntimeTerminalSeatAssign }>('terminal.clearSeat', {
+      terminal: await getTerminalHandle(flags, cwd, client)
+    })
+    printResult(result, json, formatTerminalSeatClear)
+  },
+  'terminal seats': async ({ flags, client, cwd, json }) => {
+    const result = await client.call<{ seats: RuntimeProjectAgentSeatList }>('terminal.listSeats', {
+      worktree: await getOptionalWorktreeSelector(flags, 'worktree', cwd, client)
+    })
+    printResult(result, json, formatProjectAgentSeats)
   },
   'terminal split': async ({ flags, client, cwd, json }) => {
     const directionFlag = getOptionalStringFlag(flags, 'direction')

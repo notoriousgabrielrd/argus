@@ -12,14 +12,14 @@
  * Only a payload that is not a session at all falls back to defaults.
  */
 import { z } from 'zod'
-import type {
-  TabGroupLayoutNode,
-  TerminalPaneLayoutNode,
-  TuiAgent,
-  WorkspaceKey,
-  WorkspaceSessionState
-} from './types'
+import type { TabGroupLayoutNode, TuiAgent, WorkspaceKey, WorkspaceSessionState } from './types'
 import { isValidTerminalTabId } from './terminal-tab-id'
+import { seatAssignmentsByWorktreeField } from './workspace-session-seat-schema'
+import { terminalLayoutSnapshotSchema } from './workspace-session-terminal-layout-schema'
+import {
+  visibleWorktreeIdsField,
+  worktreeColumnRatiosField
+} from './workspace-session-worktree-column-schema'
 import { parseExecutionHostId, type ExecutionHostId } from './execution-host'
 import { isTuiAgent } from './tui-agent-config'
 import { isWorkspaceKey } from './workspace-scope'
@@ -31,9 +31,6 @@ import {
 import { sleepingAgentSessionsByPaneKeySchema } from './workspace-session-sleeping-agents'
 import { salvagedField, salvagedOptional, salvagingArray, salvagingRecord } from './zod-salvage'
 
-// ─── Terminal pane layout (recursive) ───────────────────────────────
-
-const terminalPaneSplitDirectionSchema = z.enum(['vertical', 'horizontal'])
 const terminalTabIdSchema = z
   .string()
   .min(1)
@@ -41,36 +38,6 @@ const terminalTabIdSchema = z
 const workspaceKeySchema = z.custom<WorkspaceKey>(
   (value) => typeof value === 'string' && isWorkspaceKey(value)
 )
-
-// Why: z.lazy + type annotation keeps the recursive inference working without
-// forcing zod to resolve the whole tree at definition time.
-const terminalPaneLayoutNodeSchema: z.ZodType<TerminalPaneLayoutNode> = z.lazy(() =>
-  z.union([
-    z.object({
-      type: z.literal('leaf'),
-      leafId: z.string()
-    }),
-    z.object({
-      type: z.literal('split'),
-      direction: terminalPaneSplitDirectionSchema,
-      first: terminalPaneLayoutNodeSchema,
-      second: terminalPaneLayoutNodeSchema,
-      ratio: z.number().optional()
-    })
-  ])
-)
-
-const leafStringsSchema = salvagingRecord(z.string(), z.string())
-
-const terminalLayoutSnapshotSchema = z.object({
-  root: terminalPaneLayoutNodeSchema.nullable(),
-  activeLeafId: z.string().nullable(),
-  expandedLeafId: z.string().nullable(),
-  ptyIdsByLeafId: salvagedOptional('ptyIdsByLeafId', leafStringsSchema),
-  buffersByLeafId: salvagedOptional('buffersByLeafId', leafStringsSchema),
-  scrollbackRefsByLeafId: salvagedOptional('scrollbackRefsByLeafId', leafStringsSchema),
-  titlesByLeafId: salvagedOptional('titlesByLeafId', leafStringsSchema)
-})
 
 // ─── Terminal tab (legacy) ──────────────────────────────────────────
 
@@ -248,6 +215,9 @@ export const workspaceSessionStateSchema: z.ZodType<WorkspaceSessionState> = z.o
     'markdownFrontmatterVisible',
     salvagingRecord(z.string(), z.boolean())
   ),
+  visibleWorktreeIds: visibleWorktreeIdsField,
+  worktreeColumnRatios: worktreeColumnRatiosField,
+  seatAssignmentsByWorktree: seatAssignmentsByWorktreeField,
   browserTabsByWorktree: salvagedOptional(
     'browserTabsByWorktree',
     salvagingRecord(worktreeIdSchema, salvagingArray(browserWorkspaceSchema))

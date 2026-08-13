@@ -52,7 +52,7 @@ type SelectionOverrides = Partial<Parameters<typeof selectBrowserGuestEvictionWo
 function selectEvicted(overrides: SelectionOverrides): string[] {
   return selectBrowserGuestEvictionWorktreeIds({
     orderedWorktreeIds: [],
-    activeWorktreeId: null,
+    visibleWorktreeIds: new Set<string>(),
     isRetained: () => true,
     holdsLiveGuests: () => true,
     isEvictable: () => true,
@@ -75,15 +75,25 @@ describe('selectBrowserGuestEvictionWorktreeIds', () => {
     expect(selectEvicted({ orderedWorktreeIds: sixWorktrees })).toEqual(['wt-5', 'wt-6'])
   })
 
-  it('never evicts or counts the active worktree', () => {
-    // Active most-recent: five hidden holders remain, so only the LRU one goes.
-    expect(selectEvicted({ orderedWorktreeIds: sixWorktrees, activeWorktreeId: 'wt-1' })).toEqual([
-      'wt-6'
-    ])
-    // Active in LRU position: it is spared even though it ranks past the budget.
-    expect(selectEvicted({ orderedWorktreeIds: sixWorktrees, activeWorktreeId: 'wt-6' })).toEqual([
-      'wt-5'
-    ])
+  it('never evicts or counts a worktree that is on screen', () => {
+    // Visible most-recent: five hidden holders remain, so only the LRU one goes.
+    expect(
+      selectEvicted({ orderedWorktreeIds: sixWorktrees, visibleWorktreeIds: new Set(['wt-1']) })
+    ).toEqual(['wt-6'])
+    // Visible in LRU position: it is spared even though it ranks past the budget.
+    expect(
+      selectEvicted({ orderedWorktreeIds: sixWorktrees, visibleWorktreeIds: new Set(['wt-6']) })
+    ).toEqual(['wt-5'])
+  })
+
+  it('spares every visible column, not just the focused one', () => {
+    // Why: with columns open, destroying a visible column's guests blanks its browser pane.
+    expect(
+      selectEvicted({
+        orderedWorktreeIds: sixWorktrees,
+        visibleWorktreeIds: new Set(['wt-5', 'wt-6'])
+      })
+    ).toEqual([])
   })
 
   it('counts only worktrees that actually hold live guests', () => {

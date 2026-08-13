@@ -39,6 +39,8 @@ type TerminalOverlaySlotProps = {
   startupCwd: string | undefined
   groupId: string | undefined
   isWorktreeActive: boolean
+  /** Owns keyboard input; singular across worktree columns. Defaults to visibility. */
+  isWorktreeFocused?: boolean
   isVisible: boolean
   isActive: boolean
   activityTerminalPortal: ActivityTerminalPortalTarget | null
@@ -55,6 +57,7 @@ export const TerminalOverlaySlot = memo(function TerminalOverlaySlot({
   startupCwd,
   groupId,
   isWorktreeActive,
+  isWorktreeFocused = isWorktreeActive,
   isVisible,
   isActive,
   activityTerminalPortal,
@@ -226,6 +229,7 @@ export const TerminalOverlaySlot = memo(function TerminalOverlaySlot({
       // flag still lets hidden tabs throttle rendering.
       isVisible={isVisible || activityTerminalPortal !== null}
       isWorktreeActive={isWorktreeActive || activityTerminalPortal !== null}
+      isWorktreeFocused={isWorktreeFocused || activityTerminalPortal !== null}
       isolatedPaneKey={activityTerminalPortal?.paneKey ?? null}
       onPtyExit={(ptyId) => {
         if (consumeSuppressedPtyExit(ptyId)) {

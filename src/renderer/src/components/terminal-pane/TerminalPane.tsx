@@ -251,6 +251,8 @@ type TerminalPaneProps = {
   isActive: boolean
   isVisible?: boolean
   isWorktreeActive?: boolean
+  /** Owns keyboard input; singular across worktree columns. Defaults to visibility. */
+  isWorktreeFocused?: boolean
   // When set (Activity portal), isolates one split pane as a transient override that doesn't touch expandedPaneId or persist the layout.
   isolatedPaneKey?: string | null
   // Why: ephemeral one-off command terminals don't need the header's prominent split affordance (split shortcuts still work).
@@ -306,6 +308,7 @@ function TerminalPane(
     isActive,
     isVisible = true,
     isWorktreeActive = isVisible,
+    isWorktreeFocused = isWorktreeActive,
     isolatedPaneKey = null,
     showSplitButton = true,
     onPtyExit,
@@ -1693,6 +1696,7 @@ function TerminalPane(
     isActive,
     isVisible,
     isWorktreeActive,
+    isWorktreeFocused,
     // Why: hidden startup probes are opacity-hidden but measurable; ordinary hidden tabs are display:none and refit on visibility resume.
     isSyncFitEnabled: isRendererVisible || shouldMeasureHiddenStartup,
     paneCount,

@@ -263,7 +263,7 @@ Common Commands:
 Selectors:
   --repo <selector>         Registered repo selector such as id:<id>, name:<name>, or path:<path>
   --worktree <selector>     Worktree selector such as id:<repo-id>::<path>, name:<displayName>, branch:<branch>, issue:<number>, path:<path>, or active/current
-  --terminal <handle>       Runtime-issued terminal handle returned by \`argus terminal list --json\`
+  --terminal <handle>       Runtime-issued terminal handle returned by \`argus terminal list --json\`, or seat:<PROJECT_AGENT> to address the terminal holding that project-agent seat
   --parent-worktree <selector> Parent worktree selector such as id:<repo-id>::<path>, branch:<branch>, issue:<number>, path:<path>, or active/current
   --no-parent               Force no parent lineage for unrelated worktree creation/update
 
@@ -535,7 +535,7 @@ export function formatFlagHelp(flag: string): string {
     'element-index': '--element-index <n>   Element index from get-app-state',
     title: '--title <text>         Custom title for the terminal tab (omit to reset)',
     enter: '--enter                Append Enter after sending text',
-    force: '--force                Force worktree removal when supported',
+    force: '--force                Proceed with an operation the command otherwise refuses',
     focus: '--focus                Reveal the created terminal session in Argus',
     for: '--for exit|tui-idle    Wait condition to satisfy',
     'from-element-index': '--from-element-index <n> Source element index from get-app-state',
@@ -574,7 +574,8 @@ export function formatFlagHelp(flag: string): string {
       '--restore-window     Bring the target app/window forward before the operation',
     session: '--session <id>        Snapshot namespace for a related computer-use workflow',
     setup: '--setup run|skip|inherit Setup policy for repo-defined setup hooks',
-    terminal: '--terminal <handle>  Runtime-issued terminal handle',
+    seat: '--seat <PROJECT_AGENT> Project agent from <workspace>/.claude/agents/*.md, such as AUDITOR',
+    terminal: '--terminal <handle>  Runtime-issued terminal handle, or seat:<PROJECT_AGENT>',
     text: '--text <text>          Text payload to send or type',
     'text-stdin': '--text-stdin          Read text payload from stdin',
     'task-id': '--task-id <id>        Task id to include in orchestration payload JSON',

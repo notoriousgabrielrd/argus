@@ -92,6 +92,17 @@ export type WorktreeSlice = {
   worktreeLineageById: Record<string, WorktreeLineage>
   workspaceLineageByChildKey: Record<WorkspaceKey, WorkspaceLineage>
   activeWorktreeId: string | null
+  /**
+   * Worktrees rendered side by side, left to right. Empty means single-column, derived from
+   * `activeWorktreeId` — so the default is exactly the pre-columns behavior.
+   *
+   * Visible is plural; focused is not. `activeWorktreeId` remains the one worktree that owns
+   * keyboard input, the surrounding chrome, and the PTY input claim, and it is always one of
+   * these. Read through `resolveVisibleWorktreeIds` rather than directly.
+   */
+  visibleWorktreeIds: string[]
+  /** Flex ratios per visible column, same order. Empty means an even split. */
+  worktreeColumnRatios: number[]
   activeWorkspaceKey: WorkspaceKey | null
   activeWorkspaceExecutionHostId: ExecutionHostId | null
   /**
@@ -310,6 +321,11 @@ export type WorktreeSlice = {
     executionHostId?: ExecutionHostId,
     options?: { stateTransition?: ActiveWorktreeStateTransition }
   ) => boolean
+  /** Opens a worktree as its own column beside the focused one, and focuses it. */
+  openWorktreeColumn: (worktreeId: string, executionHostId?: ExecutionHostId) => void
+  /** Closes a column. The worktree keeps running; only the column goes away. */
+  closeWorktreeColumn: (worktreeId: string) => void
+  setWorktreeColumnRatios: (ratios: number[]) => void
   /**
    * Health-driven remount of one terminal tab: bumps the tab's generation so
    * TerminalPane unmounts, detaches (preserving a live PTY), and remounts with

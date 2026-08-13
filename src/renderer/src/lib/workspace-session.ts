@@ -10,6 +10,8 @@ import { normalizeBrowserHistoryEntries } from '../../../shared/workspace-sessio
 import type { AppState } from '../store'
 import type { OpenFile } from '../store/slices/editor'
 import { buildPersistedUnifiedTabSessionData } from './workspace-session-unified-tabs'
+import { buildWorktreeColumnSessionData } from './workspace-session-worktree-columns'
+import type { WorkspaceSessionSnapshot } from './workspace-session-snapshot-fields'
 import { buildLastVisitedAtByWorktreeId } from './workspace-session-focus-recency'
 import { buildSleepingAgentSessionData } from './workspace-session-sleeping-agents'
 import { buildActiveConnectionIdsAtShutdown } from './workspace-session-reconnect-targets'
@@ -23,78 +25,8 @@ export function shouldPersistWorkspaceSession(
   return state.workspaceSessionReady && state.hydrationSucceeded
 }
 
-export type WorkspaceSessionSnapshot = Pick<
-  AppState,
-  | 'activeRepoId'
-  | 'activeWorkspaceKey'
-  | 'activeWorktreeId'
-  | 'activeTabId'
-  | 'tabsByWorktree'
-  | 'ptyIdsByTabId'
-  | 'terminalLayoutsByTabId'
-  | 'activeTabIdByWorktree'
-  | 'openFiles'
-  | 'editorDrafts'
-  | 'markdownFrontmatterVisible'
-  | 'activeFileIdByWorktree'
-  | 'activeTabTypeByWorktree'
-  | 'browserTabsByWorktree'
-  | 'browserPagesByWorkspace'
-  | 'activeBrowserTabIdByWorktree'
-  | 'browserUrlHistory'
-  | 'unifiedTabsByWorktree'
-  | 'groupsByWorktree'
-  | 'layoutByWorktree'
-  | 'activeGroupIdByWorktree'
-  | 'sshConnectionStates'
-  | 'repos'
-  | 'worktreesByRepo'
-  | 'lastKnownRelayPtyIdByTabId'
-  | 'lastVisitedAtByWorktreeId'
-  | 'defaultTerminalTabsAppliedByWorktreeId'
-> & {
-  activeWorkspaceExecutionHostId?: AppState['activeWorkspaceExecutionHostId']
-  sleepingAgentSessionsByPaneKey?: AppState['sleepingAgentSessionsByPaneKey']
-}
-
-// Why: shallow-equality gate for the debounced session writer; _exhaustive below keeps it in sync with the snapshot type.
-export const SESSION_RELEVANT_FIELDS = [
-  'activeRepoId',
-  'activeWorkspaceKey',
-  'activeWorkspaceExecutionHostId',
-  'activeWorktreeId',
-  'activeTabId',
-  'tabsByWorktree',
-  'ptyIdsByTabId',
-  'terminalLayoutsByTabId',
-  'activeTabIdByWorktree',
-  'openFiles',
-  'editorDrafts',
-  'markdownFrontmatterVisible',
-  'activeFileIdByWorktree',
-  'activeTabTypeByWorktree',
-  'browserTabsByWorktree',
-  'browserPagesByWorkspace',
-  'activeBrowserTabIdByWorktree',
-  'browserUrlHistory',
-  'unifiedTabsByWorktree',
-  'groupsByWorktree',
-  'layoutByWorktree',
-  'activeGroupIdByWorktree',
-  'sshConnectionStates',
-  'repos',
-  'worktreesByRepo',
-  'lastKnownRelayPtyIdByTabId',
-  'lastVisitedAtByWorktreeId',
-  'defaultTerminalTabsAppliedByWorktreeId',
-  'sleepingAgentSessionsByPaneKey'
-] as const satisfies readonly (keyof WorkspaceSessionSnapshot)[]
-
-type _MissingSessionField = Exclude<
-  keyof WorkspaceSessionSnapshot,
-  (typeof SESSION_RELEVANT_FIELDS)[number]
->
-void (true satisfies [_MissingSessionField] extends [never] ? true : never)
+export type { WorkspaceSessionSnapshot } from './workspace-session-snapshot-fields'
+export { SESSION_RELEVANT_FIELDS } from './workspace-session-snapshot-fields'
 
 /** Build the editor-file portion of the workspace session for persistence.
  *  Only edit-mode files are saved — diffs and conflict views are transient. */
@@ -301,6 +233,7 @@ export function buildWorkspaceSessionPayload(
     activeWorkspaceKey: snapshot.activeWorkspaceKey,
     activeWorkspaceExecutionHostId: snapshot.activeWorkspaceExecutionHostId,
     activeWorktreeId: snapshot.activeWorktreeId,
+    ...buildWorktreeColumnSessionData(snapshot),
     activeTabId: snapshot.activeTabId,
     tabsByWorktree: buildSanitizedTabsByWorktree(snapshot.tabsByWorktree),
     terminalLayoutsByTabId: snapshot.terminalLayoutsByTabId,

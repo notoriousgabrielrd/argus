@@ -9,6 +9,8 @@ describe('SESSION_RELEVANT_FIELDS', () => {
     activeWorkspaceKey: true,
     activeWorkspaceExecutionHostId: true,
     activeWorktreeId: true,
+    visibleWorktreeIds: true,
+    worktreeColumnRatios: true,
     activeTabId: true,
     tabsByWorktree: true,
     ptyIdsByTabId: true,

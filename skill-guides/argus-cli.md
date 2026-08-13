@@ -189,6 +189,11 @@ ORCA terminal split --terminal <handle> --direction horizontal --command "npm te
 ORCA terminal rename --terminal <handle> --title "New Name" --json
 ORCA terminal switch --terminal <handle> --json
 ORCA terminal close --terminal <handle> --json
+ORCA terminal seats --json
+ORCA terminal assign --terminal <handle> --seat AUDITOR --json
+ORCA terminal assign --terminal <handle> --seat AUDITOR --force --json
+ORCA terminal unassign --terminal <handle> --json
+ORCA terminal send --terminal seat:AUDITOR --text "review this" --enter --json
 ```
 
 Terminal rules:
@@ -203,6 +208,15 @@ Terminal rules:
 - Terminal handles are runtime-scoped. Use `startupTerminal.handle` as the sole agent handle when `worktree create --agent` returns it; if Argus restarts, omits the handle, or returns `terminal_handle_stale`, reacquire with `terminal list` and continue with the replacement only.
 - For long output, use cursor reads. After a limited tail preview, page from `oldestCursor`; after a cursor read, continue with `nextCursor` while `limited` is true and `nextCursor !== latestCursor`.
 - `--direction horizontal` splits left/right. `--direction vertical` splits top/bottom.
+
+Project-agent seats:
+
+- A **seat** is the project agent the workspace defines in `.claude/agents/*.md` (`AUDITOR`, `BOSS`, `ENGINEER`). It is not the same axis as the **Argus agent** — the tool running in the pane (`claude`, `codex`), which is what `--agent` means everywhere else and what `terminal.agentStatus` reports. One pane can be seat `AUDITOR` while running `claude`.
+- Run `terminal seats` first: it lists exactly the seats the workspace defines and which terminal holds each. `terminal assign` refuses a name the workspace does not define.
+- Seats are exclusive per worktree, so `--terminal seat:AUDITOR` resolves to one terminal. Assigning a seat another terminal holds fails; pass `--force` to take it, and the result names the displaced terminal in `displacedHandle`.
+- A pane holds at most one seat. Re-seating a pane vacates the seat it held, reported as `vacatedSeat`.
+- `seat:<NAME>` works anywhere `--terminal` is accepted, so prefer it over storing handles: handles are runtime-scoped and go stale on restart, while a seat is re-resolved each call.
+- `terminal unassign` releases the seat and leaves the terminal running. A closed pane's seat is dropped automatically, so `seat:` never resolves to a dead pane.
 
 ## Automations
 

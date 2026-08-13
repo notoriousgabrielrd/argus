@@ -1,6 +1,7 @@
 import type { CommandSpec } from '../args'
 import { GLOBAL_FLAGS } from '../args'
 import { SERVE_COMMAND_SPECS } from './serve'
+import { TERMINAL_SEAT_COMMAND_SPECS } from './terminal-seats'
 
 export const CORE_COMMAND_SPECS: CommandSpec[] = [
   {
@@ -280,6 +281,7 @@ export const CORE_COMMAND_SPECS: CommandSpec[] = [
       'argus terminal rename --terminal term_abc123 --json'
     ]
   },
+  ...TERMINAL_SEAT_COMMAND_SPECS,
   {
     path: ['terminal', 'split'],
     summary: 'Split an existing terminal pane',

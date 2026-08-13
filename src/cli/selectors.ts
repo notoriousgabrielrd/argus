@@ -1,9 +1,11 @@
 import { resolve as resolvePath } from 'node:path'
 import type {
   ComputerAppQuery,
+  RuntimeTerminalSeatResolve,
   RuntimeWorktreeListResult,
   RuntimeWorktreeRecord
 } from '../shared/runtime-types'
+import { parseSeatSelector } from '../shared/argus/terminal-seat'
 import { isPathInsideOrEqual } from '../shared/cross-platform-path'
 import type { RuntimeClient } from './runtime-client'
 import { RuntimeClientError } from './runtime/types'
@@ -152,7 +154,18 @@ export async function getTerminalHandle(
 ): Promise<string> {
   const explicit = getOptionalStringFlag(flags, 'terminal')
   if (explicit) {
-    return explicit
+    // Why resolve here rather than in the runtime's handle lookup: seats are addressed
+    // like `terminal.resolveActive` — one resolution RPC up front — so every command that
+    // takes --terminal accepts seat:AUDITOR without touching handle validation.
+    const seat = parseSeatSelector(explicit)
+    if (seat === null) {
+      return explicit
+    }
+    const response = await client.call<RuntimeTerminalSeatResolve>('terminal.resolveSeat', {
+      seat,
+      worktree: await getBrowserWorktreeSelector(flags, cwd, client)
+    })
+    return response.result.handle
   }
   const worktree = await getBrowserWorktreeSelector(flags, cwd, client)
   const response = await client.call<{ handle: string }>('terminal.resolveActive', { worktree })
