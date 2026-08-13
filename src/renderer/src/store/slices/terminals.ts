@@ -868,6 +868,8 @@ type WorkspaceHydrationPatch = Pick<
   AppState,
   | 'activeRepoId'
   | 'activeWorktreeId'
+  | 'visibleWorktreeIds'
+  | 'worktreeColumnRatios'
   | 'activeWorkspaceKey'
   | 'activeWorkspaceExecutionHostId'
   | 'activeTabId'
@@ -1008,6 +1010,12 @@ function targetScopedWorkspaceHydrationPatch(
   return {
     activeRepoId: activeOutsideScope ? state.activeRepoId : hydrated.activeRepoId,
     activeWorktreeId: activeOutsideScope ? state.activeWorktreeId : hydrated.activeWorktreeId,
+    visibleWorktreeIds: activeOutsideScope
+      ? state.visibleWorktreeIds
+      : hydrated.visibleWorktreeIds,
+    worktreeColumnRatios: activeOutsideScope
+      ? state.worktreeColumnRatios
+      : hydrated.worktreeColumnRatios,
     activeWorkspaceKey: activeOutsideScope ? state.activeWorkspaceKey : hydrated.activeWorkspaceKey,
     activeWorkspaceExecutionHostId: activeOutsideScope
       ? state.activeWorkspaceExecutionHostId
@@ -4215,6 +4223,13 @@ export const createTerminalSlice: StateCreator<AppState, [], [], TerminalSlice> 
       const hydrated: WorkspaceHydrationPatch = {
         activeRepoId,
         activeWorktreeId,
+        // Why filtered against restored tabs: a persisted column whose worktree is gone (removed
+        // between sessions, or outside this host's scope) must not open a surface with no
+        // workspace behind it. An empty result falls back to single-column.
+        visibleWorktreeIds: (session.visibleWorktreeIds ?? []).filter((id) =>
+          Object.hasOwn(tabsByWorktree, id)
+        ),
+        worktreeColumnRatios: session.worktreeColumnRatios ?? [],
         activeWorkspaceKey,
         activeWorkspaceExecutionHostId,
         activeTabId,

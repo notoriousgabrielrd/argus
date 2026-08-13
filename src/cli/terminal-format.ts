@@ -1,7 +1,9 @@
 import type {
+  RuntimeProjectAgentSeatList,
   RuntimeTerminalClose,
   RuntimeTerminalCreate,
   RuntimeTerminalFocus,
+  RuntimeTerminalSeatAssign,
   RuntimeTerminalListResult,
   RuntimeTerminalVisualLayout,
   RuntimeTerminalVisualLayoutNode,
@@ -22,7 +24,7 @@ export function formatTerminalList(result: RuntimeTerminalListResult): string {
   const body = result.terminals
     .map(
       (terminal) =>
-        `${terminal.handle}  ${terminal.title ?? '(untitled)'}  ${terminal.connected ? 'connected' : 'disconnected'}  ${terminal.worktreePath}\n${terminal.preview ? `preview: ${terminal.preview}` : 'preview: <empty>'}`
+        `${terminal.handle}  ${terminal.title ?? '(untitled)'}${terminal.seat ? `  seat:${terminal.seat}` : ''}  ${terminal.connected ? 'connected' : 'disconnected'}  ${terminal.worktreePath}\n${terminal.preview ? `preview: ${terminal.preview}` : 'preview: <empty>'}`
     )
     .join('\n\n')
   const visualLayout = formatTerminalVisualLayouts(result.visualLayouts)
@@ -150,6 +152,36 @@ export function formatTerminalRename(result: { rename: RuntimeTerminalRename }):
   return result.rename.title
     ? `Renamed terminal ${result.rename.handle} to "${result.rename.title}".`
     : `Cleared title for terminal ${result.rename.handle}.`
+}
+
+export function formatTerminalSeatAssign(result: { seat: RuntimeTerminalSeatAssign }): string {
+  const lines = [`Assigned terminal ${result.seat.handle} to project agent ${result.seat.seat}.`]
+  if (result.seat.displacedHandle) {
+    lines.push(`${result.seat.seat} released from terminal ${result.seat.displacedHandle}.`)
+  }
+  if (result.seat.vacatedSeat) {
+    lines.push(`This terminal no longer holds ${result.seat.vacatedSeat}.`)
+  }
+  return lines.join('\n')
+}
+
+export function formatTerminalSeatClear(result: { seat: RuntimeTerminalSeatAssign }): string {
+  return result.seat.seat
+    ? `Released ${result.seat.seat} from terminal ${result.seat.handle}; the terminal is still running.`
+    : `Terminal ${result.seat.handle} held no project-agent seat.`
+}
+
+export function formatProjectAgentSeats(result: { seats: RuntimeProjectAgentSeatList }): string {
+  if (result.seats.seats.length === 0) {
+    return `No project agents defined in ${result.seats.worktreePath}/.claude/agents/.`
+  }
+  return result.seats.seats
+    .map((agent) => {
+      const occupant = agent.handle ? agent.handle : '(vacant)'
+      const tools = agent.tools.length > 0 ? agent.tools.join(', ') : 'inherits every tool'
+      return `${agent.seat}  ${occupant}\n  ${agent.description || '(no description)'}\n  tools: ${tools}`
+    })
+    .join('\n\n')
 }
 
 export function formatTerminalCreate(result: { terminal: RuntimeTerminalCreate }): string {

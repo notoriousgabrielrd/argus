@@ -27,6 +27,7 @@ import type {
   FeatureInteractionTelemetryBucketState
 } from './feature-interactions'
 import type { GitBranchChangeStatus } from './git-status-types'
+import type { TerminalSeatMap } from './argus/terminal-seat'
 import type { KeybindingOverrides, TerminalShortcutPolicy } from './keybindings'
 import type { RepoIcon } from './repo-icon'
 import type { AppIconId } from './app-icon'
@@ -1182,6 +1183,17 @@ export type WorkspaceSessionState = {
   browserUrlHistory?: BrowserHistoryEntry[]
   /** Per-worktree last-active terminal tab ID at shutdown. */
   activeTabIdByWorktree?: Record<string, string | null>
+  /** Worktree columns visible side by side, left to right. Empty/absent means single-column,
+   *  derived from activeWorktreeId — which stays the one *focused* worktree. Optional so a
+   *  peer that never opens a second column keeps reading sessions unchanged. */
+  visibleWorktreeIds?: string[]
+  /** Flex ratios per visible column, same order. Absent means an even split. */
+  worktreeColumnRatios?: number[]
+  /** Project-agent seat assignments per worktree: seat name → occupying pane's leafId.
+   *  Keyed by seat (not leaf) because seats are exclusive per worktree, which is what
+   *  lets the `seat:AUDITOR` selector resolve to exactly one terminal. Distinct from a
+   *  tab's `launchAgent`, which records the Argus agent (the tool) rather than the role. */
+  seatAssignmentsByWorktree?: Record<string, TerminalSeatMap>
   /** Unified tab model — present when saved by a build that includes TabsSlice.
    *  Read-path checks for this first; falls back to legacy fields if absent. */
   unifiedTabs?: Record<string, Tab[]>

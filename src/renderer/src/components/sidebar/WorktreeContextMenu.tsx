@@ -19,6 +19,7 @@ import {
   Bell,
   BellOff,
   CircleX,
+  Columns2,
   Pencil,
   Pin,
   PinOff,
@@ -30,6 +31,9 @@ import {
   FolderPlus,
   FolderTree
 } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
+import { getWorktreeExecutionHostId } from '../../../../shared/execution-host'
+import { resolveVisibleWorktreeIds, worktreeColumnMenuState } from '@/store/slices/worktree-columns'
 import { useAppStore } from '@/store'
 import type { AppState } from '@/store/types'
 import { useAllWorktrees, useRepoById, useRepoMap, useWorktreeMap } from '@/store/selectors'
@@ -326,6 +330,10 @@ const WorktreeContextMenu = React.memo(function WorktreeContextMenu({
   const effectiveSelectedWorktrees = selectedWorktrees ?? defaultSelectedWorktrees
   const updateWorktreeMeta = useAppStore((s) => s.updateWorktreeMeta)
   const setWorktreesPinnedAndReveal = useAppStore((s) => s.setWorktreesPinnedAndReveal)
+  const openWorktreeColumn = useAppStore((s) => s.openWorktreeColumn)
+  const closeWorktreeColumn = useAppStore((s) => s.closeWorktreeColumn)
+  const visibleWorktreeIds = useAppStore(useShallow(resolveVisibleWorktreeIds))
+  const activeWorktreeId = useAppStore((s) => s.activeWorktreeId)
   const workspaceStatuses = useAppStore((s) => s.workspaceStatuses)
   const openModal = useAppStore((s) => s.openModal)
   const projectGroups = useAppStore((s) => s.projectGroups)
@@ -557,6 +565,15 @@ const WorktreeContextMenu = React.memo(function WorktreeContextMenu({
   const handleTogglePin = useCallback(() => {
     setWorktreesPinnedAndReveal([worktree.id], !worktree.isPinned)
   }, [worktree.id, worktree.isPinned, setWorktreesPinnedAndReveal])
+
+  const { canOpen: canOpenWorktreeColumn, canClose: canCloseWorktreeColumn } =
+    worktreeColumnMenuState({ visibleWorktreeIds, activeWorktreeId }, worktree.id)
+  const handleOpenColumn = useCallback(() => {
+    openWorktreeColumn(worktree.id, getWorktreeExecutionHostId(worktree, repo ?? undefined))
+  }, [openWorktreeColumn, worktree, repo])
+  const handleCloseColumn = useCallback(() => {
+    closeWorktreeColumn(worktree.id)
+  }, [closeWorktreeColumn, worktree.id])
 
   const handleCreateGroupFromRepo = useCallback(() => {
     if (!repo) {
@@ -852,6 +869,26 @@ const WorktreeContextMenu = React.memo(function WorktreeContextMenu({
             <DropdownMenuItem onSelect={handleRename} disabled={isDeleting}>
               <Pencil className="size-3.5" />
               {translate('auto.components.sidebar.WorktreeContextMenu.439fa94d53', 'Update')}
+            </DropdownMenuItem>
+          )}
+          {/* Why only single-context: a column shows one workspace, so a multi-select has no
+              single target to open beside the current one. */}
+          {!isMultiContext && canOpenWorktreeColumn && (
+            <DropdownMenuItem onSelect={handleOpenColumn} disabled={isDeleting}>
+              <Columns2 className="size-3.5" />
+              {translate(
+                'auto.components.sidebar.WorktreeContextMenu.openWorktreeColumn',
+                'Open Beside Current'
+              )}
+            </DropdownMenuItem>
+          )}
+          {!isMultiContext && canCloseWorktreeColumn && (
+            <DropdownMenuItem onSelect={handleCloseColumn} disabled={isDeleting}>
+              <Columns2 className="size-3.5" />
+              {translate(
+                'auto.components.sidebar.WorktreeContextMenu.closeWorktreeColumn',
+                'Close Column'
+              )}
             </DropdownMenuItem>
           )}
           <DropdownMenuSub>

@@ -12,15 +12,16 @@ export const BROWSER_GUEST_HIDDEN_WORKTREE_RETENTION_LIMIT = 4
  *
  * orderedWorktreeIds must be most-recently-activated first (LRU order =
  * worktree activation order). Only worktrees that actually hold live guests
- * count toward the limit. The active worktree never counts and is never
- * evicted. isEvictable is consulted lazily, only for worktrees beyond the
- * limit — a non-evictable one (a guest an automation/mobile controller is
- * actively driving, or one still writing a download) stays retained over
- * budget.
+ * count toward the limit. A worktree on screen never counts and is never
+ * evicted — with columns that is plural, and destroying a visible column's
+ * guests would blank its browser pane. isEvictable is consulted lazily, only
+ * for worktrees beyond the limit — a non-evictable one (a guest an
+ * automation/mobile controller is actively driving, or one still writing a
+ * download) stays retained over budget.
  */
 export function selectBrowserGuestEvictionWorktreeIds(args: {
   orderedWorktreeIds: readonly string[]
-  activeWorktreeId: string | null
+  visibleWorktreeIds: ReadonlySet<string>
   isRetained: (worktreeId: string) => boolean
   holdsLiveGuests: (worktreeId: string) => boolean
   isEvictable: (worktreeId: string) => boolean
@@ -33,7 +34,7 @@ export function selectBrowserGuestEvictionWorktreeIds(args: {
   for (const worktreeId of args.orderedWorktreeIds) {
     if (
       seen.has(worktreeId) ||
-      worktreeId === args.activeWorktreeId ||
+      args.visibleWorktreeIds.has(worktreeId) ||
       !args.isRetained(worktreeId) ||
       !args.holdsLiveGuests(worktreeId)
     ) {

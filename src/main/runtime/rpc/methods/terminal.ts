@@ -892,6 +892,16 @@ const TerminalRename = TerminalHandle.extend({
   })
 })
 
+const TerminalAssignSeat = TerminalHandle.extend({
+  seat: requiredString('Missing --seat (the project-agent name, for example AUDITOR)'),
+  force: z.unknown().optional()
+})
+
+const TerminalResolveSeat = z.object({
+  seat: requiredString('Missing seat name'),
+  worktree: OptionalString
+})
+
 const TerminalSend = TerminalHandle.extend({
   text: OptionalString,
   enter: z.unknown().optional(),
@@ -1212,6 +1222,35 @@ export const TERMINAL_METHODS: RpcAnyMethod[] = [
     params: TerminalRename,
     handler: async (params, { runtime }) => ({
       rename: await runtime.renameTerminal(params.terminal, params.title || null)
+    })
+  }),
+  defineMethod({
+    name: 'terminal.assignSeat',
+    params: TerminalAssignSeat,
+    handler: async (params, { runtime }) => ({
+      seat: await runtime.assignTerminalSeat(params.terminal, params.seat, {
+        force: params.force === true
+      })
+    })
+  }),
+  defineMethod({
+    name: 'terminal.clearSeat',
+    params: TerminalHandle,
+    handler: async (params, { runtime }) => ({
+      seat: await runtime.clearTerminalSeat(params.terminal)
+    })
+  }),
+  defineMethod({
+    name: 'terminal.resolveSeat',
+    params: TerminalResolveSeat,
+    handler: async (params, { runtime }) =>
+      await runtime.resolveTerminalSeat(params.seat, params.worktree)
+  }),
+  defineMethod({
+    name: 'terminal.listSeats',
+    params: TerminalResolveActive,
+    handler: async (params, { runtime }) => ({
+      seats: await runtime.listProjectAgentSeats(params.worktree)
     })
   }),
   defineMethod({

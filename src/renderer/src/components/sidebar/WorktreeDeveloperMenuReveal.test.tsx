@@ -14,6 +14,11 @@ vi.mock('@/store', () => {
   const state = {
     tabsByWorktree: {},
     ptyIdsByTabId: {},
+    // Single-column default: the menu reads the column row to decide its open/close items.
+    activeWorktreeId: null,
+    visibleWorktreeIds: [],
+    openWorktreeColumn: vi.fn(),
+    closeWorktreeColumn: vi.fn(),
     browserTabsByWorktree: {},
     deleteStateByWorktreeId: {},
     worktreeLineageById: {},

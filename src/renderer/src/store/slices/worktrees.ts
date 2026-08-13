@@ -133,6 +133,15 @@ import type {
 import type { DirectSshAuthority } from '../../../../shared/ssh-types'
 import { findIndexedWorktreeOwnerForHost } from '@/lib/worktree-runtime-owner-index'
 import { catalogRowsEqual, reuseEqualCatalogRows } from './worktree-catalog-reconciliation'
+import {
+  closeWorktreeColumn,
+  focusWorktreeColumn,
+  normalizeWorktreeColumnRatios,
+  openWorktreeColumn,
+  pruneWorktreeColumns,
+  renameWorktreeColumn,
+  resolveVisibleWorktreeIds
+} from './worktree-columns'
 export type { WorktreeSlice, WorktreeDeleteState } from './worktree-helpers'
 
 // Why: old runtime servers only have `worktree.list`; preserve the large-list UI hydration parity used before `worktree.detectedList` existed.
@@ -2334,6 +2343,15 @@ function buildWorktreeRenameState(
       ? { sleepingAgentSessionsByPaneKey }
       : {}),
     ...(s.activeWorktreeId === oldWorktreeId ? { activeWorktreeId: newWorktreeId } : {}),
+    ...(s.visibleWorktreeIds.includes(oldWorktreeId)
+      ? {
+          visibleWorktreeIds: renameWorktreeColumn(
+            s.visibleWorktreeIds,
+            oldWorktreeId,
+            newWorktreeId
+          )
+        }
+      : {}),
     // The active workspace key derives from the worktree id, so keep it in sync when the active worktree is renamed.
     ...(s.activeWorkspaceKey === worktreeWorkspaceKey(oldWorktreeId)
       ? { activeWorkspaceKey: worktreeWorkspaceKey(newWorktreeId) }
@@ -2691,6 +2709,11 @@ function buildWorktreePurgeState(s: AppState, worktreeIds: string[]): Partial<Ap
       s.defaultTerminalTabsAppliedByWorktreeId
     ),
     activeWorktreeId: removedActive ? null : s.activeWorktreeId,
+    // Why prune here rather than at render: a column naming a removed worktree would keep a
+    // dead surface in the row, and resolveVisibleWorktreeIds would re-adopt it every pass.
+    visibleWorktreeIds: removedActive
+      ? []
+      : pruneWorktreeColumns(s.visibleWorktreeIds, (id) => !worktreeIdSet.has(id)),
     activeWorkspaceExecutionHostId: removedActive ? null : s.activeWorkspaceExecutionHostId,
     activeWorkspaceKey: (() => {
       if (s.activeWorkspaceKey && worktreeIdSet.has(s.activeWorkspaceKey)) {
@@ -3274,6 +3297,8 @@ export const createWorktreeSlice: StateCreator<AppState, [], [], WorktreeSlice> 
   worktreeLineageById: {},
   workspaceLineageByChildKey: {},
   activeWorktreeId: null,
+  visibleWorktreeIds: [],
+  worktreeColumnRatios: [],
   activeWorkspaceKey: null,
   activeWorkspaceExecutionHostId: null,
   pendingWorktreeCreations: {},
@@ -5579,6 +5604,40 @@ export const createWorktreeSlice: StateCreator<AppState, [], [], WorktreeSlice> 
     return remounted
   },
 
+  openWorktreeColumn: (worktreeId, executionHostId) => {
+    const opened = openWorktreeColumn(get(), worktreeId)
+    // Why set the row before activating: setActiveWorktree runs focusWorktreeColumn, which would
+    // otherwise swap the new column's content back into the previously focused slot.
+    set({
+      visibleWorktreeIds: opened.visibleWorktreeIds,
+      worktreeColumnRatios: normalizeWorktreeColumnRatios(
+        undefined,
+        opened.visibleWorktreeIds.length
+      )
+    })
+    get().setActiveWorktree(worktreeId, executionHostId)
+  },
+  closeWorktreeColumn: (worktreeId) => {
+    const closed = closeWorktreeColumn(get(), worktreeId)
+    set({
+      visibleWorktreeIds: closed.visibleWorktreeIds,
+      worktreeColumnRatios: normalizeWorktreeColumnRatios(
+        undefined,
+        Math.max(1, closed.visibleWorktreeIds.length)
+      )
+    })
+    if (closed.activeWorktreeId !== get().activeWorktreeId) {
+      get().setActiveWorktree(closed.activeWorktreeId)
+    }
+  },
+  setWorktreeColumnRatios: (ratios) => {
+    set((s) => ({
+      worktreeColumnRatios: normalizeWorktreeColumnRatios(
+        ratios,
+        resolveVisibleWorktreeIds(s).length
+      )
+    }))
+  },
   setActiveWorktree: (worktreeId, executionHostId, options) => {
     const stateTransition = options?.stateTransition?.(get())
     if (stateTransition && !stateTransition.activate) {
@@ -5617,6 +5676,10 @@ export const createWorktreeSlice: StateCreator<AppState, [], [], WorktreeSlice> 
         return {
           ...stateTransition?.patch,
           activeWorktreeId: null,
+          // Why cleared: columns are a composition of *focused* plus neighbors. With nothing
+          // focused (landing screen), a leftover row would paint workspaces no one owns.
+          visibleWorktreeIds: [],
+          worktreeColumnRatios: [],
           activeWorkspaceKey: null,
           activeWorkspaceExecutionHostId: null,
           // Why: clearing/activating a worktree must dismiss the background-creation panel so the user isn't stranded on it.
@@ -5826,6 +5889,9 @@ export const createWorktreeSlice: StateCreator<AppState, [], [], WorktreeSlice> 
         ...reconciliation?.patch,
         activeRepoId: nextActiveRepoId,
         activeWorktreeId: worktreeId,
+        // Why: with columns open, focusing a worktree that is not on screen swaps it into the
+        // focused column instead of growing the row — opening a column stays an explicit gesture.
+        visibleWorktreeIds: focusWorktreeColumn(s, worktreeId),
         activeWorkspaceKey: isWorkspaceKey(worktreeId)
           ? worktreeId
           : worktreeWorkspaceKey(worktreeId),

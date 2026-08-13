@@ -316,6 +316,9 @@ import {
   type RuntimeRepoSearchRefs,
   type RuntimeTerminalRead,
   type RuntimeTerminalRename,
+  type RuntimeTerminalSeatAssign,
+  type RuntimeTerminalSeatResolve,
+  type RuntimeProjectAgentSeatList,
   type RuntimeTerminalAgentStatus,
   type RuntimeTerminalSend,
   type RuntimeTerminalCreate,
@@ -590,6 +593,15 @@ import {
   type ClaudeAgentTeamsMode
 } from '../../shared/claude-agent-teams-tmux-compat'
 import { joinWorktreeRelativePath } from './runtime-relative-paths'
+import {
+  assignSeat,
+  clearSeatForLeaf,
+  findSeatForLeaf,
+  normalizeSeatName,
+  pruneSeats,
+  type TerminalSeatMap
+} from '../../shared/argus/terminal-seat'
+import { listProjectAgents, PROJECT_AGENTS_DIR } from '../argus/project-agent-definitions'
 import { collectMemorySnapshot } from '../memory/collector'
 import { app, BrowserWindow, ipcMain, Notification } from 'electron'
 import { RendererPublicationThrottle } from '../window/renderer-publication-throttle'
@@ -25010,6 +25022,210 @@ export class OrcaRuntimeService {
     return { handle, tabId: leaf.tabId, title }
   }
 
+  // ─── Project-agent seats ──────────────────────────────────────────
+  //
+  // A seat binds a *project agent* (AUDITOR, BOSS, … from the workspace's
+  // .claude/agents/*.md) to one terminal pane. This is a different axis from the tab's
+  // `launchAgent`, which records the Argus agent — the tool running in the pane.
+
+  /**
+   * Resolves a handle to the pane identity a seat is stored against.
+   *
+   * Mirrors renameTerminal's two paths: a live PTY answers without the renderer graph
+   * (headless/daemon), and only a handle with no live PTY needs the graph.
+   */
+  private resolveSeatPaneForHandle(handle: string): {
+    leafId: string
+    tabId: string
+    worktreeId: string
+  } {
+    const pty = this.getLivePtyForHandle(handle)
+    if (pty) {
+      return {
+        leafId: parsePaneKey(pty.pty.paneKey ?? '')?.leafId ?? pty.record.leafId,
+        tabId: pty.pty.tabId ?? pty.record.tabId,
+        worktreeId: pty.pty.worktreeId
+      }
+    }
+    const { leaf } = this.getLiveLeafForHandle(handle)
+    return { leafId: leaf.leafId, tabId: leaf.tabId, worktreeId: leaf.worktreeId }
+  }
+
+  // Why scan rather than index: seats store only the leafId, while `leaves` is keyed by
+  // tabId+leafId, and a pane detached into another tab keeps its leafId. Leaf ids are
+  // UUIDs, so the first match is the only match.
+  private findLeafByLeafId(leafId: string): RuntimeLeafRecord | null {
+    for (const leaf of this.leaves.values()) {
+      if (leaf.leafId === leafId) {
+        return leaf
+      }
+    }
+    return null
+  }
+
+  private isSeatOccupantLive(leafId: string): boolean {
+    if (this.findLeafByLeafId(leafId) !== null) {
+      return true
+    }
+    // Why: with no renderer graph the leaf map is empty, so fall back to live PTY pane
+    // keys — a daemon-hosted pane still holds its seat.
+    for (const pty of this.ptysById.values()) {
+      if (parsePaneKey(pty.paneKey ?? '')?.leafId === leafId) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /** Stored seats for a worktree, minus any whose pane is gone. */
+  private getSeatMapForWorktree(worktreeId: string): TerminalSeatMap {
+    const stored = this.getWorkspaceSessionForWorktree(worktreeId)?.seatAssignmentsByWorktree?.[
+      worktreeId
+    ]
+    if (!stored) {
+      return {}
+    }
+    const { seats } = pruneSeats(stored, (leafId) => this.isSeatOccupantLive(leafId))
+    return seats
+  }
+
+  private writeSeatMapForWorktree(worktreeId: string, seats: TerminalSeatMap): void {
+    const session = this.getWorkspaceSessionForWorktree(worktreeId)
+    if (!session || !this.store?.setWorkspaceSession) {
+      return
+    }
+    const byWorktree = { ...session.seatAssignmentsByWorktree }
+    if (Object.keys(seats).length === 0) {
+      delete byWorktree[worktreeId]
+    } else {
+      byWorktree[worktreeId] = seats
+    }
+    this.setWorkspaceSessionForWorktree(worktreeId, {
+      ...session,
+      seatAssignmentsByWorktree: byWorktree
+    })
+  }
+
+  private seatForLeaf(worktreeId: string, leafId: string): string | null {
+    const stored = this.getWorkspaceSessionForWorktree(worktreeId)?.seatAssignmentsByWorktree?.[
+      worktreeId
+    ]
+    return stored ? findSeatForLeaf(stored, leafId) : null
+  }
+
+  private handleForSeatOccupant(leafId: string): string | null {
+    const leaf = this.findLeafByLeafId(leafId)
+    return leaf ? this.issueHandle(leaf) : null
+  }
+
+  private async assertSeatDefinedByProject(worktreeId: string, seat: string): Promise<void> {
+    const worktree = (await this.getResolvedWorktreeMap()).get(worktreeId)
+    if (!worktree) {
+      throw new Error('worktree_not_found')
+    }
+    const defined = await listProjectAgents(worktree.path)
+    if (defined.some((agent) => agent.seat === seat)) {
+      return
+    }
+    // Why name the directory and the known seats: the definitions live in the project
+    // repo, so the fix is always an edit there, not in Argus.
+    const known = defined.map((agent) => agent.seat).join(', ')
+    throw new Error(
+      known
+        ? `unknown_project_agent:${seat}:${known}`
+        : `no_project_agents:${join(worktree.path, PROJECT_AGENTS_DIR)}`
+    )
+  }
+
+  async assignTerminalSeat(
+    handle: string,
+    seatName: string,
+    opts: { force?: boolean } = {}
+  ): Promise<RuntimeTerminalSeatAssign> {
+    const seat = normalizeSeatName(seatName)
+    const pane = this.resolveSeatPaneForHandle(handle)
+    await this.assertSeatDefinedByProject(pane.worktreeId, seat)
+    const current = this.getSeatMapForWorktree(pane.worktreeId)
+    const { seats, displacedLeafId, vacatedSeat } = assignSeat(current, seat, pane.leafId, opts)
+    this.writeSeatMapForWorktree(pane.worktreeId, seats)
+    return {
+      handle,
+      tabId: pane.tabId,
+      leafId: pane.leafId,
+      worktreeId: pane.worktreeId,
+      seat,
+      displacedHandle: displacedLeafId ? this.handleForSeatOccupant(displacedLeafId) : null,
+      vacatedSeat
+    }
+  }
+
+  async clearTerminalSeat(handle: string): Promise<RuntimeTerminalSeatAssign> {
+    const pane = this.resolveSeatPaneForHandle(handle)
+    const { seats, clearedSeat } = clearSeatForLeaf(
+      this.getSeatMapForWorktree(pane.worktreeId),
+      pane.leafId
+    )
+    if (clearedSeat !== null) {
+      this.writeSeatMapForWorktree(pane.worktreeId, seats)
+    }
+    return {
+      handle,
+      tabId: pane.tabId,
+      leafId: pane.leafId,
+      worktreeId: pane.worktreeId,
+      seat: clearedSeat
+    }
+  }
+
+  async resolveTerminalSeat(
+    seatName: string,
+    worktreeSelector?: string
+  ): Promise<RuntimeTerminalSeatResolve> {
+    const seat = normalizeSeatName(seatName)
+    const worktreeIds = worktreeSelector
+      ? [(await this.resolveWorktreeSelector(worktreeSelector)).id]
+      : [...new Set([...this.leaves.values()].map((leaf) => leaf.worktreeId))]
+    for (const worktreeId of worktreeIds) {
+      const leafId = this.getSeatMapForWorktree(worktreeId)[seat]
+      if (leafId === undefined) {
+        continue
+      }
+      const resolved = this.handleForSeatOccupant(leafId)
+      if (resolved) {
+        return { handle: resolved, seat }
+      }
+    }
+    throw new Error(`seat_not_assigned:${seat}`)
+  }
+
+  async listProjectAgentSeats(worktreeSelector?: string): Promise<RuntimeProjectAgentSeatList> {
+    const worktree = worktreeSelector
+      ? await this.resolveWorktreeSelector(worktreeSelector)
+      : await this.resolveActiveWorktreeForSeats()
+    const seats = this.getSeatMapForWorktree(worktree.id)
+    return {
+      worktreeId: worktree.id,
+      worktreePath: worktree.path,
+      seats: (await listProjectAgents(worktree.path)).map((agent) => ({
+        seat: agent.seat,
+        description: agent.description,
+        tools: [...agent.tools],
+        handle:
+          seats[agent.seat] !== undefined ? this.handleForSeatOccupant(seats[agent.seat]) : null
+      }))
+    }
+  }
+
+  private async resolveActiveWorktreeForSeats(): Promise<ResolvedWorktree> {
+    const activeHandle = await this.resolveActiveTerminal()
+    const pane = this.resolveSeatPaneForHandle(activeHandle)
+    const worktree = (await this.getResolvedWorktreeMap()).get(pane.worktreeId)
+    if (!worktree) {
+      throw new Error('worktree_not_found')
+    }
+    return worktree
+  }
+
   private async resolveAgentTerminalCreateOptions(
     workspace: TerminalWorkspaceLaunchScope,
     opts: TerminalCreateOptions
@@ -29999,7 +30215,8 @@ export class OrcaRuntimeService {
       connected: provenAbsent ? false : leaf.connected,
       writable: provenAbsent ? false : leaf.writable,
       lastOutputAt: leaf.lastOutputAt,
-      preview: leaf.preview
+      preview: leaf.preview,
+      seat: this.seatForLeaf(leaf.worktreeId, leaf.leafId)
     }
   }
 
@@ -31881,7 +32098,9 @@ export class OrcaRuntimeService {
       connected: pty.connected,
       writable: pty.connected,
       lastOutputAt: pty.lastOutputAt,
-      preview: pty.preview
+      preview: pty.preview,
+      // An orphaned PTY has no pane identity, so it cannot hold a seat.
+      seat: orphaned ? null : this.seatForLeaf(pty.worktreeId, pane.leafId)
     }
   }
 

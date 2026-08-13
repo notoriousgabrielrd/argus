@@ -31,12 +31,15 @@ export {
   formatProjectList
 } from './project-format'
 export {
+  formatProjectAgentSeats,
   formatTerminalClose,
   formatTerminalCreate,
   formatTerminalFocus,
   formatTerminalList,
   formatTerminalRead,
   formatTerminalRename,
+  formatTerminalSeatAssign,
+  formatTerminalSeatClear,
   formatTerminalSend,
   formatTerminalShow,
   formatTerminalSplit,

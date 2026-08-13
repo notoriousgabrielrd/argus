@@ -33,7 +33,11 @@ type UseTerminalPaneGlobalEffectsArgs = {
   cwd?: string
   isActive: boolean
   isVisible: boolean
+  /** Worktree is on screen: paints, is measured, is sized. Plural once columns are open. */
   isWorktreeActive?: boolean
+  /** Worktree owns keyboard input. Singular across the row; defaults to visibility so callers
+   *  that predate columns keep their behavior. */
+  isWorktreeFocused?: boolean
   isSyncFitEnabled: boolean
   paneCount: number
   managerRef: React.RefObject<PaneManager | null>
@@ -67,6 +71,7 @@ export function useTerminalPaneGlobalEffects({
   isActive,
   isVisible,
   isWorktreeActive = isVisible,
+  isWorktreeFocused = isWorktreeActive,
   isSyncFitEnabled,
   paneCount,
   managerRef,
@@ -186,7 +191,10 @@ export function useTerminalPaneGlobalEffects({
   }, [isActive, isWorktreeActive, rendererVisible])
 
   useEffect(() => {
-    const ptyId = isActive && isVisible && isWorktreeActive ? activeLeafPtyId : null
+    // Why focus, not visibility: this designates *the* foreground pane for main's ACK reserve.
+    // With columns open every visible column would otherwise claim it, and each cleanup would
+    // report the other's PTY inactive — the reserve would thrash between them.
+    const ptyId = isActive && isVisible && isWorktreeFocused ? activeLeafPtyId : null
     if (!ptyId || ptyId.startsWith('remote:')) {
       return
     }
@@ -195,7 +203,7 @@ export function useTerminalPaneGlobalEffects({
     // reports the old PTY inactive before the effect re-runs for a rebind.
     window.api.pty.setActiveRendererPty?.(ptyId, true)
     return () => window.api.pty.setActiveRendererPty?.(ptyId, false)
-  }, [isActive, isVisible, isWorktreeActive, activeLeafPtyId])
+  }, [isActive, isVisible, isWorktreeFocused, activeLeafPtyId])
 
   useEffect(() => {
     const onToggleExpand = (event: Event): void => {

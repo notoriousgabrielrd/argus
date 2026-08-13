@@ -453,6 +453,9 @@ export type RuntimeTerminalSummary = {
   writable: boolean
   lastOutputAt: number | null
   preview: string
+  /** Project-agent seat occupying this pane, or null when unseated. Optional so an
+   *  older peer that never publishes it stays readable (wire compat Rule 1). */
+  seat?: string | null
 }
 
 export type RuntimeTerminalVisualTerminalNode = {
@@ -600,6 +603,37 @@ export type RuntimeTerminalRename = {
   handle: string
   tabId: string
   title: string | null
+}
+
+export type RuntimeTerminalSeatAssign = {
+  handle: string
+  tabId: string
+  leafId: string
+  worktreeId: string
+  seat: string | null
+  /** Set when --force took an occupied seat, naming the terminal that lost it. */
+  displacedHandle?: string | null
+  /** Set when the pane already held a different seat, which this assignment vacated. */
+  vacatedSeat?: string | null
+}
+
+export type RuntimeTerminalSeatResolve = {
+  handle: string
+  seat: string
+}
+
+export type RuntimeProjectAgentSeat = {
+  seat: string
+  description: string
+  tools: string[]
+  /** Handle of the terminal currently occupying the seat, or null when vacant. */
+  handle: string | null
+}
+
+export type RuntimeProjectAgentSeatList = {
+  worktreeId: string
+  worktreePath: string
+  seats: RuntimeProjectAgentSeat[]
 }
 
 export type RuntimeTerminalSend = {

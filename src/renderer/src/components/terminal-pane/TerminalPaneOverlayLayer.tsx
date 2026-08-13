@@ -26,6 +26,7 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
   worktreeId,
   worktreePath,
   isWorktreeActive,
+  isWorktreeFocused = isWorktreeActive,
   coldParkTerminalPanes = false,
   isForceParked = false,
   shouldMeasureHiddenWorktree = false,
@@ -35,7 +36,11 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
 }: {
   worktreeId: string
   worktreePath: string
+  /** On screen: paints, is measured, and its PTYs are sized. Plural once columns are open. */
   isWorktreeActive: boolean
+  /** Owns keyboard input and the PTY input claim. Singular across the whole row.
+   *  Defaults to `isWorktreeActive` so every pre-columns caller keeps its behavior. */
+  isWorktreeFocused?: boolean
   coldParkTerminalPanes?: boolean
   /** Retention-budget force-park keeps eviction-exempt tabs mounted. */
   isForceParked?: boolean
@@ -59,7 +64,9 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
   const setActiveWorktree = useAppStore((state) => state.setActiveWorktree)
   const reconcileWorktreeTabModel = useAppStore((state) => state.reconcileWorktreeTabModel)
 
-  useNativeChatToggleShortcut(worktreeId, isWorktreeActive)
+  // Why focus, not visibility: this is a global shortcut, so two visible columns registering it
+  // would both answer one keypress.
+  useNativeChatToggleShortcut(worktreeId, isWorktreeFocused)
 
   const leaveWorktreeIfEmpty = useCallback(() => {
     const state = useAppStore.getState()
@@ -156,6 +163,7 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
               startupCwd={terminalTab.startupCwd}
               groupId={assignment?.groupId}
               isWorktreeActive={isWorktreeActive}
+              isWorktreeFocused={isWorktreeFocused}
               isVisible={isVisible}
               isActive={isActive}
               activityTerminalPortal={activityTerminalPortal}

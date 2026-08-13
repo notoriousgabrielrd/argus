@@ -26,6 +26,9 @@ export const WORKSPACE_SESSION_FIELD_OWNERSHIP = {
   activeBrowserTabIdByWorktree: 'worktreeKeyed',
   activeTabTypeByWorktree: 'worktreeKeyed',
   activeTabIdByWorktree: 'worktreeKeyed',
+  // Why worktree-keyed, not global: a project-agent seat names a pane inside one worktree,
+  // and seat names repeat across worktrees (each can have its own AUDITOR).
+  seatAssignmentsByWorktree: 'worktreeKeyed',
   browserTabsByWorktree: 'worktreeKeyed',
   unifiedTabs: 'worktreeKeyed',
   tabGroups: 'worktreeKeyed',
@@ -34,6 +37,11 @@ export const WORKSPACE_SESSION_FIELD_OWNERSHIP = {
   lastVisitedAtByWorktreeId: 'worktreeKeyed',
   defaultTerminalTabsAppliedByWorktreeId: 'worktreeKeyed',
   activeWorkspaceKey: 'global',
+  // Why global, not worktree-keyed: these describe how the window is composed, not per-worktree
+  // data. A paired client that never opens a second column simply ignores them and keeps
+  // rendering the one worktree activeWorktreeId names.
+  visibleWorktreeIds: 'global',
+  worktreeColumnRatios: 'global',
   activeWorktreeIdsOnShutdown: 'worktreeArray',
   terminalLayoutsByTabId: 'tabKeyed',
   remoteSessionIdsByTabId: 'tabKeyed',
