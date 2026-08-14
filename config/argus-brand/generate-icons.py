@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Generate every Argus icon asset from argus-logo-source.png.
 
-Follows the visual system of the app this forked: a black squircle with a soft
-shadow and a pearl-gradient glyph — never a saturated fill or a glow. The source
-art ships with a heavy radial bloom, so the mark is re-extracted here with a
-contrast curve that discards the bloom and keeps only the solid shape.
+The source is a **finished tile**: a black squircle carrying the gold laurel mark, with
+transparent corners and its own soft shadow. Earlier revisions took a white-on-white glyph
+and built the tile here (squircle mask, gradient fill, synthetic shadow); that pipeline is
+gone, because recolouring a finished tile would throw away the gold it exists for.
 
-Re-applicable: run after any upstream merge that clobbers resources/, or after
-swapping the source logo. Requires Pillow; the .icns step shells out to
-iconutil (macOS only — skip with --no-icns elsewhere).
+So the tile ships as authored, and the only thing still derived is the **silhouette** — the
+menu-bar template and the in-app mark are monochrome by contract, and the mark separates
+from the tile by *saturation*: the laurel is chromatic and the ground is not.
+
+Re-applicable: run after any upstream merge that clobbers resources/, or after swapping the
+source art. Requires Pillow; the .icns step shells out to iconutil (macOS only — skip with
+--no-icns elsewhere).
 
   python3 config/argus-brand/generate-icons.py [--no-icns]
 """
@@ -22,7 +26,7 @@ import tempfile
 from io import BytesIO
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 BRAND_DIR = Path(__file__).resolve().parent
 REPO = BRAND_DIR.parent.parent
@@ -30,95 +34,52 @@ SOURCE = BRAND_DIR / "argus-logo-source.png"
 
 # Proportions measured off the upstream icon so the two read as one family.
 TILE = 1024
-MARGIN = 0.10  # empty ring around the squircle, as a fraction of the canvas
-CORNER = 0.235  # corner radius, as a fraction of the squircle's side
-GLYPH_FILL = 0.74  # glyph's longest side, as a fraction of the squircle's side
-# The source art is white-on-white: its shapes are separated by hairline contours, not by
-# any dark ground, so a luminance threshold returns one solid blob. Eroding first widens
-# those hairlines into real separators, which is what makes the mark recoverable at all.
-ERODE = 5  # px; must exceed the hairline width
-MARK_FLOOR = 235  # after erosion, anything this bright is mark
-DESPECKLE = 7  # median window that clears the ragged interior left by erosion
-CLOSE = 5  # fills the pinholes despeckling leaves inside the iris and brow
-SMOOTH = 2.5  # px of blur before the final threshold, to round the contours
+MARGIN = 0.10  # empty ring around the tile, as a fraction of the canvas
+# Why saturation and not luminance: the squircle carries a specular rim along its top edge at
+# roughly the same brightness as the laurel's darkest shading, so any luminance cut either
+# swallows that rim or eats the leaves. The rim is neutral (S~8) and the gold is not (S~150),
+# which separates them completely — and keeps more of the mark than a luminance cut did.
+MARK_SATURATION = 64  # of 255
+MARK_VALUE = 90  # of 255; drops the near-black ground without touching the darkest gold
+SMOOTH = 1.5  # px of blur before the final threshold, to round the contours
 
 
-def glyph_alpha() -> Image.Image:
-    """Alpha mask of the mark, recovered from art that has no figure/ground contrast."""
-    gray = ImageOps.grayscale(Image.open(SOURCE).convert("RGB"))
-    mask = gray.filter(ImageFilter.MinFilter(ERODE)).point(
-        lambda v: 255 if v >= MARK_FLOOR else 0
+def source_tile() -> Image.Image:
+    """The authored icon, trimmed to its own bounds so the margin below is exact."""
+    art = Image.open(SOURCE).convert("RGBA")
+    return art.crop(art.getbbox())
+
+
+def mark_alpha() -> Image.Image:
+    """Alpha mask of the laurel mark, cut out of the finished tile by saturation."""
+    art = source_tile()
+    _, saturation, value = art.convert("RGB").convert("HSV").split()
+    chromatic = ImageChops.multiply(
+        saturation.point(lambda v: 255 if v >= MARK_SATURATION else 0),
+        value.point(lambda v: 255 if v >= MARK_VALUE else 0),
     )
-    mask = mask.filter(ImageFilter.MedianFilter(DESPECKLE))
-    # Morphological close: grow then shrink, so specks vanish without eating the strokes.
-    mask = mask.filter(ImageFilter.MaxFilter(CLOSE)).filter(ImageFilter.MinFilter(CLOSE))
-    # Blur-then-threshold rounds the stair-stepping erosion leaves on every curve.
+    # Why the alpha term: the tile's anti-aliased edge blends toward the transparent corners,
+    # and those partial pixels can read as chromatic.
+    mask = ImageChops.multiply(chromatic, art.split()[3].point(lambda v: 255 if v >= 128 else 0))
     mask = mask.filter(ImageFilter.GaussianBlur(SMOOTH)).point(lambda v: 255 if v >= 128 else 0)
     return mask.crop(mask.getbbox())
 
 
-def vertical_gradient(
-    size: tuple[int, int], top: tuple[int, int, int], bottom: tuple[int, int, int]
-) -> Image.Image:
-    w, h = size
-    ramp = Image.new("RGB", (1, h))
-    for y in range(h):
-        t = y / max(h - 1, 1)
-        ramp.putpixel((0, y), tuple(round(top[i] + (bottom[i] - top[i]) * t) for i in range(3)))
-    return ramp.resize((w, h), Image.BILINEAR)
-
-
-def squircle_mask(side: int, supersample: int = 4) -> Image.Image:
-    """Rounded-square mask, drawn oversized then downscaled so the curve stays smooth."""
-    big = side * supersample
-    mask = Image.new("L", (big, big), 0)
-    ImageDraw.Draw(mask).rounded_rectangle(
-        (0, 0, big - 1, big - 1), radius=round(CORNER * big), fill=255
-    )
-    return mask.resize((side, side), Image.LANCZOS)
-
-
-def fit(alpha: Image.Image, target: int) -> Image.Image:
-    scale = target / max(alpha.size)
-    return alpha.resize(
-        (max(round(alpha.width * scale), 1), max(round(alpha.height * scale), 1)), Image.LANCZOS
+def fit(image: Image.Image, target: int) -> Image.Image:
+    scale = target / max(image.size)
+    return image.resize(
+        (max(round(image.width * scale), 1), max(round(image.height * scale), 1)), Image.LANCZOS
     )
 
 
-def compose(flat_glyph: bool = False, badge: str | None = None) -> Image.Image:
+def compose(badge: str | None = None) -> Image.Image:
+    """The shipped canvas: the authored tile, inset so macOS has its breathing room."""
     canvas = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
     side = round(TILE * (1 - 2 * MARGIN))
-    origin = (TILE - side) // 2
-    mask = squircle_mask(side)
-
-    # The icon lands on unknown backgrounds, so it carries its own shadow.
-    shadow = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
-    shadow.paste(
-        Image.new("RGBA", (side, side), (0, 0, 0, 110)),
-        (origin, origin + round(side * 0.02)),
-        mask,
-    )
-    canvas.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(side * 0.035)))
-
-    # Tile: near-black with a top-down lift, which keeps it from reading as a hole.
-    tile_top, tile_bottom = ((26, 28, 36), (8, 8, 11)) if flat_glyph else ((38, 38, 38), (4, 4, 4))
-    tile = vertical_gradient((side, side), tile_top, tile_bottom).convert("RGBA")
-    tile.putalpha(mask)
-    canvas.alpha_composite(tile, (origin, origin))
-
-    # Glyph: pearl gradient for the shipped icon, flat white for the dev build.
-    alpha = fit(glyph_alpha(), round(side * GLYPH_FILL))
-    paint = (
-        Image.new("RGB", alpha.size, (255, 255, 255))
-        if flat_glyph
-        else vertical_gradient(alpha.size, (255, 255, 255), (226, 226, 230))
-    )
-    glyph = paint.convert("RGBA")
-    glyph.putalpha(alpha)
-    canvas.alpha_composite(glyph, ((TILE - alpha.width) // 2, (TILE - alpha.height) // 2))
-
+    tile = fit(source_tile(), side)
+    canvas.alpha_composite(tile, ((TILE - tile.width) // 2, (TILE - tile.height) // 2))
     if badge:
-        draw_badge(canvas, badge, origin, side)
+        draw_badge(canvas, badge, (TILE - side) // 2, side)
     return canvas
 
 
@@ -140,7 +101,7 @@ def draw_badge(canvas: Image.Image, letter: str, origin: int, side: int) -> None
 
 
 def template_tray(alpha: Image.Image, size: int) -> Image.Image:
-    """macOS Template image: black glyph, shape carried entirely by alpha."""
+    """macOS Template image: black mark, shape carried entirely by alpha."""
     small = fit(alpha, round(size * 0.92))
     fitted = Image.new("L", (size, size), 0)
     fitted.paste(small, ((size - small.width) // 2, (size - small.height) // 2))
@@ -149,7 +110,7 @@ def template_tray(alpha: Image.Image, size: int) -> Image.Image:
     return out
 
 
-def write_logo_svg(alpha: Image.Image, dest: Path) -> None:
+def write_logo_svg(alpha: Image.Image, dests: list[Path]) -> None:
     """The in-app mark: white on transparent, since every consumer supplies its own tile.
 
     Embedded as a raster because the source art is a flat render with no paths to trace;
@@ -161,7 +122,7 @@ def write_logo_svg(alpha: Image.Image, dest: Path) -> None:
     buf = BytesIO()
     white.save(buf, format="PNG", optimize=True)
     href = base64.b64encode(buf.getvalue()).decode()
-    dest.write_text(
+    svg = (
         '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n'
         "<!-- Argus mark. Generated by config/argus-brand/generate-icons.py; do not hand-edit. -->\n"
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
@@ -169,6 +130,8 @@ def write_logo_svg(alpha: Image.Image, dest: Path) -> None:
         f'  <image width="{mark.width}" height="{mark.height}" xlink:href="data:image/png;base64,{href}"/>\n'
         "</svg>\n"
     )
+    for dest in dests:
+        dest.write_text(svg)
 
 
 def write_icns(base: Image.Image, dest: Path) -> None:
@@ -186,12 +149,12 @@ def write_icns(base: Image.Image, dest: Path) -> None:
 def main() -> None:
     make_icns = "--no-icns" not in sys.argv
     shipped = compose()
-    dev = compose(flat_glyph=True, badge="D")
+    dev = compose(badge="D")
 
     build = REPO / "resources" / "build"
     shipped.save(build / "icon.png")
-    # Why the crop: macOS wants the squircle inset with a margin, Windows wants the tile to
-    # fill its canvas — the repo asserts a >=0.92 fill fraction on the committed .ico.
+    # Why the crop: macOS wants the tile inset with a margin, Windows wants it to fill its
+    # canvas — the repo asserts a >=0.92 fill fraction on the committed .ico.
     side = round(TILE * (1 - 2 * MARGIN))
     origin = (TILE - side) // 2
     shipped.crop((origin, origin, origin + side, origin + side)).save(
@@ -209,8 +172,13 @@ def main() -> None:
     shipped.save(res / "app-icons" / "orca-watercolor.png")
     shipped.save(res / "app-icons" / "orca-blue.png")
 
-    alpha = glyph_alpha()
-    write_logo_svg(alpha, res / "logo.svg")
+    alpha = mark_alpha()
+    # Why both: the second is the Icon Composer project's asset, so a run of
+    # resources/icon-source/generate.sh cannot resurrect the previous mark.
+    write_logo_svg(
+        alpha,
+        [res / "logo.svg", res / "icon-source" / "icon.icon" / "Assets" / "logo.svg"],
+    )
     tray = res / "tray"
     template_tray(alpha, 22).save(tray / "orca-menu-barTemplate.png")
     template_tray(alpha, 44).save(tray / "orca-menu-barTemplate@2x.png")
