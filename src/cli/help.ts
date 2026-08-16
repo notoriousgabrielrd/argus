@@ -263,7 +263,7 @@ Common Commands:
 Selectors:
   --repo <selector>         Registered repo selector such as id:<id>, name:<name>, or path:<path>
   --worktree <selector>     Worktree selector such as id:<repo-id>::<path>, name:<displayName>, branch:<branch>, issue:<number>, path:<path>, or active/current
-  --terminal <handle>       Runtime-issued terminal handle returned by \`argus terminal list --json\`, or seat:<PROJECT_AGENT> to address the terminal holding that project-agent seat
+  --terminal <handle>       Runtime-issued terminal handle returned by \`argus terminal list --json\`, seat:<PROJECT_AGENT> to address the terminal holding that project-agent seat, or self for the pane running the command
   --parent-worktree <selector> Parent worktree selector such as id:<repo-id>::<path>, branch:<branch>, issue:<number>, path:<path>, or active/current
   --no-parent               Force no parent lineage for unrelated worktree creation/update
 
@@ -575,7 +575,7 @@ export function formatFlagHelp(flag: string): string {
     session: '--session <id>        Snapshot namespace for a related computer-use workflow',
     setup: '--setup run|skip|inherit Setup policy for repo-defined setup hooks',
     seat: '--seat <PROJECT_AGENT> Project agent from <workspace>/.claude/agents/*.md, such as AUDITOR',
-    terminal: '--terminal <handle>  Runtime-issued terminal handle, or seat:<PROJECT_AGENT>',
+    terminal: '--terminal <handle>  Runtime-issued terminal handle, seat:<PROJECT_AGENT>, or self',
     text: '--text <text>          Text payload to send or type',
     'text-stdin': '--text-stdin          Read text payload from stdin',
     'task-id': '--task-id <id>        Task id to include in orchestration payload JSON',

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { WorkspaceSessionState } from '../../shared/types'
+import { PROJECT_ROSTER_FILENAME } from '../argus/agent-roster-loader'
 import { clearProjectAgentCache, PROJECT_AGENTS_DIR } from '../argus/project-agent-definitions'
 import { OrcaRuntimeService } from './orca-runtime'
 
@@ -25,6 +26,11 @@ type SeatInternals = {
   isSeatOccupantLive: (leafId: string) => boolean
   handleForSeatOccupant: (leafId: string) => string | null
   resolveWorktreeSelector: (selector: string) => Promise<{ id: string; path: string }>
+  listTerminals: (
+    worktree?: string,
+    limit?: number,
+    opts?: object
+  ) => Promise<{ terminals: { handle: string; leafId: string }[] }>
 }
 
 describe('OrcaRuntimeService project-agent seats', () => {
@@ -53,6 +59,7 @@ describe('OrcaRuntimeService project-agent seats', () => {
     session = { tabsByWorktree: { [WORKTREE_ID]: [] } } as unknown as WorkspaceSessionState
     // RuntimeStore is module-private to orca-runtime; borrow it from the constructor.
     const store = {
+      getRepos: () => [],
       getWorkspaceSession: () => session,
       setWorkspaceSession: (next: WorkspaceSessionState) => {
         session = next
@@ -219,9 +226,126 @@ describe('OrcaRuntimeService project-agent seats', () => {
 
     const listed = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
 
-    expect(listed.seats).toEqual([
+    expect(listed.seats).toMatchObject([
       { seat: 'AUDITOR', description: 'a', tools: [], handle: 'term-leaf-1' },
       { seat: 'ENGINEER', description: 'e', tools: [], handle: null }
     ])
+  })
+
+  it('leaves seats unordered and role-less when the project ships no roster', async () => {
+    const listed = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+
+    expect(listed.roster).toBeUndefined()
+    expect(listed.seats).toMatchObject([
+      { seat: 'AUDITOR', role: '', reportsTo: null, depth: 0 },
+      { seat: 'ENGINEER', role: '', reportsTo: null, depth: 0 }
+    ])
+  })
+
+  // Regression: panes opened by the CLI against a workspace no window has synced are
+  // absent from the leaf graph. Seats used to be pruned against that emptiness on every
+  // read, and assign wrote the pruned map back — so seating one agent deleted the others,
+  // and `seat:NAME` reported vacant while `terminal list` still showed the seat.
+  describe('when no renderer graph has synced the worktree', () => {
+    beforeEach(() => {
+      const internals = runtime as unknown as SeatInternals
+      // No graph and no live PTY records: liveness cannot see the pane, only the listing can.
+      vi.spyOn(internals, 'isSeatOccupantLive').mockReturnValue(false)
+      vi.spyOn(internals, 'handleForSeatOccupant').mockReturnValue(null)
+      vi.spyOn(internals, 'listTerminals').mockResolvedValue({
+        terminals: [
+          { handle: 'term-leaf-1', leafId: 'leaf-1' },
+          { handle: 'term-leaf-2', leafId: 'leaf-2' }
+        ]
+      })
+    })
+
+    it('keeps the seats it cannot see in the graph instead of deleting them', async () => {
+      seedPane('term-1', 'leaf-1')
+      await runtime.assignTerminalSeat('term-1', 'AUDITOR')
+      seedPane('term-2', 'leaf-2')
+      await runtime.assignTerminalSeat('term-2', 'ENGINEER')
+
+      expect(session.seatAssignmentsByWorktree?.[WORKTREE_ID]).toEqual({
+        AUDITOR: 'leaf-1',
+        ENGINEER: 'leaf-2'
+      })
+    })
+
+    it('resolves seat:NAME through the terminal listing', async () => {
+      seedPane('term-1', 'leaf-1')
+      await runtime.assignTerminalSeat('term-1', 'AUDITOR')
+
+      await expect(runtime.resolveTerminalSeat('AUDITOR', `id:${WORKTREE_ID}`)).resolves.toEqual({
+        handle: 'term-leaf-1',
+        seat: 'AUDITOR'
+      })
+    })
+
+    it('reports the occupant in the seat listing rather than showing it vacant', async () => {
+      seedPane('term-1', 'leaf-1')
+      await runtime.assignTerminalSeat('term-1', 'AUDITOR')
+
+      const listed = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+
+      expect(listed.seats.find((entry) => entry.seat === 'AUDITOR')?.handle).toBe('term-leaf-1')
+    })
+
+    it('still lets a live pane take a seat whose pane is gone, without --force', async () => {
+      seedPane('term-1', 'leaf-1')
+      await runtime.assignTerminalSeat('term-1', 'AUDITOR')
+      const internals = runtime as unknown as SeatInternals
+      vi.spyOn(internals, 'listTerminals').mockResolvedValue({
+        terminals: [{ handle: 'term-leaf-2', leafId: 'leaf-2' }]
+      })
+      seedPane('term-2', 'leaf-2')
+
+      await expect(runtime.assignTerminalSeat('term-2', 'AUDITOR')).resolves.toMatchObject({
+        seat: 'AUDITOR'
+      })
+      expect(session.seatAssignmentsByWorktree?.[WORKTREE_ID]).toEqual({ AUDITOR: 'leaf-2' })
+    })
+  })
+
+  describe('with a project-owned roster', () => {
+    beforeEach(async () => {
+      await writeFile(
+        join(workspace, PROJECT_ROSTER_FILENAME),
+        JSON.stringify({
+          projectId: 'seated',
+          label: 'Seated',
+          hierarchy: { VOCÊ: ['ENGINEER'], ENGINEER: ['AUDITOR'], AUDITOR: ['DESIGNER'] },
+          agents: [
+            { name: 'ENGINEER', role: 'builds', tools: ['Read', 'Edit'] },
+            { name: 'AUDITOR', role: 'audits', tools: ['Read'], readOnly: true }
+          ]
+        })
+      )
+    })
+
+    it('orders the seats by the chart and carries role, manager, and depth', async () => {
+      const listed = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+
+      expect(listed.roster).toEqual({ projectId: 'seated', label: 'Seated', source: 'project' })
+      expect(listed.seats).toMatchObject([
+        { seat: 'ENGINEER', role: 'builds', reportsTo: null, depth: 0, readOnly: false },
+        { seat: 'AUDITOR', role: 'audits', reportsTo: 'ENGINEER', depth: 1, readOnly: true }
+      ])
+    })
+
+    it('reports a charted agent the workspace never defined instead of offering the seat', async () => {
+      const listed = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+
+      expect(listed.chartOnlyAgents).toEqual(['DESIGNER'])
+      expect(listed.seats.map((seat) => seat.seat)).not.toContain('DESIGNER')
+    })
+
+    it('still refuses to seat a terminal on a charted agent with no definition', async () => {
+      seedPane('term-1', 'leaf-1')
+
+      await expect(runtime.assignTerminalSeat('term-1', 'DESIGNER')).rejects.toThrow(
+        /unknown_project_agent:DESIGNER/
+      )
+    })
   })
 })

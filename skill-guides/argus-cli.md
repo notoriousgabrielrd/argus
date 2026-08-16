@@ -190,6 +190,7 @@ ORCA terminal rename --terminal <handle> --title "New Name" --json
 ORCA terminal switch --terminal <handle> --json
 ORCA terminal close --terminal <handle> --json
 ORCA terminal seats --json
+ORCA terminal assign --terminal self --seat AUDITOR --json
 ORCA terminal assign --terminal <handle> --seat AUDITOR --json
 ORCA terminal assign --terminal <handle> --seat AUDITOR --force --json
 ORCA terminal unassign --terminal <handle> --json
@@ -216,7 +217,10 @@ Project-agent seats:
 - Seats are exclusive per worktree, so `--terminal seat:AUDITOR` resolves to one terminal. Assigning a seat another terminal holds fails; pass `--force` to take it, and the result names the displaced terminal in `displacedHandle`.
 - A pane holds at most one seat. Re-seating a pane vacates the seat it held, reported as `vacatedSeat`.
 - `seat:<NAME>` works anywhere `--terminal` is accepted, so prefer it over storing handles: handles are runtime-scoped and go stale on restart, while a seat is re-resolved each call.
+- `--terminal self` is the pane running the command, resolved from the `ORCA_PANE_KEY` every Argus pane exports. Use it to seat yourself (`terminal assign --terminal self --seat AUDITOR`) or to ask who you are (`terminal show --terminal self --json` reports your `seat`). Omitting `--terminal` is **not** the same: that resolves the pane the user last focused, which is the caller only by coincidence — so an agent in a background pane must pass `self`.
 - `terminal unassign` releases the seat and leaves the terminal running. A closed pane's seat is dropped automatically, so `seat:` never resolves to a dead pane.
+- `terminal seats` orders and indents seats by the project chart — `<workspace>/argus.agents.json`, else a roster bundled with Argus. Each seat then carries `role`, `readOnly`, `reportsTo`, `directReports`, and `depth` in `--json`, so you can route work up or down the org chart instead of guessing from names.
+- `chartOnlyAgents` lists names the chart has but the workspace does not define in `.claude/agents/`. They are not seatable — the fix is a `.md` in the project, not an Argus setting.
 
 ## Automations
 

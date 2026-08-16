@@ -628,12 +628,32 @@ export type RuntimeProjectAgentSeat = {
   tools: string[]
   /** Handle of the terminal currently occupying the seat, or null when vacant. */
   handle: string | null
+  // Roster/hierarchy metadata. Optional: a host without a roster for the project, or one
+  // predating it, still reports the seat itself.
+  /** Role line from the project roster. */
+  role?: string
+  /** True when the agent must not modify the code it inspects. */
+  readOnly?: boolean
+  /** Manager in the chart; null for a top-level agent. */
+  reportsTo?: string | null
+  directReports?: string[]
+  /** 0 for a top-level agent, 1 for its reports, and so on. */
+  depth?: number
 }
 
 export type RuntimeProjectAgentSeatList = {
   worktreeId: string
   worktreePath: string
+  /** Seats the workspace defines, ordered by the chart when one covers them. */
   seats: RuntimeProjectAgentSeat[]
+  /** Present when a roster was found for the project. */
+  roster?: {
+    projectId: string
+    label: string
+    source: 'project' | 'bundled'
+  }
+  /** Chart names the workspace does not define — visible, but not seatable. */
+  chartOnlyAgents?: string[]
 }
 
 export type RuntimeTerminalSend = {

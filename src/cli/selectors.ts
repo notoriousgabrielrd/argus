@@ -144,6 +144,43 @@ export async function getBrowserWorktreeSelector(
   }
 }
 
+/** `--terminal self` — the pane that ran the command. */
+export const SELF_TERMINAL_SELECTOR = 'self'
+
+export function isSelfTerminalSelector(selector: string): boolean {
+  return selector.trim().toLowerCase() === SELF_TERMINAL_SELECTOR
+}
+
+/**
+ * Resolves the caller's own pane.
+ *
+ * Why not just omit `--terminal`: that resolves the pane the user last focused, which is
+ * the caller only by coincidence. `ORCA_PANE_KEY` is the pane's own identity, exported
+ * into every Argus-managed terminal, so a background agent can name itself exactly.
+ */
+async function resolveSelfTerminalHandle(client: RuntimeClient): Promise<string> {
+  const paneKey = process.env.ORCA_PANE_KEY
+  if (!paneKey) {
+    throw new RuntimeClientError(
+      'invalid_environment',
+      '--terminal self only works inside an Argus terminal (ORCA_PANE_KEY is unset). Pass a handle from `argus terminal list --json` instead.'
+    )
+  }
+  try {
+    const response = await client.call<{ handle: string }>('terminal.resolveSelf', { paneKey })
+    return response.result.handle
+  } catch (error) {
+    // Why translate: an older host answers `method_not_found`, which reads like a CLI bug.
+    if (error instanceof RuntimeClientError && error.code === 'method_not_found') {
+      throw new RuntimeClientError(
+        'unsupported_runtime',
+        'This Argus runtime predates `--terminal self`. Update Argus, or pass a handle from `argus terminal list --json`.'
+      )
+    }
+    throw error
+  }
+}
+
 // Why: mirrors browser's implicit active-tab targeting. When --terminal is
 // omitted, resolve the active terminal in the current worktree so commands
 // like `argus terminal send --text "hello" --enter` Just Work.
@@ -154,6 +191,9 @@ export async function getTerminalHandle(
 ): Promise<string> {
   const explicit = getOptionalStringFlag(flags, 'terminal')
   if (explicit) {
+    if (isSelfTerminalSelector(explicit)) {
+      return await resolveSelfTerminalHandle(client)
+    }
     // Why resolve here rather than in the runtime's handle lookup: seats are addressed
     // like `terminal.resolveActive` — one resolution RPC up front — so every command that
     // takes --terminal accepts seat:AUDITOR without touching handle validation.

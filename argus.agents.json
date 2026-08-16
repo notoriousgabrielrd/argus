@@ -1,0 +1,27 @@
+{
+  "$comment": "Organograma dos agentes deste projeto. As definições vivem em .claude/agents/*.md e continuam sendo a fonte da verdade; este arquivo só diz quem responde a quem e a linha de papel de cada um.",
+  "projectId": "ondine",
+  "label": "Argus (ondine)",
+  "hierarchy": {
+    "VOCÊ": ["ENGINEER", "AUDITOR"],
+    "ENGINEER": ["DESIGNER"]
+  },
+  "agents": [
+    {
+      "name": "ENGINEER",
+      "role": "Implementação de ponta a ponta — investigação, mudança e teste.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "DESIGNER",
+      "role": "Design system da UI — tokens, primitivos shadcn, styleguide.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write"]
+    },
+    {
+      "name": "AUDITOR",
+      "role": "Auditoria do diff contra as regras do repo — relata, não edita.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Write"],
+      "readOnly": true
+    }
+  ]
+}

@@ -113,7 +113,7 @@ import { getGitCloneFailureMessage } from '../../shared/git-clone-failure-messag
 import { GIT_FETCH_SKIP_AUTO_MAINTENANCE_CONFIG_ARGS } from '../../shared/git-fetch-auto-maintenance'
 import { createHash, randomUUID } from 'node:crypto'
 import { homedir } from 'node:os'
-import { isAbsolute, join, resolve } from 'node:path'
+import { basename, isAbsolute, join, resolve } from 'node:path'
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises'
 import { resolveWorktreeCreateBase } from '../worktree-create-base'
 import { resolveWorktreeAddBaseRef } from '../../shared/worktree-base-ref'
@@ -602,6 +602,12 @@ import {
   type TerminalSeatMap
 } from '../../shared/argus/terminal-seat'
 import { listProjectAgents, PROJECT_AGENTS_DIR } from '../argus/project-agent-definitions'
+import {
+  loadArgusRoster,
+  resolveBundledRosterDir,
+  type LoadedArgusRoster
+} from '../argus/agent-roster-loader'
+import { mergeSeatRoster } from '../../shared/argus/seat-roster'
 import { collectMemorySnapshot } from '../memory/collector'
 import { app, BrowserWindow, ipcMain, Notification } from 'electron'
 import { RendererPublicationThrottle } from '../window/renderer-publication-throttle'
@@ -16356,6 +16362,35 @@ export class OrcaRuntimeService {
     return leaf?.worktreeId ?? this.getPtyRecordForPaneKey(paneKey)?.worktreeId ?? null
   }
 
+  /**
+   * Resolves the pane that issued a command, from the `ORCA_PANE_KEY` Argus exports into
+   * every managed pane.
+   *
+   * Why this is not `resolveActiveTerminal`: that answers with the pane the user last
+   * focused, which is only incidentally the caller. An agent running in a background pane
+   * has to be able to name itself — to take a seat, or to say who it is.
+   */
+  async resolveTerminalForPaneKey(paneKey: string): Promise<string> {
+    const parsed = parsePaneKey(paneKey)
+    if (!parsed) {
+      throw new Error(`invalid_pane_key:${paneKey}`)
+    }
+    const leaf = this.leaves.get(this.getLeafKey(parsed.tabId, parsed.leafId))
+    if (leaf) {
+      return this.issueHandle(leaf)
+    }
+    // Why the listing fallback: with no renderer graph (daemon/headless) `leaves` is empty,
+    // while the summary carries the same leafId the pane key names.
+    const listed = await this.listTerminals(undefined, undefined, {
+      includeVisualLayouts: false
+    })
+    const summary = listed.terminals.find((terminal) => terminal.leafId === parsed.leafId)
+    if (summary) {
+      return summary.handle
+    }
+    throw new Error(`terminal_not_found_for_pane:${parsed.leafId}`)
+  }
+
   /** Read-only context of the worktree the user is focused on, for plugin
    *  panels (workspace.readContext). Prefers the persisted session focus and
    *  falls back to the last-focused pane's worktree; null when neither
@@ -25077,13 +25112,25 @@ export class OrcaRuntimeService {
     return false
   }
 
-  /** Stored seats for a worktree, minus any whose pane is gone. */
+  /**
+   * Stored seats for a worktree, minus any whose pane is gone.
+   *
+   * Why the graph gate: liveness is decided from the renderer leaf graph (plus live PTYs),
+   * and both are empty when no window has synced this worktree — panes opened by the CLI
+   * against a background workspace are the normal case. Pruning against that emptiness
+   * declares every seat dead, and because assign/clear write the pruned map back, one
+   * assignment would silently delete every other seat in the worktree. With the graph
+   * unavailable we keep what is stored and let the read path report a seat it cannot
+   * resolve as vacant instead.
+   */
   private getSeatMapForWorktree(worktreeId: string): TerminalSeatMap {
-    const stored = this.getWorkspaceSessionForWorktree(worktreeId)?.seatAssignmentsByWorktree?.[
-      worktreeId
-    ]
+    const stored =
+      this.getWorkspaceSessionForWorktree(worktreeId)?.seatAssignmentsByWorktree?.[worktreeId]
     if (!stored) {
       return {}
+    }
+    if (this.graphStatus !== 'ready') {
+      return { ...stored }
     }
     const { seats } = pruneSeats(stored, (leafId) => this.isSeatOccupantLive(leafId))
     return seats
@@ -25107,15 +25154,33 @@ export class OrcaRuntimeService {
   }
 
   private seatForLeaf(worktreeId: string, leafId: string): string | null {
-    const stored = this.getWorkspaceSessionForWorktree(worktreeId)?.seatAssignmentsByWorktree?.[
-      worktreeId
-    ]
+    const stored =
+      this.getWorkspaceSessionForWorktree(worktreeId)?.seatAssignmentsByWorktree?.[worktreeId]
     return stored ? findSeatForLeaf(stored, leafId) : null
   }
 
   private handleForSeatOccupant(leafId: string): string | null {
     const leaf = this.findLeafByLeafId(leafId)
     return leaf ? this.issueHandle(leaf) : null
+  }
+
+  /**
+   * Handle of the pane holding a seat, or null when the pane is really gone.
+   *
+   * Why the listing fallback: the leaf graph only holds panes a window has synced, so a
+   * seat taken by a CLI-opened pane in a background workspace would otherwise resolve to
+   * null and read as vacant — `seat:AUDITOR` would fail while `terminal list` still showed
+   * the seat. The listing knows every pane the runtime hosts, graph or not.
+   */
+  private async resolveHandleForSeatOccupant(leafId: string): Promise<string | null> {
+    const graphed = this.handleForSeatOccupant(leafId)
+    if (graphed) {
+      return graphed
+    }
+    const listed = await this.listTerminals(undefined, undefined, {
+      includeVisualLayouts: false
+    })
+    return listed.terminals.find((terminal) => terminal.leafId === leafId)?.handle ?? null
   }
 
   private async assertSeatDefinedByProject(worktreeId: string, seat: string): Promise<void> {
@@ -25137,6 +25202,28 @@ export class OrcaRuntimeService {
     )
   }
 
+  /**
+   * Frees the target seat when the pane holding it is gone, so a dead occupant does not
+   * demand --force forever. Only that one seat is released — the rest of the map is left
+   * alone, since a seat we merely cannot resolve right now is not a seat we may delete.
+   */
+  private async releaseSeatHeldByDeadPane(
+    seats: TerminalSeatMap,
+    seat: string,
+    claimantLeafId: string
+  ): Promise<TerminalSeatMap> {
+    const occupant = seats[seat]
+    if (occupant === undefined || occupant === claimantLeafId) {
+      return seats
+    }
+    if ((await this.resolveHandleForSeatOccupant(occupant)) !== null) {
+      return seats
+    }
+    const next = { ...seats }
+    delete next[seat]
+    return next
+  }
+
   async assignTerminalSeat(
     handle: string,
     seatName: string,
@@ -25145,7 +25232,11 @@ export class OrcaRuntimeService {
     const seat = normalizeSeatName(seatName)
     const pane = this.resolveSeatPaneForHandle(handle)
     await this.assertSeatDefinedByProject(pane.worktreeId, seat)
-    const current = this.getSeatMapForWorktree(pane.worktreeId)
+    const current = await this.releaseSeatHeldByDeadPane(
+      this.getSeatMapForWorktree(pane.worktreeId),
+      seat,
+      pane.leafId
+    )
     const { seats, displacedLeafId, vacatedSeat } = assignSeat(current, seat, pane.leafId, opts)
     this.writeSeatMapForWorktree(pane.worktreeId, seats)
     return {
@@ -25154,7 +25245,9 @@ export class OrcaRuntimeService {
       leafId: pane.leafId,
       worktreeId: pane.worktreeId,
       seat,
-      displacedHandle: displacedLeafId ? this.handleForSeatOccupant(displacedLeafId) : null,
+      displacedHandle: displacedLeafId
+        ? await this.resolveHandleForSeatOccupant(displacedLeafId)
+        : null,
       vacatedSeat
     }
   }
@@ -25177,6 +25270,18 @@ export class OrcaRuntimeService {
     }
   }
 
+  /**
+   * Worktrees to search when the caller named none.
+   *
+   * Why not just the leaf graph: it is empty until a window syncs, and a seat held in a
+   * background workspace still has to resolve. The resolved worktree map is the complete
+   * set the runtime knows.
+   */
+  private async worktreeIdsToSearchForSeats(): Promise<string[]> {
+    const graphed = [...new Set([...this.leaves.values()].map((leaf) => leaf.worktreeId))]
+    return graphed.length > 0 ? graphed : [...(await this.getResolvedWorktreeMap()).keys()]
+  }
+
   async resolveTerminalSeat(
     seatName: string,
     worktreeSelector?: string
@@ -25184,13 +25289,13 @@ export class OrcaRuntimeService {
     const seat = normalizeSeatName(seatName)
     const worktreeIds = worktreeSelector
       ? [(await this.resolveWorktreeSelector(worktreeSelector)).id]
-      : [...new Set([...this.leaves.values()].map((leaf) => leaf.worktreeId))]
+      : await this.worktreeIdsToSearchForSeats()
     for (const worktreeId of worktreeIds) {
       const leafId = this.getSeatMapForWorktree(worktreeId)[seat]
       if (leafId === undefined) {
         continue
       }
-      const resolved = this.handleForSeatOccupant(leafId)
+      const resolved = await this.resolveHandleForSeatOccupant(leafId)
       if (resolved) {
         return { handle: resolved, seat }
       }
@@ -25198,21 +25303,71 @@ export class OrcaRuntimeService {
     throw new Error(`seat_not_assigned:${seat}`)
   }
 
+  /**
+   * Identities to try against the bundled rosters, best guess first.
+   *
+   * Why several: a roster is checked in under a project's own name, while Argus addresses
+   * a workspace by a generated repo id. The durable project id is the right answer when a
+   * workspace has one; the repo directory and display name cover the rest.
+   */
+  private rosterProjectIdCandidates(worktree: ResolvedWorktree): string[] {
+    const repo = this.listRepos().find((candidate) => candidate.id === worktree.repoId)
+    const candidates: string[] = []
+    for (const raw of [worktree.projectId, repo ? basename(repo.path) : null, repo?.displayName]) {
+      const id = raw?.trim().toLowerCase()
+      if (id && !candidates.includes(id)) {
+        candidates.push(id)
+      }
+    }
+    return candidates
+  }
+
+  private async loadSeatRosterForWorktree(
+    worktree: ResolvedWorktree
+  ): Promise<LoadedArgusRoster | null> {
+    return loadArgusRoster({
+      projectIds: this.rosterProjectIdCandidates(worktree),
+      workspacePath: worktree.path,
+      // Why the cwd fallback: `app` is unavailable in daemon/headless hosts, where a
+      // missing bundled roster is a degraded list, not a failed command.
+      bundledRosterDir: resolveBundledRosterDir(
+        typeof app.getAppPath === 'function' ? app.getAppPath() : process.cwd()
+      )
+    })
+  }
+
   async listProjectAgentSeats(worktreeSelector?: string): Promise<RuntimeProjectAgentSeatList> {
     const worktree = worktreeSelector
       ? await this.resolveWorktreeSelector(worktreeSelector)
       : await this.resolveActiveWorktreeForSeats()
-    const seats = this.getSeatMapForWorktree(worktree.id)
+    const occupants = this.getSeatMapForWorktree(worktree.id)
+    const roster = await this.loadSeatRosterForWorktree(worktree)
+    const { entries, chartOnly } = mergeSeatRoster(await listProjectAgents(worktree.path), roster)
+    const handleBySeat = new Map(
+      await Promise.all(
+        Object.entries(occupants).map(
+          async ([seat, leafId]) => [seat, await this.resolveHandleForSeatOccupant(leafId)] as const
+        )
+      )
+    )
     return {
       worktreeId: worktree.id,
       worktreePath: worktree.path,
-      seats: (await listProjectAgents(worktree.path)).map((agent) => ({
-        seat: agent.seat,
-        description: agent.description,
-        tools: [...agent.tools],
-        handle:
-          seats[agent.seat] !== undefined ? this.handleForSeatOccupant(seats[agent.seat]) : null
-      }))
+      seats: entries.map((entry) => ({
+        seat: entry.seat,
+        description: entry.description,
+        tools: [...entry.tools],
+        handle: handleBySeat.get(entry.seat) ?? null,
+        role: entry.role,
+        readOnly: entry.readOnly,
+        reportsTo: entry.reportsTo,
+        directReports: [...entry.directReports],
+        depth: entry.depth
+      })),
+      ...(roster
+        ? { roster: { projectId: roster.projectId, label: roster.label, source: roster.source } }
+        : {}),
+      ...(chartOnly.length > 0 ? { chartOnlyAgents: chartOnly } : {})
     }
   }
 

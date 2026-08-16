@@ -74,17 +74,28 @@ describe('loadArgusRoster', () => {
       JSON.stringify({ label: 'Owned', agents: [{ name: 'MINE', role: 'r', tools: [] }] })
     )
     const loaded = await loadArgusRoster({
-      projectId: 'agendapower',
+      projectIds: ['agendapower'],
       workspacePath: workspace,
       bundledRosterDir: REPO_ROSTER_DIR
     })
     expect(loaded?.label).toBe('Owned')
     expect(loaded?.agents.map((a) => a.name)).toEqual(['MINE'])
+    expect(loaded?.source).toBe('project')
+  })
+
+  it('tries every candidate identity before giving up on the bundled rosters', async () => {
+    const loaded = await loadArgusRoster({
+      projectIds: ['repo-42', 'confetti'],
+      workspacePath: makeDir(),
+      bundledRosterDir: REPO_ROSTER_DIR
+    })
+    expect(loaded?.projectId).toBe('confetti')
+    expect(loaded?.source).toBe('bundled')
   })
 
   it('falls back to the bundled roster imported from the cockpit', async () => {
     const loaded = await loadArgusRoster({
-      projectId: 'agendapower',
+      projectIds: ['agendapower'],
       workspacePath: makeDir(),
       bundledRosterDir: REPO_ROSTER_DIR
     })
@@ -97,7 +108,7 @@ describe('loadArgusRoster', () => {
     const empty = makeDir()
     mkdirSync(join(empty, 'bundled'))
     const loaded = await loadArgusRoster({
-      projectId: 'unknown-project',
+      projectIds: ['unknown-project'],
       workspacePath: empty,
       bundledRosterDir: join(empty, 'bundled')
     })
@@ -108,7 +119,7 @@ describe('loadArgusRoster', () => {
     const workspace = makeDir()
     writeFileSync(join(workspace, PROJECT_ROSTER_FILENAME), '{ corrupt')
     const loaded = await loadArgusRoster({
-      projectId: 'agendapower',
+      projectIds: ['agendapower'],
       workspacePath: workspace,
       bundledRosterDir: REPO_ROSTER_DIR
     })
