@@ -172,16 +172,40 @@ export function formatTerminalSeatClear(result: { seat: RuntimeTerminalSeatAssig
 }
 
 export function formatProjectAgentSeats(result: { seats: RuntimeProjectAgentSeatList }): string {
-  if (result.seats.seats.length === 0) {
+  const { seats, roster, chartOnlyAgents } = result.seats
+  if (seats.length === 0 && !chartOnlyAgents?.length) {
     return `No project agents defined in ${result.seats.worktreePath}/.claude/agents/.`
   }
-  return result.seats.seats
-    .map((agent) => {
-      const occupant = agent.handle ? agent.handle : '(vacant)'
-      const tools = agent.tools.length > 0 ? agent.tools.join(', ') : 'inherits every tool'
-      return `${agent.seat}  ${occupant}\n  ${agent.description || '(no description)'}\n  tools: ${tools}`
-    })
-    .join('\n\n')
+  const sections: string[] = []
+  if (roster) {
+    sections.push(
+      `${roster.label} — ${roster.source} roster, ${seats.length} ${seats.length === 1 ? 'seat' : 'seats'}`
+    )
+  }
+  sections.push(
+    seats
+      .map((agent) => {
+        // Indent by chart depth so a manager's reports read as its reports.
+        const indent = '  '.repeat(agent.depth ?? 0)
+        const occupant = agent.handle ? agent.handle : '(vacant)'
+        const tools = agent.tools.length > 0 ? agent.tools.join(', ') : 'inherits every tool'
+        // Why role first: the roster line is the curated one-liner, while the `.md`
+        // description is the agent's own (often long) trigger text.
+        const summary = agent.role || agent.description || '(no description)'
+        return [
+          `${indent}${agent.seat}  ${occupant}${agent.readOnly ? '  read-only' : ''}`,
+          `${indent}  ${summary}`,
+          `${indent}  tools: ${tools}`
+        ].join('\n')
+      })
+      .join('\n\n')
+  )
+  if (chartOnlyAgents?.length) {
+    sections.push(
+      `In the chart, not defined in ${result.seats.worktreePath}/.claude/agents/: ${chartOnlyAgents.join(', ')}`
+    )
+  }
+  return sections.filter((section) => section.length > 0).join('\n\n')
 }
 
 export function formatTerminalCreate(result: { terminal: RuntimeTerminalCreate }): string {

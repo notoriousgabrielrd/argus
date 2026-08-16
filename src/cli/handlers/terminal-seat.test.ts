@@ -246,4 +246,57 @@ describe('terminal seats CLI', () => {
     expect(printed).toContain('(vacant)')
     expect(printed).toContain('inherits every tool')
   })
+
+  it('indents reports under their manager and names the roster behind the order', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const call = vi.fn().mockResolvedValue({
+      result: {
+        seats: {
+          worktreeId: 'repo::/w',
+          worktreePath: '/w',
+          roster: { projectId: 'confetti', label: 'Confetti', source: 'bundled' },
+          seats: [
+            {
+              seat: 'BOSS',
+              description: 'Infra',
+              tools: ['Read'],
+              handle: 'term-1',
+              role: 'Infra mentor',
+              readOnly: false,
+              reportsTo: null,
+              directReports: ['DESIGNER'],
+              depth: 0
+            },
+            {
+              seat: 'DESIGNER',
+              description: 'UI',
+              tools: ['Read'],
+              handle: null,
+              role: 'Design system',
+              readOnly: true,
+              reportsTo: 'BOSS',
+              directReports: [],
+              depth: 1
+            }
+          ],
+          chartOnlyAgents: ['HUNTER']
+        }
+      }
+    })
+
+    await TERMINAL_HANDLERS['terminal seats']({
+      flags: new Map(),
+      client: { call } as unknown as RuntimeClient,
+      cwd: '/tmp/worktree',
+      json: false
+    })
+
+    const printed = log.mock.calls.map((args) => String(args[0])).join('\n')
+    expect(printed).toContain('Confetti — bundled roster')
+    expect(printed).toContain('BOSS  term-1')
+    expect(printed).toContain('  DESIGNER  (vacant)  read-only')
+    // The roster's one-liner wins over the .md trigger text.
+    expect(printed).toContain('Infra mentor')
+    expect(printed).toContain('not defined in /w/.claude/agents/: HUNTER')
+  })
 })

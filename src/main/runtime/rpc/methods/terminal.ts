@@ -897,6 +897,10 @@ const TerminalAssignSeat = TerminalHandle.extend({
   force: z.unknown().optional()
 })
 
+const TerminalResolveSelf = z.object({
+  paneKey: requiredString('Missing pane key — ORCA_PANE_KEY is set only inside Argus panes')
+})
+
 const TerminalResolveSeat = z.object({
   seat: requiredString('Missing seat name'),
   worktree: OptionalString
@@ -1238,6 +1242,13 @@ export const TERMINAL_METHODS: RpcAnyMethod[] = [
     params: TerminalHandle,
     handler: async (params, { runtime }) => ({
       seat: await runtime.clearTerminalSeat(params.terminal)
+    })
+  }),
+  defineMethod({
+    name: 'terminal.resolveSelf',
+    params: TerminalResolveSelf,
+    handler: async (params, { runtime }) => ({
+      handle: await runtime.resolveTerminalForPaneKey(params.paneKey)
     })
   }),
   defineMethod({

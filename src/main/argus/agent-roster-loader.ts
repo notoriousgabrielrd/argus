@@ -19,7 +19,21 @@ import type { ArgusAgentDefinition, ArgusProjectAgents } from '../../shared/argu
 
 export const PROJECT_ROSTER_FILENAME = 'argus.agents.json'
 
-export type LoadedArgusRoster = ArgusProjectAgents & { hierarchy: AgentHierarchy }
+export type LoadedArgusRoster = ArgusProjectAgents & {
+  hierarchy: AgentHierarchy
+  /** Where the chart came from, so callers can say which file to edit. */
+  source: 'project' | 'bundled'
+}
+
+/**
+ * Directory holding the rosters shipped with Argus.
+ *
+ * One branch for packaged and checkout builds: `resources/**` is asar-unpacked rather than
+ * copied to `resourcesPath`, and the main process reads through the app path either way.
+ */
+export function resolveBundledRosterDir(appPath: string): string {
+  return join(appPath, 'resources', 'argus')
+}
 
 function parseAgents(value: unknown): ArgusAgentDefinition[] {
   if (!Array.isArray(value)) {
@@ -46,7 +60,11 @@ function parseAgents(value: unknown): ArgusAgentDefinition[] {
   return agents
 }
 
-export function parseArgusRoster(raw: string, fallbackProjectId: string): LoadedArgusRoster | null {
+export function parseArgusRoster(
+  raw: string,
+  fallbackProjectId: string,
+  source: LoadedArgusRoster['source'] = 'project'
+): LoadedArgusRoster | null {
   let parsed: unknown
   try {
     parsed = JSON.parse(raw)
@@ -68,7 +86,8 @@ export function parseArgusRoster(raw: string, fallbackProjectId: string): Loaded
     projectId,
     label: typeof doc.label === 'string' && doc.label ? doc.label : projectId,
     agents,
-    hierarchy: charts[projectId] ?? {}
+    hierarchy: charts[projectId] ?? {},
+    source
   }
 }
 
@@ -80,29 +99,35 @@ async function readIfPresent(path: string): Promise<string | null> {
   }
 }
 
+/**
+ * @param projectIds Identities to try against the bundled rosters, best guess first — a
+ * workspace has no single canonical project name, so the caller offers what it knows
+ * (durable project id, repo directory, repo display name). The first entry also names a
+ * project-owned roster that omits `projectId`.
+ */
 export async function loadArgusRoster(options: {
-  projectId: string
+  projectIds: readonly string[]
   workspacePath: string
   bundledRosterDir: string
 }): Promise<LoadedArgusRoster | null> {
+  const fallbackId = options.projectIds[0] ?? ''
   const projectOwned = await readIfPresent(join(options.workspacePath, PROJECT_ROSTER_FILENAME))
   if (projectOwned) {
-    const parsed = parseArgusRoster(projectOwned, options.projectId)
+    const parsed = parseArgusRoster(projectOwned, fallbackId, 'project')
     if (parsed) {
       return parsed
     }
   }
-  // Why kebab-case the id: bundled rosters are checked in as files, and `agendapower`
-  // ships as agenda-power-agents.json to stay readable next to its siblings.
-  for (const candidate of [
-    `${options.projectId}-agents.json`,
-    `${kebab(options.projectId)}-agents.json`
-  ]) {
-    const bundled = await readIfPresent(join(options.bundledRosterDir, candidate))
-    if (bundled) {
-      const parsed = parseArgusRoster(bundled, options.projectId)
-      if (parsed) {
-        return parsed
+  for (const projectId of options.projectIds) {
+    // Why kebab-case the id: bundled rosters are checked in as files, and `agendapower`
+    // ships as agenda-power-agents.json to stay readable next to its siblings.
+    for (const candidate of [`${projectId}-agents.json`, `${kebab(projectId)}-agents.json`]) {
+      const bundled = await readIfPresent(join(options.bundledRosterDir, candidate))
+      if (bundled) {
+        const parsed = parseArgusRoster(bundled, projectId, 'bundled')
+        if (parsed) {
+          return parsed
+        }
       }
     }
   }
