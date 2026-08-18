@@ -55,6 +55,7 @@ import type { MacOptionAsAlt } from './terminal-shortcut-policy'
 import { useEffectiveMacOptionAsAlt } from '@/lib/keyboard-layout/use-effective-mac-option-as-alt'
 import { useTerminalFontZoom } from './useTerminalFontZoom'
 import CloseTerminalDialog, { type CloseTerminalDialogCopyKind } from './CloseTerminalDialog'
+import { decidePaneClose } from './pane-close-decision'
 import { resolveLeafCloseCopyKind } from '../terminal/terminal-close-copy-kind'
 import { RUNNING_CLOSE_PROBE_TIMEOUT_MS } from '../terminal/running-terminal-close-guard'
 import CodexRestartChip from '../CodexRestartChip'
@@ -1169,7 +1170,14 @@ function TerminalPane(
       if (!manager) {
         return
       }
-      if (manager.getPanes().length <= 1) {
+      const decision = decidePaneClose(
+        manager.getPanes().map((pane) => pane.id),
+        paneId
+      )
+      if (decision === 'ignore') {
+        return
+      }
+      if (decision === 'close-tab') {
         onCloseTab()
       } else {
         // Why: closing a single split pane skips closeTab's bulk cleanup, so clear this pane's cache timer or the sidebar shows a stale countdown.
