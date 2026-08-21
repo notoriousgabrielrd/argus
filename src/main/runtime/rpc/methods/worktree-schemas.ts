@@ -41,7 +41,10 @@ const CliWorkspaceProvenanceRequest = z.object({
 
 export const WorktreeListParams = z.object({
   repo: OptionalString,
-  limit: OptionalFiniteNumber
+  limit: OptionalFiniteNumber,
+  // Off by default so the legacy response stays byte-identical; an older host that
+  // strips the field just answers without folder workspaces, which is what it did before.
+  includeFolderWorkspaces: OptionalBoolean
 })
 
 export const WorktreeDetectedListParams = z.object({

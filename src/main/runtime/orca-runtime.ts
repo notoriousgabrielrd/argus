@@ -20971,7 +20971,8 @@ export class OrcaRuntimeService {
 
   async listManagedWorktrees(
     repoSelector?: string,
-    limit = DEFAULT_WORKTREE_LIST_LIMIT
+    limit = DEFAULT_WORKTREE_LIST_LIMIT,
+    opts: { includeFolderWorkspaces?: boolean } = {}
   ): Promise<RuntimeWorktreeListResult> {
     if (!Number.isInteger(limit) || limit <= 0) {
       throw new Error('invalid_limit')
@@ -21002,6 +21003,14 @@ export class OrcaRuntimeService {
         agentScratchMatchersByRepoId.get(worktree.repoId)
       )
     })
+    if (opts.includeFolderWorkspaces === true) {
+      for (const folderWorkspace of this.store?.getFolderWorkspaces?.() ?? []) {
+        const worktree = this.folderWorkspaceToResolvedWorktree(folderWorkspace)
+        if (!repoId || worktree.repoId === repoId) {
+          worktrees.push(worktree)
+        }
+      }
+    }
     return {
       worktrees: worktrees.slice(0, limit),
       totalCount: worktrees.length,
@@ -25183,8 +25192,36 @@ export class OrcaRuntimeService {
     return listed.terminals.find((terminal) => terminal.leafId === leafId)?.handle ?? null
   }
 
+  /**
+   * The workspace whose `.claude/agents/` defines the seats, by stored workspace id.
+   *
+   * Why not getResolvedWorktreeMap alone: that map holds git worktrees only, while a pane
+   * in a folder workspace carries a `folder:<id>` worktree id — so every seat path keyed
+   * on it reported worktree_not_found for a workspace Argus otherwise manages fully.
+   */
+  private async resolveSeatWorkspaceById(worktreeId: string): Promise<ResolvedWorktree | null> {
+    const scope = parseWorkspaceKey(worktreeId)
+    if (scope?.type === 'folder') {
+      const workspace = this.store
+        ?.getFolderWorkspaces?.()
+        .find((entry) => entry.id === scope.folderWorkspaceId)
+      return workspace ? this.folderWorkspaceToResolvedWorktree(workspace) : null
+    }
+    const resolvedId = scope?.type === 'worktree' ? scope.worktreeId : worktreeId
+    return (await this.getResolvedWorktreeMap()).get(resolvedId) ?? null
+  }
+
+  /** Selector form of {@link resolveSeatWorkspaceById}, accepting `folder:<id>` and `id:folder:<id>`. */
+  private async resolveSeatWorkspaceSelector(selector: string): Promise<ResolvedWorktree> {
+    const folderScope = await this.resolveFolderWorkspaceLaunchScope(selector)
+    if (folderScope?.folderWorkspace) {
+      return this.folderWorkspaceToResolvedWorktree(folderScope.folderWorkspace)
+    }
+    return await this.resolveWorktreeSelector(selector)
+  }
+
   private async assertSeatDefinedByProject(worktreeId: string, seat: string): Promise<void> {
-    const worktree = (await this.getResolvedWorktreeMap()).get(worktreeId)
+    const worktree = await this.resolveSeatWorkspaceById(worktreeId)
     if (!worktree) {
       throw new Error('worktree_not_found')
     }
@@ -25279,7 +25316,15 @@ export class OrcaRuntimeService {
    */
   private async worktreeIdsToSearchForSeats(): Promise<string[]> {
     const graphed = [...new Set([...this.leaves.values()].map((leaf) => leaf.worktreeId))]
-    return graphed.length > 0 ? graphed : [...(await this.getResolvedWorktreeMap()).keys()]
+    if (graphed.length > 0) {
+      return graphed
+    }
+    return [
+      ...(await this.getResolvedWorktreeMap()).keys(),
+      ...(this.store?.getFolderWorkspaces?.() ?? []).map((workspace) =>
+        folderWorkspaceKey(workspace.id)
+      )
+    ]
   }
 
   async resolveTerminalSeat(
@@ -25288,7 +25333,7 @@ export class OrcaRuntimeService {
   ): Promise<RuntimeTerminalSeatResolve> {
     const seat = normalizeSeatName(seatName)
     const worktreeIds = worktreeSelector
-      ? [(await this.resolveWorktreeSelector(worktreeSelector)).id]
+      ? [(await this.resolveSeatWorkspaceSelector(worktreeSelector)).id]
       : await this.worktreeIdsToSearchForSeats()
     for (const worktreeId of worktreeIds) {
       const leafId = this.getSeatMapForWorktree(worktreeId)[seat]
@@ -25313,7 +25358,13 @@ export class OrcaRuntimeService {
   private rosterProjectIdCandidates(worktree: ResolvedWorktree): string[] {
     const repo = this.listRepos().find((candidate) => candidate.id === worktree.repoId)
     const candidates: string[] = []
-    for (const raw of [worktree.projectId, repo ? basename(repo.path) : null, repo?.displayName]) {
+    // Why the path fallback: a folder workspace has no repo row, so without it the only
+    // identity left is the display name and the bundled roster never matches.
+    for (const raw of [
+      worktree.projectId,
+      repo ? basename(repo.path) : basename(worktree.path),
+      repo?.displayName
+    ]) {
       const id = raw?.trim().toLowerCase()
       if (id && !candidates.includes(id)) {
         candidates.push(id)
@@ -25338,7 +25389,7 @@ export class OrcaRuntimeService {
 
   async listProjectAgentSeats(worktreeSelector?: string): Promise<RuntimeProjectAgentSeatList> {
     const worktree = worktreeSelector
-      ? await this.resolveWorktreeSelector(worktreeSelector)
+      ? await this.resolveSeatWorkspaceSelector(worktreeSelector)
       : await this.resolveActiveWorktreeForSeats()
     const occupants = this.getSeatMapForWorktree(worktree.id)
     const roster = await this.loadSeatRosterForWorktree(worktree)
@@ -25374,7 +25425,7 @@ export class OrcaRuntimeService {
   private async resolveActiveWorktreeForSeats(): Promise<ResolvedWorktree> {
     const activeHandle = await this.resolveActiveTerminal()
     const pane = this.resolveSeatPaneForHandle(activeHandle)
-    const worktree = (await this.getResolvedWorktreeMap()).get(pane.worktreeId)
+    const worktree = await this.resolveSeatWorkspaceById(pane.worktreeId)
     if (!worktree) {
       throw new Error('worktree_not_found')
     }

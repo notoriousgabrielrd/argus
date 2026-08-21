@@ -52,8 +52,12 @@ export async function resolveCurrentWorktreeSelector(
   assertLocalCwdWorktreeSelector('current', client)
 
   const currentPath = resolvePath(cwd)
+  // Why the flag: a folder workspace is an Argus-managed checkout with no repo row, so
+  // without it `active` could not name the workspace the cwd actually sits in. An older
+  // host strips the field and answers with git worktrees only, as it always did.
   const worktrees = await client.call<RuntimeWorktreeListResult>('worktree.list', {
-    limit: 10_000
+    limit: 10_000,
+    includeFolderWorkspaces: true
   })
   let enclosingWorktree: RuntimeWorktreeRecord | undefined
   let enclosingPathLength = -1

@@ -41,7 +41,10 @@ export const WORKTREE_METHODS: RpcMethod[] = [
   defineMethod({
     name: 'worktree.list',
     params: WorktreeListParams,
-    handler: async (params, { runtime }) => runtime.listManagedWorktrees(params.repo, params.limit)
+    handler: async (params, { runtime }) =>
+      runtime.listManagedWorktrees(params.repo, params.limit, {
+        includeFolderWorkspaces: params.includeFolderWorkspaces === true
+      })
   }),
   defineMethod({
     name: 'worktree.detectedList',
