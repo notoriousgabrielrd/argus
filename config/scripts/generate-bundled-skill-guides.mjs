@@ -15,6 +15,7 @@ const CANONICAL_GUIDE_NAMES = [
   'argus-emulator-android',
   'argus-linear',
   'argus-per-workspace-env',
+  'argus-seats',
   'orchestration'
 ]
 
@@ -28,6 +29,7 @@ const GUIDE_ALIASES = {
   'argus-emulator-android': ['orca-emulator-android'],
   'argus-linear': ['orca-linear'],
   'argus-per-workspace-env': ['orca-per-workspace-env'],
+  'argus-seats': ['orca-seats'],
   orchestration: []
 }
 
@@ -44,6 +46,7 @@ const STUB_TOPICS = [
   'argus-emulator-android',
   'argus-linear',
   'argus-per-workspace-env',
+  'argus-seats',
   'orchestration'
 ]
 
