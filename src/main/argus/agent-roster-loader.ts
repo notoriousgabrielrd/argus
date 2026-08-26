@@ -11,18 +11,25 @@ import type { ArgusAgentDefinition, ArgusProjectAgents } from '../../shared/argu
  *
  * Resolution order, first hit wins:
  *   1. `<workspace>/argus.agents.json` — the project owns its own chart.
- *   2. A bundled roster under `resources/argus/` — the ones imported from the cockpit.
+ *   2. `resources/argus/default-chart.json` — the chart shipped with Argus.
+ *
+ * Argus used to ship one roster per known project and pick by directory name, which handed a
+ * stranger's chart to anyone whose repo happened to share the name. The bundled layer is now a
+ * single generic chart; a project that wants its own says so in its own file.
  *
  * Missing or malformed files resolve to null instead of throwing: the roster is display
  * metadata, and a bad chart must never keep a workspace from opening.
  */
 
 export const PROJECT_ROSTER_FILENAME = 'argus.agents.json'
+export const DEFAULT_CHART_FILENAME = 'default-chart.json'
 
 export type LoadedArgusRoster = ArgusProjectAgents & {
   hierarchy: AgentHierarchy
   /** Where the chart came from, so callers can say which file to edit. */
   source: 'project' | 'bundled'
+  /** Seats the project turned off, from `seats.disabled`. Uppercased. */
+  disabledSeats: readonly string[]
 }
 
 /**
@@ -87,8 +94,28 @@ export function parseArgusRoster(
     label: typeof doc.label === 'string' && doc.label ? doc.label : projectId,
     agents,
     hierarchy: charts[projectId] ?? {},
-    source
+    source,
+    disabledSeats: parseDisabledSeats(doc.seats)
   }
+}
+
+/**
+ * `seats.disabled` is how a project opts out of a baseline role it does not want. Opting out
+ * has to be expressible in a file the project owns, because the role it is refusing lives in
+ * a directory the project cannot edit.
+ */
+function parseDisabledSeats(value: unknown): string[] {
+  if (typeof value !== 'object' || value === null) {
+    return []
+  }
+  const disabled = (value as Record<string, unknown>).disabled
+  if (!Array.isArray(disabled)) {
+    return []
+  }
+  return disabled
+    .filter((seat): seat is string => typeof seat === 'string')
+    .map((seat) => seat.trim().toUpperCase())
+    .filter((seat) => seat.length > 0)
 }
 
 async function readIfPresent(path: string): Promise<string | null> {
@@ -100,40 +127,21 @@ async function readIfPresent(path: string): Promise<string | null> {
 }
 
 /**
- * @param projectIds Identities to try against the bundled rosters, best guess first — a
- * workspace has no single canonical project name, so the caller offers what it knows
- * (durable project id, repo directory, repo display name). The first entry also names a
- * project-owned roster that omits `projectId`.
+ * @param projectId Identity to stamp on a project-owned roster that omits `projectId`, and on
+ * the bundled default chart, which is generic and carries none.
  */
 export async function loadArgusRoster(options: {
-  projectIds: readonly string[]
+  projectId: string
   workspacePath: string
   bundledRosterDir: string
 }): Promise<LoadedArgusRoster | null> {
-  const fallbackId = options.projectIds[0] ?? ''
   const projectOwned = await readIfPresent(join(options.workspacePath, PROJECT_ROSTER_FILENAME))
   if (projectOwned) {
-    const parsed = parseArgusRoster(projectOwned, fallbackId, 'project')
+    const parsed = parseArgusRoster(projectOwned, options.projectId, 'project')
     if (parsed) {
       return parsed
     }
   }
-  for (const projectId of options.projectIds) {
-    // Why kebab-case the id: bundled rosters are checked in as files, and `agendapower`
-    // ships as agenda-power-agents.json to stay readable next to its siblings.
-    for (const candidate of [`${projectId}-agents.json`, `${kebab(projectId)}-agents.json`]) {
-      const bundled = await readIfPresent(join(options.bundledRosterDir, candidate))
-      if (bundled) {
-        const parsed = parseArgusRoster(bundled, projectId, 'bundled')
-        if (parsed) {
-          return parsed
-        }
-      }
-    }
-  }
-  return null
-}
-
-function kebab(projectId: string): string {
-  return projectId === 'agendapower' ? 'agenda-power' : projectId
+  const bundled = await readIfPresent(join(options.bundledRosterDir, DEFAULT_CHART_FILENAME))
+  return bundled ? parseArgusRoster(bundled, options.projectId, 'bundled') : null
 }

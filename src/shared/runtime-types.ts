@@ -639,6 +639,13 @@ export type RuntimeProjectAgentSeat = {
   directReports?: string[]
   /** 0 for a top-level agent, 1 for its reports, and so on. */
   depth?: number
+  /**
+   * Which layer defined the seat: the project repo, the Argus-owned store for this repo, or
+   * the baseline shipped with Argus. Optional — a host predating layered definitions omits it.
+   */
+  source?: 'project' | 'argus' | 'bundled'
+  /** Absolute path of the defining `.md`, on the host. A seated agent reads its persona there. */
+  definitionPath?: string
 }
 
 export type RuntimeProjectAgentSeatList = {
@@ -654,6 +661,14 @@ export type RuntimeProjectAgentSeatList = {
   }
   /** Chart names the workspace does not define — visible, but not seatable. */
   chartOnlyAgents?: string[]
+  /**
+   * Where Argus keeps this repo's specialized personas, on the host.
+   *
+   * A persona written here overrides the shipped baseline without touching the project repo,
+   * which is the point: specializing a role must not put a file in someone's worktree. Absent
+   * when the host cannot resolve a user data path, or predates layered definitions.
+   */
+  agentStoreDir?: string
 }
 
 export type RuntimeTerminalSend = {

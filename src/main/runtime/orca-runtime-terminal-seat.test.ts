@@ -1,6 +1,7 @@
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { app } from 'electron'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { WorkspaceSessionState } from '../../shared/types'
 import { PROJECT_ROSTER_FILENAME } from '../argus/agent-roster-loader'
@@ -11,7 +12,10 @@ vi.mock('electron', () => ({
   BrowserWindow: { fromId: vi.fn(() => null) },
   webContents: { fromId: vi.fn(() => null) },
   ipcMain: { on: vi.fn(), removeListener: vi.fn() },
-  app: { getPath: vi.fn(() => '/tmp') }
+  // Why an app path with no resources/argus/agents: these cases are about what the
+  // *workspace* defines, and the baseline Argus ships would otherwise seat six roles
+  // into every assertion. Layer precedence has its own suite.
+  app: { getPath: vi.fn(() => '/tmp'), getAppPath: vi.fn(() => '/tmp/argus-no-bundle') }
 }))
 
 const WORKTREE_ID = 'repo::/w'
@@ -50,6 +54,9 @@ describe('OrcaRuntimeService project-agent seats', () => {
 
   beforeEach(async () => {
     clearProjectAgentCache()
+    // Reassert per test: a nested block that points this at the checkout must not leak the
+    // shipped baseline into the cases that are about what the workspace itself defines.
+    vi.mocked(app.getAppPath).mockReturnValue('/tmp/argus-no-bundle')
     workspace = await mkdtemp(join(tmpdir(), 'argus-runtime-seats-'))
     const agentsDir = join(workspace, PROJECT_AGENTS_DIR)
     await mkdir(agentsDir, { recursive: true })
@@ -304,6 +311,65 @@ describe('OrcaRuntimeService project-agent seats', () => {
         seat: 'AUDITOR'
       })
       expect(session.seatAssignmentsByWorktree?.[WORKTREE_ID]).toEqual({ AUDITOR: 'leaf-2' })
+    })
+  })
+
+  describe('with the baseline Argus ships', () => {
+    beforeEach(() => {
+      // Point the app path at this checkout so resources/argus/agents resolves. The rest of
+      // the suite deliberately points it at nothing, to isolate what the workspace defines.
+      vi.mocked(app.getAppPath).mockReturnValue(process.cwd())
+      clearProjectAgentCache()
+    })
+
+    it('seats the shipped roles alongside the two this workspace defines', async () => {
+      const { seats } = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+      const bySeat = new Map(seats.map((seat) => [seat.seat, seat]))
+
+      expect([...bySeat.keys()].sort()).toEqual([
+        'AUDITOR',
+        'BOSS',
+        'CEO',
+        'DESIGNER',
+        'ENGINEER',
+        'HUNTER'
+      ])
+      // The union is per seat: the project keeps the two it wrote and gains the rest.
+      expect(bySeat.get('AUDITOR')?.source).toBe('project')
+      expect(bySeat.get('ENGINEER')?.source).toBe('project')
+      expect(bySeat.get('DESIGNER')?.source).toBe('bundled')
+      expect(bySeat.get('DESIGNER')?.definitionPath).toContain(join('resources', 'argus', 'agents'))
+    })
+
+    it('seats a terminal on a role that only the baseline defines', async () => {
+      seedPane('term-1', 'leaf-1')
+      // Before the baseline shipped, this rejected with no_project_agents / unknown_project_agent.
+      await expect(runtime.assignTerminalSeat('term-1', 'HUNTER')).resolves.toMatchObject({
+        seat: 'HUNTER'
+      })
+    })
+
+    it('drops a baseline role the project turned off in argus.agents.json', async () => {
+      await writeFile(
+        join(workspace, PROJECT_ROSTER_FILENAME),
+        JSON.stringify({
+          agents: [{ name: 'ENGINEER', role: 'r', tools: [] }],
+          seats: { disabled: ['DESIGNER', 'CEO'] }
+        })
+      )
+      const { seats } = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+      const names = seats.map((seat) => seat.seat)
+
+      expect(names).not.toContain('DESIGNER')
+      expect(names).not.toContain('CEO')
+      expect(names).toContain('ENGINEER')
+    })
+
+    it('tells the caller where a specialized persona would go', async () => {
+      const listed = await runtime.listProjectAgentSeats(`id:${WORKTREE_ID}`)
+      // Null repoId in this harness means no store dir; the field is absent rather than a
+      // path keyed on `undefined`, which would collide every such workspace into one folder.
+      expect(listed.agentStoreDir).toBeUndefined()
     })
   })
 

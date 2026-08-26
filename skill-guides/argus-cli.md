@@ -212,15 +212,19 @@ Terminal rules:
 
 Project-agent seats:
 
-- A **seat** is the project agent the workspace defines in `.claude/agents/*.md` (`AUDITOR`, `BOSS`, `ENGINEER`). It is not the same axis as the **Argus agent** — the tool running in the pane (`claude`, `codex`), which is what `--agent` means everywhere else and what `terminal.agentStatus` reports. One pane can be seat `AUDITOR` while running `claude`.
-- Run `terminal seats` first: it lists exactly the seats the workspace defines and which terminal holds each. `terminal assign` refuses a name the workspace does not define.
+- A **seat** is an org-chart agent (`CEO`, `BOSS`, `ENGINEER`, `HUNTER`, `AUDITOR`, `DESIGNER`). It is not the same axis as the **Argus agent** — the tool running in the pane (`claude`, `codex`), which is what `--agent` means everywhere else and what `terminal.agentStatus` reports. One pane can be seat `AUDITOR` while running `claude`.
+- Seat definitions resolve across three layers, **per seat**: `<workspace>/.claude/agents/*.md` wins, then personas Argus stores for the repo, then the baseline shipped inside Argus. So every workspace has the six roles without anyone adding a file to it, and a project that defines only `ENGINEER` keeps its own and still gets the rest. Each seat reports its `source` and `definitionPath` in `--json`.
+- Run `terminal seats` first: it lists every seat resolvable here and which terminal holds each. `terminal assign` refuses only a name no layer defines.
 - Seats are exclusive per worktree, so `--terminal seat:AUDITOR` resolves to one terminal. Assigning a seat another terminal holds fails; pass `--force` to take it, and the result names the displaced terminal in `displacedHandle`.
 - A pane holds at most one seat. Re-seating a pane vacates the seat it held, reported as `vacatedSeat`.
 - `seat:<NAME>` works anywhere `--terminal` is accepted, so prefer it over storing handles: handles are runtime-scoped and go stale on restart, while a seat is re-resolved each call.
 - `--terminal self` is the pane running the command, resolved from the `ORCA_PANE_KEY` every Argus pane exports. Use it to seat yourself (`terminal assign --terminal self --seat AUDITOR`) or to ask who you are (`terminal show --terminal self --json` reports your `seat`). Omitting `--terminal` is **not** the same: that resolves the pane the user last focused, which is the caller only by coincidence — so an agent in a background pane must pass `self`.
 - `terminal unassign` releases the seat and leaves the terminal running. A closed pane's seat is dropped automatically, so `seat:` never resolves to a dead pane.
-- `terminal seats` orders and indents seats by the project chart — `<workspace>/argus.agents.json`, else a roster bundled with Argus. Each seat then carries `role`, `readOnly`, `reportsTo`, `directReports`, and `depth` in `--json`, so you can route work up or down the org chart instead of guessing from names.
-- `chartOnlyAgents` lists names the chart has but the workspace does not define in `.claude/agents/`. They are not seatable — the fix is a `.md` in the project, not an Argus setting.
+- `terminal seats` orders and indents seats by the project chart — `<workspace>/argus.agents.json`, else the generic chart shipped with Argus. Each seat then carries `role`, `readOnly`, `reportsTo`, `directReports`, and `depth` in `--json`, so you can route work up or down the org chart instead of guessing from names.
+- `chartOnlyAgents` lists names the chart has but no layer defines. They are not seatable — the fix is a `.md`, in the project or in the store `agentStoreDir` names.
+- To give a role this project's real knowledge, write the persona into the directory `terminal seats --json` reports as `agentStoreDir`. It overrides the shipped baseline for every worktree of the repo and puts no file in anyone's checkout — which also keeps it from registering as a Claude Code subagent type, the way a file under `.claude/agents/` does.
+- A seated agent loads its own persona: read your `seat` from `terminal show --terminal self --json`, then read the file `terminal seats --json` gives as that seat's `definitionPath`. Argus reads only the frontmatter; it never injects the role into you.
+- Run `ORCA skills get argus-seats` for the protocol between seats — addressing, trails that prevent loops, seating a vacant seat, and when to wait.
 
 ## Automations
 

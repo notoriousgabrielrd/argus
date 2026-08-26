@@ -67,14 +67,14 @@ describe('parseArgusRoster', () => {
 })
 
 describe('loadArgusRoster', () => {
-  it('prefers a project-owned roster over the bundled one', async () => {
+  it('prefers a project-owned roster over the bundled default chart', async () => {
     const workspace = makeDir()
     writeFileSync(
       join(workspace, PROJECT_ROSTER_FILENAME),
       JSON.stringify({ label: 'Owned', agents: [{ name: 'MINE', role: 'r', tools: [] }] })
     )
     const loaded = await loadArgusRoster({
-      projectIds: ['agendapower'],
+      projectId: 'agendapower',
       workspacePath: workspace,
       bundledRosterDir: REPO_ROSTER_DIR
     })
@@ -83,46 +83,81 @@ describe('loadArgusRoster', () => {
     expect(loaded?.source).toBe('project')
   })
 
-  it('tries every candidate identity before giving up on the bundled rosters', async () => {
+  it('serves the shipped default chart to a workspace that owns no roster', async () => {
     const loaded = await loadArgusRoster({
-      projectIds: ['repo-42', 'confetti'],
+      projectId: 'a-stranger-repo',
       workspacePath: makeDir(),
       bundledRosterDir: REPO_ROSTER_DIR
     })
-    expect(loaded?.projectId).toBe('confetti')
     expect(loaded?.source).toBe('bundled')
+    expect(loaded?.agents.map((a) => a.name)).toEqual([
+      'CEO',
+      'BOSS',
+      'ENGINEER',
+      'HUNTER',
+      'AUDITOR',
+      'DESIGNER'
+    ])
+    expect(loaded?.hierarchy.CEO).toContain('AUDITOR')
   })
 
-  it('falls back to the bundled roster imported from the cockpit', async () => {
+  it('stamps the caller identity on the generic chart, which carries none', async () => {
     const loaded = await loadArgusRoster({
-      projectIds: ['agendapower'],
+      projectId: 'a-stranger-repo',
       workspacePath: makeDir(),
       bundledRosterDir: REPO_ROSTER_DIR
     })
-    expect(loaded?.label).toBe('AgendaPower')
-    expect(loaded?.agents.map((a) => a.name)).toContain('AUDITOR')
-    expect(loaded?.hierarchy.CEO).toContain('AUDITOR')
+    // Why this matters: the bundled chart used to be picked by directory name, so a repo
+    // called `confetti` inherited someone else's org chart. Identity is now stamped, never
+    // matched.
+    expect(loaded?.projectId).toBe('a-stranger-repo')
   })
 
   it('resolves to null when neither source has a roster', async () => {
     const empty = makeDir()
     mkdirSync(join(empty, 'bundled'))
     const loaded = await loadArgusRoster({
-      projectIds: ['unknown-project'],
+      projectId: 'unknown-project',
       workspacePath: empty,
       bundledRosterDir: join(empty, 'bundled')
     })
     expect(loaded).toBeNull()
   })
 
-  it('ignores a corrupt project roster and still serves the bundled one', async () => {
+  it('ignores a corrupt project roster and still serves the default chart', async () => {
     const workspace = makeDir()
     writeFileSync(join(workspace, PROJECT_ROSTER_FILENAME), '{ corrupt')
     const loaded = await loadArgusRoster({
-      projectIds: ['agendapower'],
+      projectId: 'whatever',
       workspacePath: workspace,
       bundledRosterDir: REPO_ROSTER_DIR
     })
-    expect(loaded?.label).toBe('AgendaPower')
+    expect(loaded?.source).toBe('bundled')
+  })
+
+  it('reads seats.disabled so a project can refuse a role it does not own the file for', async () => {
+    const workspace = makeDir()
+    writeFileSync(
+      join(workspace, PROJECT_ROSTER_FILENAME),
+      JSON.stringify({
+        agents: [{ name: 'ENGINEER', role: 'r', tools: [] }],
+        seats: { disabled: ['designer', ' HUNTER ', '', 42] }
+      })
+    )
+    const loaded = await loadArgusRoster({
+      projectId: 'p',
+      workspacePath: workspace,
+      bundledRosterDir: REPO_ROSTER_DIR
+    })
+    expect(loaded?.disabledSeats).toEqual(['DESIGNER', 'HUNTER'])
+  })
+
+  it('defaults disabledSeats to empty when the project says nothing', async () => {
+    const loaded = await loadArgusRoster({
+      projectId: 'p',
+      workspacePath: makeDir(),
+      bundledRosterDir: REPO_ROSTER_DIR
+    })
+    expect(loaded?.disabledSeats).toEqual([])
   })
 })

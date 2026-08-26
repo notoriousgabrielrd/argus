@@ -190,11 +190,9 @@ describe('seat: terminal selector', () => {
 
   it('leaves a plain handle untouched, with no resolution round-trip', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {})
-    const call = vi
-      .fn()
-      .mockResolvedValue({
-        result: { send: { handle: 'term-1', accepted: true, bytesWritten: 1 } }
-      })
+    const call = vi.fn().mockResolvedValue({
+      result: { send: { handle: 'term-1', accepted: true, bytesWritten: 1 } }
+    })
 
     await TERMINAL_HANDLERS['terminal send']({
       flags: new Map([
@@ -297,6 +295,8 @@ describe('terminal seats CLI', () => {
     expect(printed).toContain('  DESIGNER  (vacant)  read-only')
     // The roster's one-liner wins over the .md trigger text.
     expect(printed).toContain('Infra mentor')
-    expect(printed).toContain('not defined in /w/.claude/agents/: HUNTER')
+    // The wording dropped the project path: with a baseline shipping in Argus, a charted
+    // name nobody defines is missing from every layer, not just from the repo.
+    expect(printed).toContain('defined by no layer: HUNTER')
   })
 })

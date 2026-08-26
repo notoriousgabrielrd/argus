@@ -1,0 +1,43 @@
+{
+  "$comment": "Organograma padrão do Argus, usado quando o workspace não traz argus.agents.json. Os papéis vivem em resources/argus/agents/*.md e continuam sendo a fonte da verdade; este arquivo só diz quem responde a quem.",
+  "label": "Argus",
+  "hierarchy": {
+    "VOCÊ": ["CEO"],
+    "CEO": ["BOSS", "ENGINEER", "HUNTER", "AUDITOR"],
+    "ENGINEER": ["DESIGNER"]
+  },
+  "agents": [
+    {
+      "name": "CEO",
+      "role": "Gestor do ecossistema de agentes deste projeto — topo da hierarquia.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Write", "AskUserQuestion"],
+      "readOnly": true
+    },
+    {
+      "name": "BOSS",
+      "role": "Consultor de infraestrutura e plataforma deste projeto, em postura de mentor — deploy, topologia de serviços, banco, filas, observabilidade e resposta a incidentes.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "ENGINEER",
+      "role": "Engenheiro sênior deste projeto — dono da implementação de ponta a ponta, da investigação ao teste que prova o comportamento.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "HUNTER",
+      "role": "Caçador de bugs deste projeto — parte do sintoma, reproduz, isola a causa raiz e corrige com um teste que falharia antes.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write", "WebFetch", "WebSearch"]
+    },
+    {
+      "name": "AUDITOR",
+      "role": "Auditor deste projeto — confronta a mudança contra as regras escritas do repo e as regras de negócio.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Write"],
+      "readOnly": true
+    },
+    {
+      "name": "DESIGNER",
+      "role": "Dono do design system da UI deste projeto — layout, cor, tipografia, espaçamento e escolha de componente.",
+      "tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write"]
+    }
+  ]
+}

@@ -1874,6 +1874,24 @@
           }
         ]
       }
+    ],
+    "argus-seats": [
+      {
+        "releaseRevision": 1,
+        "packageDigest": "dc5ec7e32e5e476788fcefae76d0ad7163000ccc1439425fa880ffc90eaab0ec",
+        "gitTreeSha": "dd89bd51005ec28819cbe4c66cf1c073d2fe7a12",
+        "files": [
+          {
+            "path": "SKILL.md",
+            "size": 2495,
+            "executable": false,
+            "classification": "text",
+            "exactSha256": "a8e3bfc871d62f791fe8004b553e60791600647017b627f5bc2c04cfa1d09597",
+            "textNormalizedSha256": "a8e3bfc871d62f791fe8004b553e60791600647017b627f5bc2c04cfa1d09597",
+            "identitySha256": "a8e3bfc871d62f791fe8004b553e60791600647017b627f5bc2c04cfa1d09597"
+          }
+        ]
+      }
     ]
   }
 }
