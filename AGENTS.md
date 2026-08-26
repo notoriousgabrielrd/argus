@@ -6,6 +6,35 @@ All UI work — layout, color, typography, spacing, component selection, UX beha
 
 Use the `$electron` skill and Playwright CDP for rendered Orca UI checks. Do not use computer-use for Orca UI validation.
 
+# Project Agents: Dispatch by Seat, Not by Subagent
+
+`ENGINEER`, `DESIGNER`, and `AUDITOR` are **seats** — Argus terminal panes, each running its
+own Claude process. Hand work to a seat with `/seat <NAME> <prompt>`, or directly:
+
+```
+argus terminal seats --json                       # handle: null means the seat is vacant
+argus terminal send --terminal seat:ENGINEER --text "<request>" --enter --json
+argus terminal read --terminal seat:ENGINEER --json
+```
+
+Address the seat, never the handle — handles are runtime-scoped and go stale.
+
+`.claude/agents/*.md` serves two consumers: Argus reads the frontmatter to know a seat
+exists (`src/main/argus/project-agent-definitions.ts`), and Claude Code registers the same
+file as a subagent type. That makes the `Agent` tool the path of least resistance, and it is
+the wrong one for real work: a subagent runs inside the caller's session, so the caller pays
+for its context, its report inflates the caller on every later turn, and a run that goes off
+the rails is invisible until it returns. A seat is a separate process in a visible pane —
+watchable, interruptible, resumable.
+
+Subagents stay fine for one thing: broad, throwaway, read-only search where you want the
+conclusion and not the file dumps. Anything with an owner and a completion criterion goes to
+a seat.
+
+Every agent definition carries an explicit `model:`. Keep the reasoning seats on the
+inherited model and the executor seats on `sonnet` — an unset `model:` silently inherits
+Opus for the whole run.
+
 # Style
 ## Concise/Brief Non-obviosu comments ONLY
   * DO NOT: be verbose, explain the obvious, walk through the code ("WHY not HOW")
