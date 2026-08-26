@@ -129,4 +129,20 @@ describe('resolveBundledAgentDir', () => {
   it('points at the roles shipped inside the app', () => {
     expect(resolveBundledAgentDir('/app')).toBe(join('/app', 'resources', 'argus', 'agents'))
   })
+
+  it('escapes the asar archive, which only Electron can read through', () => {
+    // definitionPath is published to seat callers, and a seated agent opens its persona with
+    // ordinary file tools — a path inside app.asar fails with ENOTDIR for every one of them.
+    expect(resolveBundledAgentDir(join('/A.app', 'Contents', 'Resources', 'app.asar'))).toBe(
+      join('/A.app', 'Contents', 'Resources', 'app.asar.unpacked', 'resources', 'argus', 'agents')
+    )
+  })
+
+  it('leaves a checkout path alone, since it has no archive to escape', () => {
+    expect(resolveBundledAgentDir('/repo')).toBe(join('/repo', 'resources', 'argus', 'agents'))
+    // A directory that merely ends in something asar-ish is not the archive.
+    expect(resolveBundledAgentDir('/repo/my-app.asar-backup')).toBe(
+      join('/repo/my-app.asar-backup', 'resources', 'argus', 'agents')
+    )
+  })
 })

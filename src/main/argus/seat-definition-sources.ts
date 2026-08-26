@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { join } from 'node:path'
+import { join, sep } from 'node:path'
 import { listAgentDefinitionsIn, PROJECT_AGENTS_DIR } from './project-agent-definitions'
 import type { ProjectAgentDefinition } from './project-agent-definitions'
 import type { TerminalSeatName } from '../../shared/argus/terminal-seat'
@@ -27,9 +27,21 @@ export type ResolvedSeatDefinition = ProjectAgentDefinition & {
 
 export const ARGUS_AGENT_STORE_DIR = join('argus', 'agents')
 
-/** Directory holding the role baseline shipped with Argus. */
+/**
+ * Directory holding the role baseline shipped with Argus.
+ *
+ * Why the asar swap: a packaged `appPath` ends in `app.asar`, and only Electron's patched fs
+ * can read through that archive. This directory's paths are published to seat callers as
+ * `definitionPath`, and a seated agent reads its persona with ordinary file tools — so the
+ * path has to be the unpacked copy, which `resources/**` is already emitted as.
+ */
 export function resolveBundledAgentDir(appPath: string): string {
-  return join(appPath, 'resources', 'argus', 'agents')
+  const unpacked = appPath.endsWith(`${sep}app.asar`)
+    ? `${appPath}.unpacked`
+    : appPath === 'app.asar'
+      ? 'app.asar.unpacked'
+      : appPath
+  return join(unpacked, 'resources', 'argus', 'agents')
 }
 
 /**
