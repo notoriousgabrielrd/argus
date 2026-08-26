@@ -21,6 +21,10 @@ export type SeatDefinitionInput = {
   seat: TerminalSeatName
   description: string
   tools: readonly string[]
+  /** Which layer defined this seat. Absent from callers that read one directory. */
+  source?: string
+  /** Absolute path of the defining `.md`. Carried through so a seated agent can read it. */
+  path?: string
 }
 
 export type SeatRosterEntry = {
@@ -39,6 +43,9 @@ export type SeatRosterEntry = {
   directReports: readonly string[]
   /** Indentation level among *listed* seats: 0 at the top, 1 under a listed manager. */
   depth: number
+  /** Passed through from the definition, so callers can name the file that defines the seat. */
+  source?: string
+  path?: string
 }
 
 export type SeatRoster = {
@@ -56,6 +63,8 @@ function toEntry(
     seat: definition.seat,
     description: definition.description,
     tools: definition.tools,
+    ...(definition.source ? { source: definition.source } : {}),
+    ...(definition.path ? { path: definition.path } : {}),
     role: rosterAgent?.role ?? '',
     // Why fall back to the `.md` tools: without a roster entry the frontmatter is all we
     // know, and it carries the same signal the roster's `readOnly` was derived from.

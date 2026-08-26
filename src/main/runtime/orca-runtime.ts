@@ -601,7 +601,13 @@ import {
   pruneSeats,
   type TerminalSeatMap
 } from '../../shared/argus/terminal-seat'
-import { listProjectAgents, PROJECT_AGENTS_DIR } from '../argus/project-agent-definitions'
+import { PROJECT_AGENTS_DIR } from '../argus/project-agent-definitions'
+import {
+  resolveArgusAgentStoreDir,
+  resolveBundledAgentDir,
+  resolveSeatDefinitions,
+  type ResolvedSeatDefinition
+} from '../argus/seat-definition-sources'
 import {
   loadArgusRoster,
   resolveBundledRosterDir,
@@ -25225,12 +25231,13 @@ export class OrcaRuntimeService {
     if (!worktree) {
       throw new Error('worktree_not_found')
     }
-    const defined = await listProjectAgents(worktree.path)
+    const { definitions: defined } = await this.resolveSeatDefinitionsForWorktree(worktree)
     if (defined.some((agent) => agent.seat === seat)) {
       return
     }
-    // Why name the directory and the known seats: the definitions live in the project
-    // repo, so the fix is always an edit there, not in Argus.
+    // Why name the known seats: with a baseline shipping in Argus, an empty list now means
+    // every layer was empty or the project disabled everything — rarer, and worth saying
+    // differently from "you asked for a name nobody defines".
     const known = defined.map((agent) => agent.seat).join(', ')
     throw new Error(
       known
@@ -25349,35 +25356,71 @@ export class OrcaRuntimeService {
   }
 
   /**
-   * Identities to try against the bundled rosters, best guess first.
+   * The identity stamped on a chart that carries no `projectId` of its own.
    *
-   * Why several: a roster is checked in under a project's own name, while Argus addresses
-   * a workspace by a generated repo id. The durable project id is the right answer when a
-   * workspace has one; the repo directory and display name cover the rest.
+   * Why a fallback chain rather than the repo id: this string is user-facing in the seat
+   * list, so the project's own name reads better than a generated id. It no longer selects
+   * which chart loads — that stopped being name-based when the per-project bundled rosters
+   * were replaced by one generic chart.
    */
-  private rosterProjectIdCandidates(worktree: ResolvedWorktree): string[] {
+  private rosterProjectId(worktree: ResolvedWorktree): string {
     const repo = this.listRepos().find((candidate) => candidate.id === worktree.repoId)
-    const candidates: string[] = []
-    // Why the path fallback: a folder workspace has no repo row, so without it the only
-    // identity left is the display name and the bundled roster never matches.
     for (const raw of [
       worktree.projectId,
       repo ? basename(repo.path) : basename(worktree.path),
       repo?.displayName
     ]) {
       const id = raw?.trim().toLowerCase()
-      if (id && !candidates.includes(id)) {
-        candidates.push(id)
+      if (id) {
+        return id
       }
     }
-    return candidates
+    return ''
+  }
+
+  /**
+   * Every layer a seat definition can come from, for one workspace.
+   *
+   * The Argus-owned store is keyed by `repoId` so worktrees of the same repo share a persona
+   * that was specialized once. Both the store and the bundle degrade to null in a headless
+   * host where `app` is unavailable — a missing layer is a shorter seat list, never a failure.
+   */
+  private async resolveSeatDefinitionsForWorktree(
+    worktree: ResolvedWorktree,
+    disabled?: readonly string[]
+  ): Promise<{ definitions: readonly ResolvedSeatDefinition[]; storeDir: string | null }> {
+    let appPath: string | null = null
+    try {
+      appPath = typeof app.getAppPath === 'function' ? (app.getAppPath() ?? null) : process.cwd()
+    } catch {
+      appPath = null
+    }
+    let userDataPath: string | null = null
+    try {
+      userDataPath = typeof app.getPath === 'function' ? (app.getPath('userData') ?? null) : null
+    } catch {
+      userDataPath = null
+    }
+    // Why guard repoId: a workspace can reach here before its repo row resolves, and a store
+    // path keyed on `undefined` would collide every such workspace into one directory.
+    const storeDir =
+      userDataPath && worktree.repoId
+        ? resolveArgusAgentStoreDir(userDataPath, worktree.repoId)
+        : null
+    const definitions = await resolveSeatDefinitions({
+      workspacePath: worktree.path,
+      storeDir,
+      bundledDir: appPath ? resolveBundledAgentDir(appPath) : null,
+      disabled
+    })
+    return { definitions, storeDir }
   }
 
   private async loadSeatRosterForWorktree(
     worktree: ResolvedWorktree
   ): Promise<LoadedArgusRoster | null> {
     return loadArgusRoster({
-      projectIds: this.rosterProjectIdCandidates(worktree),
+      projectId: this.rosterProjectId(worktree),
       workspacePath: worktree.path,
       // Why the cwd fallback: `app` is unavailable in daemon/headless hosts, where a
       // missing bundled roster is a degraded list, not a failed command.
@@ -25393,7 +25436,11 @@ export class OrcaRuntimeService {
       : await this.resolveActiveWorktreeForSeats()
     const occupants = this.getSeatMapForWorktree(worktree.id)
     const roster = await this.loadSeatRosterForWorktree(worktree)
-    const { entries, chartOnly } = mergeSeatRoster(await listProjectAgents(worktree.path), roster)
+    const { definitions, storeDir } = await this.resolveSeatDefinitionsForWorktree(
+      worktree,
+      roster?.disabledSeats
+    )
+    const { entries, chartOnly } = mergeSeatRoster(definitions, roster)
     const handleBySeat = new Map(
       await Promise.all(
         Object.entries(occupants).map(
@@ -25413,12 +25460,15 @@ export class OrcaRuntimeService {
         readOnly: entry.readOnly,
         reportsTo: entry.reportsTo,
         directReports: [...entry.directReports],
-        depth: entry.depth
+        depth: entry.depth,
+        ...(entry.source ? { source: entry.source as 'project' | 'argus' | 'bundled' } : {}),
+        ...(entry.path ? { definitionPath: entry.path } : {})
       })),
       ...(roster
         ? { roster: { projectId: roster.projectId, label: roster.label, source: roster.source } }
         : {}),
-      ...(chartOnly.length > 0 ? { chartOnlyAgents: chartOnly } : {})
+      ...(chartOnly.length > 0 ? { chartOnlyAgents: chartOnly } : {}),
+      ...(storeDir ? { agentStoreDir: storeDir } : {})
     }
   }
 

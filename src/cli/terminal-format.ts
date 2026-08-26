@@ -174,7 +174,9 @@ export function formatTerminalSeatClear(result: { seat: RuntimeTerminalSeatAssig
 export function formatProjectAgentSeats(result: { seats: RuntimeProjectAgentSeatList }): string {
   const { seats, roster, chartOnlyAgents } = result.seats
   if (seats.length === 0 && !chartOnlyAgents?.length) {
-    return `No project agents defined in ${result.seats.worktreePath}/.claude/agents/.`
+    // Why not "define some": Argus ships a baseline, so an empty list means every layer was
+    // empty — an old host, or a project that disabled the roles it was offered.
+    return `No seats available for ${result.seats.worktreePath}. Argus ships a baseline roster, so this means the host predates it or argus.agents.json disabled every role.`
   }
   const sections: string[] = []
   if (roster) {
@@ -192,17 +194,24 @@ export function formatProjectAgentSeats(result: { seats: RuntimeProjectAgentSeat
         // Why role first: the roster line is the curated one-liner, while the `.md`
         // description is the agent's own (often long) trigger text.
         const summary = agent.role || agent.description || '(no description)'
+        // Why surface the source: with three layers, "which file do I edit" is no longer
+        // obvious, and the answer differs per seat.
+        const origin = agent.source ? `  [${agent.source}]` : ''
         return [
-          `${indent}${agent.seat}  ${occupant}${agent.readOnly ? '  read-only' : ''}`,
+          `${indent}${agent.seat}  ${occupant}${agent.readOnly ? '  read-only' : ''}${origin}`,
           `${indent}  ${summary}`,
-          `${indent}  tools: ${tools}`
+          `${indent}  tools: ${tools}`,
+          ...(agent.definitionPath ? [`${indent}  defined in: ${agent.definitionPath}`] : [])
         ].join('\n')
       })
       .join('\n\n')
   )
   if (chartOnlyAgents?.length) {
+    sections.push(`In the chart, defined by no layer: ${chartOnlyAgents.join(', ')}`)
+  }
+  if (result.seats.agentStoreDir) {
     sections.push(
-      `In the chart, not defined in ${result.seats.worktreePath}/.claude/agents/: ${chartOnlyAgents.join(', ')}`
+      `Specialize a role for this repo by writing it to ${result.seats.agentStoreDir} — that overrides the shipped baseline without adding a file to the worktree.`
     )
   }
   return sections.filter((section) => section.length > 0).join('\n\n')

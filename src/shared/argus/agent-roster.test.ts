@@ -12,37 +12,41 @@ function readRoster(file: string): ImportedRoster {
   ) as ImportedRoster
 }
 
-const imported = readRoster('agenda-power-agents.json')
-const confetti = readRoster('confetti-agents.json')
+// Argus used to ship one roster per known project, picked by directory name — which handed a
+// stranger's chart to anyone whose repo shared the name. One generic chart replaced them, and
+// it is the only one these invariants can be asserted against.
+const shipped = readRoster('default-chart.json')
 
-describe.each([
-  ['AgendaPower', imported],
-  ['Confetti', confetti]
-])('imported %s roster', (_label, roster) => {
+describe('shipped default chart', () => {
   it('carries every agent named in the hierarchy, and no orphans', () => {
-    const charts = parseAgentHierarchyByProject({ [roster.projectId]: roster.hierarchy })
-    const charted = listHierarchyAgents(charts[roster.projectId]!)
-    const rostered = roster.agents.map((agent) => agent.name).sort()
+    const projectId = shipped.projectId ?? 'default'
+    const charts = parseAgentHierarchyByProject({ [projectId]: shipped.hierarchy })
+    const charted = listHierarchyAgents(charts[projectId]!)
+    const rostered = shipped.agents.map((agent) => agent.name).sort()
     expect(rostered).toEqual(charted)
   })
 
   it('keeps its AUDITOR read-only over code', () => {
-    const auditor = findAgent(roster, 'AUDITOR')
+    const auditor = findAgent(shipped, 'AUDITOR')
     expect(auditor).toBeDefined()
     expect(canMutateCode(auditor!)).toBe(false)
     expect(auditor!.tools).not.toContain('Edit')
   })
 
   it('describes every agent with a role line', () => {
-    for (const agent of roster.agents) {
+    for (const agent of shipped.agents) {
       expect(agent.role.length, agent.name).toBeGreaterThan(0)
     }
   })
+
+  it("names no specific project, so nobody inherits someone else's org chart", () => {
+    expect(shipped.projectId).toBeUndefined()
+  })
 })
 
-describe('imported AgendaPower roster', () => {
+describe('shipped chart, AUDITOR detail', () => {
   it('keeps AUDITOR read-only over code while still able to write its report', () => {
-    const auditor = findAgent(imported, 'AUDITOR')
+    const auditor = findAgent(shipped, 'AUDITOR')
     expect(auditor).toBeDefined()
     // Why assert the exact list: these mirror the agent's `tools:` frontmatter, and a
     // silent drift here would grant or revoke a capability the .md never changed.
@@ -55,8 +59,8 @@ describe('imported AgendaPower roster', () => {
   })
 
   it('marks the implementers as able to change code', () => {
-    for (const name of ['BOSS', 'ENGINEER', 'HUNTER', 'MINER', 'DIARIO']) {
-      const agent = findAgent(imported, name)
+    for (const name of ['BOSS', 'ENGINEER', 'HUNTER', 'DESIGNER']) {
+      const agent = findAgent(shipped, name)
       expect(agent, name).toBeDefined()
       expect(canMutateCode(agent!), name).toBe(true)
       expect(agent!.tools, name).toEqual(expect.arrayContaining(['Edit']))
@@ -64,8 +68,8 @@ describe('imported AgendaPower roster', () => {
   })
 
   it('keeps the non-implementers off the mutating tools', () => {
-    for (const name of ['CEO', 'MAESTRO', 'AUDITOR']) {
-      const agent = findAgent(imported, name)
+    for (const name of ['CEO', 'AUDITOR']) {
+      const agent = findAgent(shipped, name)
       expect(agent, name).toBeDefined()
       expect(canMutateCode(agent!), name).toBe(false)
       for (const tool of MUTATING_TOOLS) {
@@ -74,9 +78,13 @@ describe('imported AgendaPower roster', () => {
     }
   })
 
-  it('gives CEO the delegation tools that make it a manager', () => {
-    const ceo = findAgent(imported, 'CEO')
-    expect(ceo!.tools).toEqual(expect.arrayContaining(['Agent', 'SendMessage', 'TaskList']))
+  it('gives CEO the shell it needs to drive seats, and no subagent tool', () => {
+    const ceo = findAgent(shipped, 'CEO')
+    // Bash is what lets the CEO run `argus terminal send`. Without it the only delegation
+    // path left is the Agent tool, which runs a subagent inside the caller's own session —
+    // the caller pays for its context and cannot see it run.
+    expect(ceo!.tools).toContain('Bash')
+    expect(ceo!.tools).not.toContain('Agent')
   })
 })
 

@@ -10,7 +10,10 @@ vi.mock('electron', () => ({
   BrowserWindow: { fromId: vi.fn(() => null) },
   webContents: { fromId: vi.fn(() => null) },
   ipcMain: { on: vi.fn(), removeListener: vi.fn() },
-  app: { getPath: vi.fn(() => '/tmp') }
+  // Why an app path with no resources/argus/agents: these cases are about what the
+  // *workspace* defines, and the baseline Argus ships would otherwise seat six roles
+  // into every assertion. Layer precedence has its own suite.
+  app: { getPath: vi.fn(() => '/tmp'), getAppPath: vi.fn(() => '/tmp/argus-no-bundle') }
 }))
 
 const FOLDER_WORKSPACE_ID = 'fw-1'

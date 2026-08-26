@@ -102,7 +102,17 @@ const cacheByDir = new Map<string, CacheEntry>()
 export async function listProjectAgents(
   workspacePath: string
 ): Promise<readonly ProjectAgentDefinition[]> {
-  const dir = join(workspacePath, PROJECT_AGENTS_DIR)
+  return await listAgentDefinitionsIn(join(workspacePath, PROJECT_AGENTS_DIR))
+}
+
+/**
+ * Reads one directory of agent `.md` files. Split out from {@link listProjectAgents} so the
+ * layered resolver can read Argus-owned and bundled directories through the same parser and
+ * the same revision cache — the file format does not change with where the file lives.
+ */
+export async function listAgentDefinitionsIn(
+  dir: string
+): Promise<readonly ProjectAgentDefinition[]> {
   const revision = await directoryRevision(dir)
   if (revision === null) {
     cacheByDir.delete(dir)
