@@ -3,7 +3,7 @@ import {
   isUnknownWorkerStartOutcome,
   type WorkerSetupReceipt
 } from './orchestration-worker-topology'
-import type { OrchestrationWorkerLaunchReceipt } from './orchestration-worker-launch-preferences'
+import type { OrchestrationWorkerLaunchReceipt } from '../../orchestration/worker-launch-preferences'
 
 export function failWorkerStartWithReceipt(args: {
   db: OrchestrationDb

@@ -26,6 +26,9 @@ export const WorkerStartParams = z.object({
   effort: OptionalWorkerLaunchPreference,
   retryOf: OptionalString,
   timeoutMs: OptionalFiniteNumber,
+  // Why a tri-state: absent means "the caller did not say", which the handler reads as the
+  // default (on). Only an explicit false forbids the watchdog from replacing a dead worker.
+  autoRestart: z.boolean().optional(),
   devMode: z.boolean().optional()
 })
 

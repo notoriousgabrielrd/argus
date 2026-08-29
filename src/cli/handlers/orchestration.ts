@@ -900,6 +900,7 @@ export const ORCHESTRATION_HANDLERS: Record<string, CommandHandler> = {
       effort,
       terminal: getOptionalStringFlag(flags, 'terminal'),
       retryOf: getOptionalStringFlag(flags, 'retry-of'),
+      ...(flags.has('no-auto-restart') ? { autoRestart: false } : {}),
       timeoutMs: getOptionalPositiveIntegerValueFlag(flags, 'timeout-ms'),
       run: getOptionalStringFlag(flags, 'run'),
       from: await resolveCoordinatorTerminalHandle(flags, cwd, client),

@@ -3926,6 +3926,37 @@ export class OrchestrationDb {
   }
 
   // Why: runs in the status-update transaction, so a completed task never leaves its ready children unpromoted.
+  /**
+   * Promotes every `pending` task whose dependencies have all completed.
+   *
+   * {@link promoteReadyTasks} only fires on the writer that completes a dependency, so a
+   * completion recorded while nothing was watching — a watchdog reclaim, a manual
+   * `task-update`, a restart mid-DAG — leaves its dependents pending forever. This sweep is
+   * idempotent and safe to run on a timer.
+   */
+  promotePendingTasks(): string[] {
+    const candidates = this.db
+      .prepare("SELECT * FROM tasks WHERE status = 'pending'")
+      .all() as TaskRow[]
+
+    const promoted: string[] = []
+    for (const task of candidates) {
+      const deps: string[] = JSON.parse(task.deps)
+      // Why skip: createTask already opens a dependency-free task as `ready`, so a pending
+      // row with no deps is state this sweep does not understand. Leave it for a human.
+      if (deps.length === 0) {
+        continue
+      }
+      const allDepsCompleted = deps.every((depId) => this.getTask(depId)?.status === 'completed')
+      if (!allDepsCompleted) {
+        continue
+      }
+      this.db.prepare("UPDATE tasks SET status = 'ready' WHERE id = ?").run(task.id)
+      promoted.push(task.id)
+    }
+    return promoted
+  }
+
   private promoteReadyTasks(completedTaskId: string): void {
     const candidates = this.db
       .prepare("SELECT * FROM tasks WHERE status = 'pending'")

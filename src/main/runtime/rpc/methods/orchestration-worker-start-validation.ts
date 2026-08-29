@@ -7,7 +7,7 @@ import {
   assertWorkerLaunchPreferencesCreateTerminal,
   createWorkerLaunchReceipt,
   resolveWorkerLaunchPreferences
-} from './orchestration-worker-launch-preferences'
+} from '../../orchestration/worker-launch-preferences'
 import type { WorkerStartInput } from './orchestration-worker-start-schema'
 
 type WorkerStartLaunch = ReturnType<typeof resolveWorkerLaunchPreferences>

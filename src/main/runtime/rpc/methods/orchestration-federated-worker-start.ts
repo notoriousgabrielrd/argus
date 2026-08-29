@@ -19,7 +19,7 @@ import {
   createPendingWorkerLaunchReceipt,
   resolveFederatedWorkerLaunchReceipt,
   type OrchestrationWorkerLaunchReceipt
-} from './orchestration-worker-launch-preferences'
+} from '../../orchestration/worker-launch-preferences'
 import { validateFederatedWorkerStartPlacement } from './orchestration-worker-start-validation'
 
 export async function startFederatedWorker(args: {
