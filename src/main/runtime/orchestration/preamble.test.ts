@@ -34,7 +34,7 @@ describe('buildDispatchPreamble', () => {
     expect(result).not.toContain('{{')
   })
 
-  it('includes worker_done command with --body 3-sentence summary prompt and reportPath', () => {
+  it('includes worker_done command with --body 3-sentence summary prompt and report path', () => {
     const result = buildDispatchPreamble(baseParams())
 
     expect(result).toContain('worker_done')
@@ -42,7 +42,6 @@ describe('buildDispatchPreamble', () => {
     expect(result).toContain('orchestration check')
     expect(result).toContain('--body')
     expect(result).toMatch(/3-sentence summary/)
-    expect(result).toContain('reportPath')
     expect(result).toContain('--task-id task_abc123')
     expect(result).toContain('--dispatch-id ctx_def456')
     expect(result).toContain('--outcome succeeded')
@@ -271,6 +270,98 @@ describe('buildDispatchPreamble', () => {
     expect(firstIdx).toBeGreaterThanOrEqual(0)
     expect(secondIdx).toBeGreaterThan(firstIdx)
     expect(thirdIdx).toBeGreaterThan(secondIdx)
+  })
+
+  it('tells the worker to keep payloads out of --body', () => {
+    const result = buildDispatchPreamble(baseParams())
+
+    expect(result).toContain('--body carries pointers, never payloads')
+    expect(result).toContain('--report-path')
+    expect(result).toContain('--files-modified')
+  })
+
+  describe('project agent roster', () => {
+    it('omits the section when the caller resolved no teammates', () => {
+      expect(buildDispatchPreamble(baseParams())).not.toContain('PROJECT AGENTS IN THIS WORKTREE')
+      expect(
+        buildDispatchPreamble(baseParams({ teammates: [] }))
+      ).not.toContain('PROJECT AGENTS IN THIS WORKTREE')
+    })
+
+    it('lists each seat with its description and routes work through the coordinator', () => {
+      const result = buildDispatchPreamble(
+        baseParams({
+          teammates: [
+            { seat: 'AUDITOR', description: 'Audits the diff against repo rules.' },
+            { seat: 'DESIGNER', description: 'Owns the UI design system.' }
+          ]
+        })
+      )
+
+      expect(result).toContain('  AUDITOR — Audits the diff against repo rules.')
+      expect(result).toContain('  DESIGNER — Owns the UI design system.')
+      expect(result).toContain('do not prompt another seat directly')
+    })
+
+    it('drops the worker own seat so the roster only names other owners', () => {
+      const result = buildDispatchPreamble(
+        baseParams({
+          selfSeat: 'ENGINEER',
+          teammates: [
+            { seat: 'ENGINEER', description: 'End-to-end implementation.' },
+            { seat: 'AUDITOR', description: 'Audits the diff.' }
+          ]
+        })
+      )
+
+      expect(result).toContain('AUDITOR')
+      expect(result).not.toContain('ENGINEER —')
+    })
+
+    it('omits the section when the only defined seat is the worker own', () => {
+      const result = buildDispatchPreamble(
+        baseParams({
+          selfSeat: 'ENGINEER',
+          teammates: [{ seat: 'ENGINEER', description: 'End-to-end implementation.' }]
+        })
+      )
+
+      expect(result).not.toContain('PROJECT AGENTS IN THIS WORKTREE')
+    })
+
+    it('truncates a long description instead of pasting a paragraph into every dispatch', () => {
+      const result = buildDispatchPreamble(
+        baseParams({
+          teammates: [{ seat: 'AUDITOR', description: 'x'.repeat(400) }]
+        })
+      )
+
+      const line = result.split('\n').find((entry) => entry.startsWith('  AUDITOR'))!
+      expect(line.length).toBeLessThan(130)
+      expect(line).toContain('…')
+    })
+
+    it('caps the listing and points at terminal seats for the rest', () => {
+      const teammates = Array.from({ length: 11 }, (_, index) => ({
+        seat: `AGENT${index}`,
+        description: `Role ${index}`
+      }))
+
+      const result = buildDispatchPreamble(baseParams({ teammates }))
+
+      expect(result).toContain('  AGENT7 — Role 7')
+      expect(result).not.toContain('  AGENT8 — Role 8')
+      expect(result).toContain('…and 3 more: argus terminal seats --json')
+    })
+
+    it('renders a seat with no description as a bare name', () => {
+      const result = buildDispatchPreamble(
+        baseParams({ teammates: [{ seat: 'AUDITOR', description: '  ' }] })
+      )
+
+      expect(result).toContain('  AUDITOR\n')
+      expect(result).not.toContain('AUDITOR —')
+    })
   })
 
   it('renders a stable snapshot of the full preamble', () => {
