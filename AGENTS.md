@@ -55,6 +55,44 @@ Never use vague names like `helpers`, `utils`, `common`, `misc`, or `shared-stuf
 
 Always use the primary working directory (the worktree) for all file reads and edits. Never follow absolute paths from subagent results that point to the main repo.
 
+## Delegating Parallel Work
+
+Parallel work stays in the **current** worktree — everyone shares one checkout, one branch, one set of edits. Never spin up a child worktree just to get a second agent.
+
+Seat the agent in a new pane of this worktree, then address it by seat:
+
+```text
+argus terminal seats --json
+argus terminal create --worktree active --command "claude" --json
+argus terminal assign --terminal <handle> --seat ENGINEER --json
+argus terminal send --terminal seat:ENGINEER --text "<brief>" --enter --json
+```
+
+`.claude/agents/` (AUDITOR, DESIGNER, ENGINEER) defines the seats. A seat is exclusive per worktree, so `seat:<NAME>` resolves without a handle and survives restarts — never store handles across turns.
+
+Because the seats share a checkout, coordinate writes: give each seat a disjoint set of files, or let only one write at a time. Two seats editing the same file is a lost edit, not a merge conflict.
+
+### Input Token Economy
+
+A seat is a long-lived session whose context stays warm; a sub-agent is one-shot and re-pays the system prompt plus this file on every spawn. Prefer re-prompting an existing seat over spawning anything new.
+
+- **Never paste file content into a prompt.** Same worktree means the seat can read it — pass `path:line-range` and let it fetch only what it needs.
+- **Don't fan out readers over the same files.** One agent reads, then hands the others the conclusion.
+- **Keep CLI payloads narrow:** `--json` on every call, no `--include-visual-layouts` unless pane topology is the actual question, and page `terminal read --cursor` instead of dumping scrollback.
+- **Sub-agents are for read-only fan-out you throw away** — sweeping many files for a symbol or call site, where the answer is small relative to what was read. That, not parallelism, is what keeps their output off your context.
+
+### Messages Carry Pointers, Not Payloads
+
+Two agent sessions cannot share a context window: everything one sends the other becomes tokens in the receiver's prompt, and stays there for the rest of its run. The sender pays output rates to write it, the receiver pays input rates on every later turn. So a message says *where*, never *what*.
+
+- **A message body is ids, one line of meaning, and a path.** Long-form output goes to a file; the message carries `--report-path`. Changed files go in `--files-modified`, not in prose.
+- **Never put file contents, diffs, logs, or command output in a body.** The agents share a checkout — a path is enough.
+- **Structured over narrative:** `--payload <json>` with ids and paths beats a paragraph the receiver has to parse.
+- **Pull, don't push:** `check --types`, `--peek`, `task-list --brief`, `worker-read --limit`, `terminal read --cursor`. Read the narrowest thing that answers the question.
+- **The cheapest handoff moves the task, not the context.** If the work needs a live agent's context, re-prompt that agent (`worker-start --terminal <handle>`) instead of briefing a new one.
+
+The dispatch preamble states this rule to every worker (`src/main/runtime/orchestration/preamble.ts`). Keep the two in sync: a rule that lives only here is a rule the workers never see.
+
 ## Cross-Platform Support
 
 Orca targets macOS, Linux, and Windows. Keep all platform-dependent behavior behind runtime checks:

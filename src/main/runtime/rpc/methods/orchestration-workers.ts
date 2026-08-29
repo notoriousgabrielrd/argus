@@ -9,10 +9,10 @@ import {
   createExistingWorktreeWorkerTerminal,
   createWorkerWorktree,
   monitorWorkerSetup,
-  requireWorkerAuthority,
   type WorkerEffect,
   type WorkerSetupReceipt
 } from './orchestration-worker-topology'
+import { requireWorkerAuthority } from '../../orchestration/worker-terminal-authority'
 import {
   persistGatedSetupSpawnFailure,
   persistWorkerReadinessStage,
@@ -93,6 +93,12 @@ export const ORCHESTRATION_WORKER_START_METHODS: RpcMethod[] = [
       }
 
       const startOptions = {
+        // Why recorded rather than decided later: a replacement is started by a timer with
+        // no principal, so the permission to start one has to come from this call, where a
+        // real coordinator is present. `devMode` rides along so the replacement's preamble
+        // names the same CLI this caller used.
+        autoRestart: params.autoRestart ?? true,
+        devMode: params.devMode ?? false,
         worktree: requestedWorktree,
         resolvedWorktreeId: resolvedWorktree?.id ?? null,
         name: params.name ?? null,
@@ -116,6 +122,9 @@ export const ORCHESTRATION_WORKER_START_METHODS: RpcMethod[] = [
         runtimeEpoch: runtime.getRuntimeId(),
         mutationReceipt: orchestrationMutation
       })
+      // Why here: from this row on, the task's progress depends on a worker process staying
+      // alive, and nothing else reclaims it once this coordinator's turn ends.
+      runtime.ensureOrchestrationQueueWatchdog()
       const effects: WorkerEffect[] = []
       if (resolvedWorktree) {
         effects.push(
@@ -229,7 +238,8 @@ export const ORCHESTRATION_WORKER_START_METHODS: RpcMethod[] = [
           workerHandle: terminalHandle,
           dispatchCapability: capability,
           devMode: params.devMode,
-          cliCommand: runtime.getTerminalOrchestrationCliCommand(terminalHandle)
+          cliCommand: runtime.getTerminalOrchestrationCliCommand(terminalHandle),
+          ...(await runtime.resolveDispatchRosterForTerminal(terminalHandle))
         })
         await runtime.sendTerminalAgentPrompt(terminalHandle, preamble)
         effects.push({

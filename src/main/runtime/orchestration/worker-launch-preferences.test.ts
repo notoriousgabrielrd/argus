@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { ORCHESTRATION_WORKER_LAUNCH_PREFERENCES_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
+import { ORCHESTRATION_WORKER_LAUNCH_PREFERENCES_RUNTIME_CAPABILITY } from '../../../shared/protocol-version'
 import {
   assertWorkerLaunchPreferencesCreateTerminal,
   assertWorkerLaunchPreferencesRuntimeSupported,
   createPendingWorkerLaunchReceipt,
   resolveFederatedWorkerLaunchReceipt,
   resolveWorkerLaunchPreferences
-} from './orchestration-worker-launch-preferences'
-import { WorkerStartParams } from './orchestration-worker-start-schema'
+} from './worker-launch-preferences'
+import { WorkerStartParams } from '../rpc/methods/orchestration-worker-start-schema'
 
 describe('orchestration worker launch preferences', () => {
   it('passes an opaque Claude model and portable effort through the shared catalog', () => {

@@ -1333,7 +1333,8 @@ export const ORCHESTRATION_METHODS: RpcMethod[] = [
         workerHandle: to,
         dispatchCapability,
         devMode: params.devMode,
-        cliCommand: runtime.getTerminalOrchestrationCliCommand(to)
+        cliCommand: runtime.getTerminalOrchestrationCliCommand(to),
+        ...(await runtime.resolveDispatchRosterForTerminal(to))
       })
 
       let injected = false
@@ -1346,6 +1347,10 @@ export const ORCHESTRATION_METHODS: RpcMethod[] = [
           throw err
         }
       }
+
+      // Why here: this is the moment a task starts depending on a worker staying alive, so
+      // it is the moment the queue needs a watcher that outlives this coordinator's turn.
+      runtime.ensureOrchestrationQueueWatchdog()
 
       // Why: returnPreamble is opt-in because the preamble is several hundred bytes most callers don't need in the response.
       if (params.returnPreamble) {
@@ -1557,11 +1562,13 @@ export const ORCHESTRATION_METHODS: RpcMethod[] = [
       const db = runtime.getOrchestrationDb()
       if (params.all) {
         runtime.stopOrchestrationFederationRelay()
+        runtime.stopOrchestrationQueueWatchdog()
         db.resetAll()
         return { reset: 'all' }
       }
       if (params.tasks) {
         runtime.stopOrchestrationFederationRelay()
+        runtime.stopOrchestrationQueueWatchdog()
         db.resetTasks()
         return { reset: 'tasks' }
       }

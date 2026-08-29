@@ -31,6 +31,12 @@ export type PreambleParams = {
   // Why: prompt-returning agents should idle after worker_done, while bare
   // shells have no agent prompt for Argus to reuse.
   workerKind?: 'prompt-returning-agent' | 'bare-shell'
+  // Why: resolved from live pane state at injection time, not from the task, so
+  // previews (dispatch --dry-run, dispatch-show --preamble) omit the section
+  // instead of guessing a roster for a handle that may not exist yet.
+  teammates?: readonly { seat: string; description: string }[]
+  /** The worker's own seat, dropped from the roster when the caller knows it. */
+  selfSeat?: string
 }
 
 // Why: 5 minutes is frequent enough that the coordinator's stale-heartbeat
@@ -38,6 +44,13 @@ export type PreambleParams = {
 // infrequent enough to avoid inbox spam on long tasks. One constant so
 // cadence tuning is a single-line change (Q1 in DESIGN_DOC_PREAMBLE_FIX.md).
 const HEARTBEAT_INTERVAL_MIN = 5
+
+// Why cap both: the roster exists to save the worker a `terminal seats` round trip, so it
+// has to stay smaller than the call it replaces. A project with a large chart would
+// otherwise grow every dispatch prompt without bound, and a `description:` line in
+// `.claude/agents/*.md` is free-form prose that can run for paragraphs.
+const MAX_ROSTER_SEATS = 8
+const MAX_ROSTER_DESCRIPTION = 100
 
 // Why: the dispatch preamble teaches agents about Argus's CLI commands for
 // structured communication. Behavioral rules (body summary, heartbeat cadence,
@@ -71,8 +84,13 @@ Slack, GitHub comments, or any other channel to reach a human during the run.
   # RULE: --body must be a 3-sentence executive summary (what you did,
   # what you found, what's left). Never send an empty body; the coordinator
   # reads the body first and only opens artifacts if it needs more detail.
-  # If you produced a long-form artifact, include its path as
-  # payload.reportPath so the coordinator can find it without a file search.
+  #
+  # RULE: --body carries pointers, never payloads. Do not paste file
+  # contents, diffs, logs, or command output into it. Anything longer than
+  # the summary goes to a file whose path you pass as --report-path; changed
+  # files go in --files-modified. You share this worktree with the
+  # coordinator, so a path is enough for it to read what you wrote — and it
+  # pays for every byte of --body in its own context window.
   #
   # RULE: send worker_done exactly once. Use --outcome succeeded when the
   # requested work is done, or replace it with --outcome failed when it is not.
@@ -138,10 +156,54 @@ ${postDoneInstructions}`
   const drift =
     params.baseDrift && params.baseDrift.behind > 0 ? buildDriftSection(params.baseDrift) : ''
 
-  return `${header}${drift}
+  const roster = buildProjectAgentSection(params.teammates ?? [], params.selfSeat)
+
+  return `${header}${roster}${drift}
 
 === TASK ===
 ${params.taskSpec}`
+}
+
+/**
+ * Names the seats this project defines, so a worker can route work it should not do.
+ *
+ * Routing only, deliberately: prompting a peer seat directly would open a channel the
+ * coordinator cannot see, which is the one thing the header forbids. Knowing the roster
+ * lets the worker name the right owner in its report instead of asking who exists.
+ */
+function buildProjectAgentSection(
+  teammates: readonly { seat: string; description: string }[],
+  selfSeat?: string
+): string {
+  const others = teammates.filter((agent) => agent.seat !== selfSeat)
+  if (others.length === 0) {
+    return ''
+  }
+  const listed = others.slice(0, MAX_ROSTER_SEATS)
+  const lines = listed.map((agent) => {
+    const description = agent.description.trim()
+    if (!description) {
+      return `  ${agent.seat}`
+    }
+    const trimmed =
+      description.length > MAX_ROSTER_DESCRIPTION
+        ? `${description.slice(0, MAX_ROSTER_DESCRIPTION).trimEnd()}…`
+        : description
+    return `  ${agent.seat} — ${trimmed}`
+  })
+  const remaining = others.length - listed.length
+  const overflow = remaining > 0 ? `\n  …and ${remaining} more: argus terminal seats --json` : ''
+
+  return `
+
+--- PROJECT AGENTS IN THIS WORKTREE ---
+Seats this project defines in .claude/agents/, for routing:
+${lines.join('\n')}${overflow}
+
+RULE: do not prompt another seat directly. That opens a channel the coordinator
+cannot see. When work belongs to another seat, name that seat in your
+worker_done body or escalation and let the coordinator dispatch it.
+---`
 }
 
 function buildPostWorkerDoneInstructions({
