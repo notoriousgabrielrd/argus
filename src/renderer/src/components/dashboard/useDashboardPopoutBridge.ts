@@ -130,7 +130,16 @@ export function useDashboardPopoutBridge(enabled: boolean): void {
       return
     }
     return window.api.dashboard.onRevealAgent((args) => {
-      useAppStore.getState().setActiveWorktree(args.worktreeId, args.executionHostId)
+      const state = useAppStore.getState()
+      // Why: a stale card (worktree removed since the snapshot) would activate a worktree the
+      // store no longer has and leave the main area blank.
+      const known = Object.values(state.worktreesByRepo).some((list) =>
+        list.some((wt) => wt.id === args.worktreeId)
+      )
+      if (!known) {
+        return
+      }
+      state.setActiveWorktree(args.worktreeId, args.executionHostId)
       activateTabAndFocusPane(args.tabId, args.leafId, { flashFocusedPane: true })
     })
   }, [enabled])

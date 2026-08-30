@@ -56,6 +56,7 @@ import { clearTrustedUIRendererWebContentsId, setTrustedUIRendererWebContentsId 
 import { resolveWindowCloseAction } from './window-close-decision'
 import { rectHasVisibleAreaOnAnyDisplay } from './window-bounds-validation'
 import { closeDashboardPopout } from './dashboard-popout-window'
+import { closeNotchOverlay } from './notch-overlay-window'
 import { installPrivilegedWindowNavigationPolicy } from './privileged-window-navigation'
 import { isMacosTahoeOrNewer } from './macos-tahoe-release'
 import { registerPluginPanelNavigationGuard } from '../plugins/plugin-panel-navigation-guard'
@@ -175,6 +176,7 @@ const TITLEBAR_CSS_CENTER = 18
 const TRAFFIC_LIGHT_RADIUS = 6
 const TRAFFIC_LIGHT_X = 16
 const MIN_WIDTH = 600
+const MAIN_WINDOW_MAX_LISTENERS = 25
 const MIN_HEIGHT = 400
 
 function syncTrafficLightPosition(win: BrowserWindow, zoomFactor: number): void {
@@ -304,6 +306,12 @@ export function createMainWindow(
       webviewTag: true
     }
   })
+  // Why: eleven independent services each hook `closed` on the main window (attach-main-window-services,
+  // rate limits, TCC notice, base-dir watcher, ...), all once per window; the default cap of 10 only produces
+  // a false MaxListenersExceededWarning.
+  if (typeof mainWindow.setMaxListeners === 'function') {
+    mainWindow.setMaxListeners(MAIN_WINDOW_MAX_LISTENERS)
+  }
   const rendererWebContentsId = mainWindow.webContents.id
   installWindowsPathRegistryChangeListener(mainWindow)
   // Why: native paste fallback is privileged IPC; only the top-level renderer may request it.
@@ -1136,6 +1144,7 @@ export function createMainWindow(
     // alongside so it never orphans as a lone window after the app window is
     // gone (e.g. on macOS where the app stays alive after the window closes).
     closeDashboardPopout()
+    closeNotchOverlay()
     clearInitialRevealFallbackTimer()
     clearQuitRendererAckTimer()
     // Why: default-deny the Cmd+B carve-out after the window is gone so a stale-true flag can't leak into later state.

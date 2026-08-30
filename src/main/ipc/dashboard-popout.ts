@@ -9,7 +9,13 @@ import {
   isDashboardPopoutRenderer,
   onDashboardPopoutOpenChanged
 } from '../window/dashboard-popout-window'
+import {
+  getNotchOverlayWindow,
+  isNotchOverlayRenderer,
+  onNotchOverlayOpenChanged
+} from '../window/notch-overlay-window'
 import { safelyRevealWindow } from '../window/focus-existing-window'
+import type { DashboardRevealAgentArgs } from '../../shared/dashboard-snapshot'
 import { getTrustedUIRendererWindow, isTrustedUIRenderer, sendToTrustedUIRenderer } from './ui'
 import {
   admitDashboardSnapshot,
@@ -24,8 +30,40 @@ import {
 // Cleared on close so a reopened popout never flashes a previous session.
 let lastSnapshot: DashboardSnapshot | null = null
 
-function isDashboardEnabled(store: Store): boolean {
+function isPopoutEnabled(store: Store): boolean {
   return store.getSettings().experimentalAgentDashboardPopout === true
+}
+
+// Why: the macOS notch overlay is a second consumer of the same snapshot stream, so the
+// relay stays on while either surface is enabled.
+function isDashboardEnabled(store: Store): boolean {
+  return (
+    isPopoutEnabled(store) ||
+    (process.platform === 'darwin' && store.getSettings().experimentalMacNotchOverlay === true)
+  )
+}
+
+function isSnapshotConsumerRenderer(sender: Electron.WebContents): boolean {
+  return isDashboardPopoutRenderer(sender) || isNotchOverlayRenderer(sender)
+}
+
+function anySnapshotConsumerOpen(): boolean {
+  return getDashboardPopoutWindow() !== null || getNotchOverlayWindow() !== null
+}
+
+/** Raise the main window and route it to the agent's pane. Shared by the pop-out and the notch overlay. */
+export function revealDashboardAgentInMainWindow(args: DashboardRevealAgentArgs): void {
+  const mainWindow = getTrustedUIRendererWindow()
+  if (!mainWindow) {
+    return
+  }
+  safelyRevealWindow(mainWindow)
+  mainWindow.webContents.send('ui:revealDashboardAgent', args)
+  try {
+    app.focus({ steal: true })
+  } catch {
+    // Best-effort; the per-window focus above may still bring it forward.
+  }
 }
 
 export function registerDashboardPopoutHandlers(
@@ -42,22 +80,32 @@ export function registerDashboardPopoutHandlers(
   ipcMain.removeHandler('dashboardPopout:sleepWorkspace')
 
   onDashboardPopoutOpenChanged((open) => {
-    if (!open) {
+    if (!open && !anySnapshotConsumerOpen()) {
       lastSnapshot = null
     }
+  })
+  onNotchOverlayOpenChanged((open) => {
+    if (!open && !anySnapshotConsumerOpen()) {
+      lastSnapshot = null
+    }
+    // Why: the pop-out window announces its own transitions; the notch reuses the same
+    // renderer signal so the main window's publisher tracks "any consumer open".
+    sendToTrustedUIRenderer('dashboard:popoutOpenChanged', open || anySnapshotConsumerOpen())
   })
   store.onSettingsChanged((updates, settings) => {
     if (
       'experimentalAgentDashboardPopout' in updates &&
       settings.experimentalAgentDashboardPopout !== true
     ) {
-      lastSnapshot = null
       closeDashboardPopout()
+      if (!anySnapshotConsumerOpen()) {
+        lastSnapshot = null
+      }
     }
   })
 
   ipcMain.handle('dashboardPopout:open', (event, view: unknown): void => {
-    if (!isTrustedUIRenderer(event.sender) || !isDashboardEnabled(store)) {
+    if (!isTrustedUIRenderer(event.sender) || !isPopoutEnabled(store)) {
       return
     }
     if (view !== undefined && view !== 'board' && view !== 'map') {
@@ -92,12 +140,13 @@ export function registerDashboardPopoutHandlers(
         ? { ...admitted.snapshot, repoIconsByRepoId: lastSnapshot.repoIconsByRepoId }
         : admitted.snapshot
     getDashboardPopoutWindow()?.webContents.send('dashboard:snapshot', admitted.snapshot)
+    getNotchOverlayWindow()?.webContents.send('dashboard:snapshot', admitted.snapshot)
   })
 
   // The popout asks for a snapshot on mount: replay the cache immediately, then
   // nudge the main renderer to publish a fresh one.
   ipcMain.handle('dashboard:requestSnapshot', (event): void => {
-    if (!isDashboardPopoutRenderer(event.sender) || !isDashboardEnabled(store)) {
+    if (!isSnapshotConsumerRenderer(event.sender) || !isDashboardEnabled(store)) {
       return
     }
     if (lastSnapshot) {
@@ -108,7 +157,7 @@ export function registerDashboardPopoutHandlers(
 
   ipcMain.handle('dashboard:getPopoutOpen', (event): boolean =>
     isTrustedUIRenderer(event.sender) && isDashboardEnabled(store)
-      ? getDashboardPopoutWindow() !== null
+      ? anySnapshotConsumerOpen()
       : false
   )
 
@@ -116,7 +165,7 @@ export function registerDashboardPopoutHandlers(
   // main renderer's store — the same ack that mutes its sidebar row.
   ipcMain.handle('dashboardPopout:ackAgent', (event, args: unknown): void => {
     if (
-      !isDashboardPopoutRenderer(event.sender) ||
+      !isSnapshotConsumerRenderer(event.sender) ||
       !isDashboardEnabled(store) ||
       !args ||
       typeof args !== 'object' ||
@@ -136,17 +185,7 @@ export function registerDashboardPopoutHandlers(
     ) {
       return
     }
-    const mainWindow = getTrustedUIRendererWindow()
-    if (!mainWindow) {
-      return
-    }
-    safelyRevealWindow(mainWindow)
-    mainWindow.webContents.send('ui:revealDashboardAgent', args)
-    try {
-      app.focus({ steal: true })
-    } catch {
-      // Best-effort; the per-window focus above may still bring it forward.
-    }
+    revealDashboardAgentInMainWindow(args)
   })
 
   ipcMain.handle('dashboardPopout:spawnAgent', (event, args: unknown): void => {
@@ -162,7 +201,7 @@ export function registerDashboardPopoutHandlers(
 
   ipcMain.handle('dashboardPopout:sleepWorkspace', (event, args: unknown): void => {
     if (
-      !isDashboardPopoutRenderer(event.sender) ||
+      !isSnapshotConsumerRenderer(event.sender) ||
       !isDashboardEnabled(store) ||
       !isDashboardSleepWorkspaceArgs(args)
     ) {

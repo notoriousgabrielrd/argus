@@ -71,6 +71,7 @@ export type ReactErrorBoundarySurface =
   | 'overlay'
   | 'rich-markdown-editor'
   | 'dashboard-popout'
+  | 'notch-overlay'
 
 export type ReactErrorBoundaryReportArgs = {
   boundaryId: string

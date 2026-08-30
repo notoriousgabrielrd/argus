@@ -157,6 +157,9 @@ vi.mock('./onboarding', () => ({
 vi.mock('./dashboard-popout', () => ({
   registerDashboardPopoutHandlers: registerDashboardPopoutHandlersMock
 }))
+vi.mock('./notch-overlay', () => ({
+  registerNotchOverlayHandlers: vi.fn()
+}))
 
 vi.mock('../window/dashboard-popout-window', () => ({
   isDashboardPopoutRenderer: isDashboardPopoutRendererMock

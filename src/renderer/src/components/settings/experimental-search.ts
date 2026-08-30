@@ -5,6 +5,7 @@ import { translateSearchKeyword } from './settings-search-keywords'
 import { getNewWorktreeCardStyleSearchEntry } from './new-worktree-card-style-search-entry'
 import { getNativeChatExperimentalSearchEntry } from './native-chat-experimental-search-entry'
 import { getEphemeralVmsSearchEntry } from './ephemeral-vms-search'
+import { getNotchOverlaySearchEntry } from './notch-overlay-search-entry'
 
 export const getExperimentalPaneSearchEntries = createLocalizedCatalog(
   (): SettingsSearchEntry[] => [
@@ -95,6 +96,7 @@ export const getExperimentalPaneSearchEntries = createLocalizedCatalog(
         )
       ]
     },
+    getNotchOverlaySearchEntry(),
     {
       title: translate(
         'auto.components.settings.experimental.search.agentDashboard.title',
@@ -255,6 +257,9 @@ export function getExperimentalSearchEntry() {
         'auto.components.settings.experimental.search.agentDashboard.title',
         'Agent Dashboard'
       )
+    ),
+    notchOverlay: findEntry(
+      translate('auto.components.settings.experimental.search.notchOverlay.title', 'Notch Overlay')
     ),
     nativeChat: findEntry(
       translate('auto.components.settings.experimental.search.nativeChat.title', 'Chat UI')

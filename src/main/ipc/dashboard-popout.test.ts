@@ -40,6 +40,11 @@ vi.mock('../window/dashboard-popout-window', () => ({
   isDashboardPopoutRenderer: isPopoutRendererMock,
   onDashboardPopoutOpenChanged: vi.fn()
 }))
+vi.mock('../window/notch-overlay-window', () => ({
+  getNotchOverlayWindow: () => null,
+  isNotchOverlayRenderer: () => false,
+  onNotchOverlayOpenChanged: () => () => {}
+}))
 vi.mock('../window/focus-existing-window', () => ({ safelyRevealWindow: safelyRevealMock }))
 vi.mock('./ui', () => ({
   getTrustedUIRendererWindow: getTrustedWindowMock,
