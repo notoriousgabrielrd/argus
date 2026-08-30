@@ -204,6 +204,7 @@ import {
   getDashboardPopoutWindow,
   zoomDashboardPopoutIfFocused
 } from './window/dashboard-popout-window'
+import { getNotchOverlayWindow } from './window/notch-overlay-window'
 import {
   createSystemTray,
   destroySystemTray,
@@ -1577,6 +1578,7 @@ function openMainWindow(options: { revealOnDidFinishLoad?: boolean } = {}): Brow
       mainWindow?.webContents.send('agentStatus:set', statusEvent)
       if (!suppressSyntheticCodexAutoApprovalTitle || isAskUserQuestionTool(payload.toolName)) {
         getDashboardPopoutWindow()?.webContents.send('agentStatus:set', statusEvent)
+        getNotchOverlayWindow()?.webContents.send('agentStatus:set', statusEvent)
       }
       recordAgentStateCrashBreadcrumb(payload.agentType ?? 'unknown', payload.state)
       // Why: native OSC titles miss some idle/permission frames, so inject hook-derived ones to keep the renderer title tracker in sync.
@@ -1596,6 +1598,7 @@ function openMainWindow(options: { revealOnDidFinishLoad?: boolean } = {}): Brow
     }
     mainWindow?.webContents.send('agentStatus:clear', clear)
     getDashboardPopoutWindow()?.webContents.send('agentStatus:clear', clear)
+    getNotchOverlayWindow()?.webContents.send('agentStatus:clear', clear)
   })
   setMigrationUnsupportedPtyListener((event) => {
     if (mainWindow?.isDestroyed()) {

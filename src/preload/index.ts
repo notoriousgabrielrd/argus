@@ -2416,6 +2416,19 @@ const api = {
       ipcRenderer.invoke('dashboardPopout:sleepWorkspace', args)
   },
 
+  notchOverlay: {
+    setExpanded: (args: { expanded: boolean }): Promise<void> =>
+      ipcRenderer.invoke('notchOverlay:setExpanded', args),
+    onExpandedChanged: (callback: (expanded: boolean) => void): (() => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, expanded: boolean): void =>
+        callback(expanded)
+      ipcRenderer.on('notchOverlay:expandedChanged', listener)
+      return () => ipcRenderer.removeListener('notchOverlay:expandedChanged', listener)
+    },
+    revealAgent: (args: DashboardRevealAgentArgs): Promise<void> =>
+      ipcRenderer.invoke('notchOverlay:revealAgent', args)
+  },
+
   terminalPreview: {
     connect: (
       ptyId: string,

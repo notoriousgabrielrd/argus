@@ -5,6 +5,7 @@ import type { Store } from '../persistence'
 import { rectHasVisibleAreaOnAnyDisplay } from './window-bounds-validation'
 import { sendToTrustedUIRenderer } from '../ipc/ui'
 import { installPrivilegedWindowNavigationPolicy } from './privileged-window-navigation'
+import { getNotchOverlayWindow } from './notch-overlay-window'
 import { stepUIZoomLevel, type UIZoomDirection } from '../../shared/ui-zoom-level'
 import { nativeZoomCommandMatchesKeybindings } from '../../shared/window-shortcut-policy'
 import {
@@ -92,7 +93,8 @@ export function onDashboardPopoutOpenChanged(listener: (open: boolean) => void):
 // Why: the main renderer's snapshot publisher only runs while the pop-out is
 // open. Tell that exact window when the state flips, then notify listeners.
 function broadcastPopoutOpenChanged(open: boolean): void {
-  sendToTrustedUIRenderer('dashboard:popoutOpenChanged', open)
+  // Why: the notch overlay consumes the same stream; closing the pop-out must not silence it.
+  sendToTrustedUIRenderer('dashboard:popoutOpenChanged', open || getNotchOverlayWindow() !== null)
   for (const listener of popoutOpenListeners) {
     listener(open)
   }
