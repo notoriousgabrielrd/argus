@@ -109,6 +109,14 @@ __orca_restore_attribution_path() {
   export PATH="\${ORCA_ATTRIBUTION_SHIM_DIR}:$PATH"
 }
 __orca_restore_attribution_path
+__orca_restore_tmux_shim_path() {
+  [[ -n "\${ORCA_TMUX_SHIM_DIR:-}" ]] || return 0
+  case "$PATH" in
+    "\${ORCA_TMUX_SHIM_DIR}"|"\${ORCA_TMUX_SHIM_DIR}:"*) return 0 ;;
+  esac
+  export PATH="\${ORCA_TMUX_SHIM_DIR}:$PATH"
+}
+__orca_restore_tmux_shim_path
 __orca_restore_agent_teams_path() {
   [[ -n "\${ORCA_AGENT_TEAMS_SHIM_DIR:-}" ]] || return 0
   case "$PATH" in
@@ -230,6 +238,14 @@ __orca_restore_attribution_path() {
   export PATH="\${ORCA_ATTRIBUTION_SHIM_DIR}:$PATH"
 }
 [[ ! -o login ]] && __orca_restore_attribution_path
+__orca_restore_tmux_shim_path() {
+  [[ -n "\${ORCA_TMUX_SHIM_DIR:-}" ]] || return 0
+  case "$PATH" in
+    "\${ORCA_TMUX_SHIM_DIR}"|"\${ORCA_TMUX_SHIM_DIR}:"*) return 0 ;;
+  esac
+  export PATH="\${ORCA_TMUX_SHIM_DIR}:$PATH"
+}
+[[ ! -o login ]] && __orca_restore_tmux_shim_path
 __orca_restore_agent_teams_path() {
   [[ -n "\${ORCA_AGENT_TEAMS_SHIM_DIR:-}" ]] || return 0
   case "$PATH" in
@@ -294,6 +310,14 @@ __orca_restore_attribution_path() {
   export PATH="\${ORCA_ATTRIBUTION_SHIM_DIR}:$PATH"
 }
 __orca_restore_attribution_path
+__orca_restore_tmux_shim_path() {
+  [[ -n "\${ORCA_TMUX_SHIM_DIR:-}" ]] || return 0
+  case "$PATH" in
+    "\${ORCA_TMUX_SHIM_DIR}"|"\${ORCA_TMUX_SHIM_DIR}:"*) return 0 ;;
+  esac
+  export PATH="\${ORCA_TMUX_SHIM_DIR}:$PATH"
+}
+__orca_restore_tmux_shim_path
 __orca_restore_agent_teams_path() {
   [[ -n "\${ORCA_AGENT_TEAMS_SHIM_DIR:-}" ]] || return 0
   case "$PATH" in

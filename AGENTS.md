@@ -103,6 +103,13 @@ Orca targets macOS, Linux, and Windows. Keep all platform-dependent behavior beh
 - **Windows setup scripts**: the setup/issue-command runner is a `.cmd` batch file unless the script starts with a `#!` line — never derive that from the user's terminal-shell preference, and never launch a `.cmd` runner with a bare `cmd.exe /c` from a Git Bash pane (MSYS rewrites the `/c`). See [`docs/reference/windows-setup-shell.md`](./docs/reference/windows-setup-shell.md).
 - **Linux native modules**: keep the glibc floor at Ubuntu 20.04 / glibc 2.31. A module compiled from source on a newer runner can reference symbol versions absent on the floor and crash the app on startup. See [`docs/reference/linux-glibc-compatibility.md`](./docs/reference/linux-glibc-compatibility.md); packaging fails if a bundled native binary needs newer glibc.
 
+## Shared tmux Sessions
+
+Panes whose shell attaches to a shared tmux session would mirror each other: one tmux session has a
+single current window, shared by every client. Argus prevents this with a `tmux` PATH shim that puts
+each pane on its own grouped session. Before touching pane env, PATH shims, or anything that runs
+tmux, read [`docs/reference/tmux-session-isolation.md`](./docs/reference/tmux-session-isolation.md).
+
 ## SSH Use Case
 
 All changes must consider the SSH use case. Don't assume local-only execution.
