@@ -124,10 +124,7 @@ import {
   parseWorkerTerminalHostScope,
   type WorkerTerminalHostScope
 } from './orchestration/worker-terminal-process-liveness'
-import {
-  sweepOrchestrationQueue,
-  type QueueWatchdogSweep
-} from './orchestration/queue-watchdog'
+import { sweepOrchestrationQueue, type QueueWatchdogSweep } from './orchestration/queue-watchdog'
 import { restartReclaimedWorker } from './orchestration/worker-restart'
 import { rollbackWorkspaceSessionAfterFailedAsyncWrite } from './workspace-session-failed-write-rollback'
 import { OrchestrationError } from './orchestration/orchestration-error'
@@ -3988,14 +3985,24 @@ export class OrcaRuntimeService {
     if (connectionId === null && !this.canRecoverPersistentLocalPtysFn()) {
       return
     }
-    const inventory = await this.refreshPtyWorktreeRecordsWithControllerInventory(
-      [...(await this.getResolvedWorktreeMap()).values()],
-      null,
-      undefined,
-      connectionId
-    )
-    if (!inventory) {
-      throw new Error('terminal_liveness_unavailable')
+    const resolvedWorktrees = [...(await this.getResolvedWorktreeMap()).values()]
+    for (let attempt = 0; ; attempt += 1) {
+      const issuedGeneration = this.ptyControllerInventorySequence + 1
+      const inventory = await this.refreshPtyWorktreeRecordsWithControllerInventory(
+        resolvedWorktrees,
+        null,
+        undefined,
+        connectionId
+      )
+      if (inventory) {
+        return
+      }
+      // Why: a null inventory also means "a newer inventory superseded this one" (renderer startup fires
+      // aggregate liveness refreshes concurrently). That is fresh liveness, not an unavailable controller.
+      const superseded = this.ptyControllerInventorySequence > issuedGeneration
+      if (!superseded || attempt >= RESTORED_AUTHORITY_SUPERSEDED_RETRY_LIMIT) {
+        throw new Error('terminal_liveness_unavailable')
+      }
     }
   }
 
@@ -36157,6 +36164,7 @@ export function resolveWorktreeScanCacheTtlMs(repo: Pick<Repo, 'path' | 'connect
     : WORKTREE_SCAN_CACHE_TTL_MS
 }
 const PTY_CONTROLLER_LIST_TIMEOUT_MS = 3000
+const RESTORED_AUTHORITY_SUPERSEDED_RETRY_LIMIT = 3
 // Why 30s: the watchdog only reclaims workers already silent for ten minutes, so the tick
 // decides how fast a reclaim lands, not whether it happens. Frequent enough that a human
 // coming back to the app finds the queue already healed, cheap enough to leave armed.
