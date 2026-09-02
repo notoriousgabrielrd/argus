@@ -9,6 +9,7 @@ import {
   openWorktreePath,
   WorktreeOpenInSubMenu
 } from './WorktreeOpenInMenu'
+import { WorktreeOpenHereMenuItems } from './WorktreeOpenHereMenuItems'
 
 type ReactElementLike = {
   type: unknown
@@ -34,6 +35,13 @@ const {
   openSettingsPageMock: vi.fn(),
   openSettingsTargetMock: vi.fn(),
   toastErrorMock: vi.fn()
+}))
+
+const { openWorktreeHereMock } = vi.hoisted(() => ({
+  openWorktreeHereMock: vi.fn()
+}))
+vi.mock('./worktree-open-here', () => ({
+  openWorktreeHere: openWorktreeHereMock
 }))
 
 vi.mock('sonner', () => ({
@@ -122,6 +130,47 @@ describe('WorktreeOpenInMenu', () => {
     })
 
     expect(findByType(tree, DropdownMenuSubTrigger).props.disabled).toBe(true)
+  })
+
+  it('lists Claude and Terminal above the external apps when a worktree id is given', () => {
+    const withId = WorktreeOpenInSubMenu({
+      worktreeId: 'wt-1',
+      worktreePath: '/tmp/workspace',
+      connectionId: null
+    })
+    const content = findByType(withId, DropdownMenuSubContent)
+    const children = React.Children.toArray(content.props.children as React.ReactNode)
+    expect((children[0] as ReactElementLike).type).toBe(WorktreeOpenHereMenuItems)
+
+    const withoutId = WorktreeOpenInSubMenu({
+      worktreePath: '/tmp/workspace',
+      connectionId: null
+    })
+    let hasOpenHere = false
+    visit(withoutId, (entry) => {
+      if (entry.type === WorktreeOpenHereMenuItems) {
+        hasOpenHere = true
+      }
+    })
+    expect(hasOpenHere).toBe(false)
+  })
+
+  it('routes Claude and Terminal selections to openWorktreeHere', () => {
+    openWorktreeHereMock.mockReset()
+    const tree = WorktreeOpenHereMenuItems({ worktreeId: 'wt-1' })
+    const targets: string[] = []
+    visit(tree, (entry) => {
+      const target = entry.props['data-open-here-target'] as string | undefined
+      if (target) {
+        targets.push(target)
+        ;(entry.props.onSelect as () => void)()
+      }
+    })
+    expect(targets).toEqual(['claude', 'terminal'])
+    expect(openWorktreeHereMock.mock.calls).toEqual([
+      ['wt-1', 'claude'],
+      ['wt-1', 'terminal']
+    ])
   })
 
   it('stops menu item click propagation', () => {
