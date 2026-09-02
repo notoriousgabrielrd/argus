@@ -34,7 +34,17 @@ function verifyPackagedDaemonEntryBoots(resourcesDir, options = {}) {
   const execPath = options.execPath || process.execPath
   const entryPath = assertPackagedDaemonEntryExists(resourcesDir)
 
-  const result = spawnSync(execPath, [entryPath], { encoding: 'utf8', timeout: 10_000 })
+  // Why: afterPack runs microseconds after ~250MB of Electron is extracted into
+  // appOutDir, so XProtect + Spotlight are still sweeping the very tree this
+  // cold-starts Node from. A stalled start is not the regression this gate
+  // exists to catch, so ETIMEDOUT retries once on a warmer tree instead of
+  // failing the build; a load failure still fails on the first attempt.
+  const timeoutMs = Number(process.env.ORCA_DAEMON_ENTRY_BOOT_TIMEOUT_MS) || 60_000
+  let result = spawnSync(execPath, [entryPath], { encoding: 'utf8', timeout: timeoutMs })
+  if (result.error?.code === 'ETIMEDOUT') {
+    console.warn(`[verify-packaged-daemon-entry] boot exceeded ${timeoutMs}ms — retrying once`)
+    result = spawnSync(execPath, [entryPath], { encoding: 'utf8', timeout: timeoutMs })
+  }
   if (result.error) {
     throw new Error(
       `[verify-packaged-daemon-entry] could not launch daemon-entry.js: ${result.error.message}`

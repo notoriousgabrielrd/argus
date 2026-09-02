@@ -12,6 +12,7 @@ import { useAppStore } from '@/store'
 import { isLocalPathOpenBlocked, showLocalPathOpenBlockedToast } from '@/lib/local-path-open-guard'
 import { getLocalFileManagerLabel } from '@/lib/local-file-manager-label'
 import { OpenInApplicationIcon } from '@/lib/open-in-app-catalog'
+import { WorktreeOpenHereMenuItems } from './WorktreeOpenHereMenuItems'
 import { getExternalEditorOpenCapability } from '@/lib/external-editor-open-capability'
 import { NO_OPEN_IN_APPLICATIONS } from '@/lib/open-in-application-selection'
 import type { ShellOpenExternalEditorResult } from '../../../../shared/shell-open-types'
@@ -347,10 +348,11 @@ export function WorktreeOpenInMenuItems({
 }
 
 export function WorktreeOpenInSubMenu({
+  worktreeId,
   worktreePath,
   connectionId,
   disabled
-}: WorktreeOpenInMenuItemsProps): React.JSX.Element {
+}: WorktreeOpenInMenuItemsProps & { worktreeId?: string }): React.JSX.Element {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger disabled={disabled}>
@@ -362,6 +364,9 @@ export function WorktreeOpenInSubMenu({
         onClick={stopMenuPropagation}
         onPointerDown={stopMenuPropagation}
       >
+        {worktreeId ? (
+          <WorktreeOpenHereMenuItems worktreeId={worktreeId} disabled={disabled} />
+        ) : null}
         <WorktreeOpenInMenuItems
           worktreePath={worktreePath}
           connectionId={connectionId}
