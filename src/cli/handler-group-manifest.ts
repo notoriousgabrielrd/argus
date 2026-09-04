@@ -78,6 +78,40 @@ export const HANDLER_GROUPS: readonly HandlerGroup[] = [
     load: async () => (await import('./handlers/worktree.js')).WORKTREE_HANDLERS
   },
   {
+    name: 'obsidian',
+    keys: [
+      'obsidian vaults',
+      'obsidian vault-add',
+      'obsidian vault-remove',
+      'obsidian vault-default',
+      'obsidian info',
+      'obsidian notes',
+      'obsidian read',
+      'obsidian search',
+      'obsidian links',
+      'obsidian tags',
+      'obsidian tree',
+      'obsidian daily',
+      'obsidian open'
+    ],
+    load: async () => (await import('./handlers/obsidian.js')).OBSIDIAN_READ_HANDLERS
+  },
+  {
+    name: 'obsidian-write',
+    keys: [
+      'obsidian create',
+      'obsidian append',
+      'obsidian prepend',
+      'obsidian replace',
+      'obsidian set-property',
+      'obsidian remove-property',
+      'obsidian rename',
+      'obsidian move',
+      'obsidian delete'
+    ],
+    load: async () => (await import('./handlers/obsidian-write.js')).OBSIDIAN_WRITE_HANDLERS
+  },
+  {
     name: 'file',
     keys: ['file open', 'file diff', 'file open-changed'],
     load: async () => (await import('./handlers/file.js')).FILE_HANDLERS

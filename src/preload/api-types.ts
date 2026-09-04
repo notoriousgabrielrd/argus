@@ -15,6 +15,22 @@ import type {
   BitbucketConnectionStatus
 } from '../shared/bitbucket-credentials'
 import type { NativeFileDropPayload } from '../shared/native-file-drop'
+import type {
+  ObsidianDailyNote,
+  ObsidianDeleteResult,
+  ObsidianLinkReport,
+  ObsidianNote,
+  ObsidianNoteFilter,
+  ObsidianNoteList,
+  ObsidianNoteWriteResult,
+  ObsidianOpenResult,
+  ObsidianRenameResult,
+  ObsidianSearchHit,
+  ObsidianTagCount,
+  ObsidianTreeEntry,
+  ObsidianVault,
+  ObsidianVaultStats
+} from '../shared/obsidian-types'
 import type { ComputerAwakeStatus } from '../shared/computer-awake-mode'
 import type { BrowserFindSource } from '../shared/browser-find-source'
 import type {
@@ -2146,6 +2162,98 @@ export type PreloadApi = {
     ) => Promise<{ ok: true; account: string | null } | { ok: false; error: string }>
     disconnect: () => Promise<void>
     status: () => Promise<BitbucketConnectionStatus>
+  }
+  obsidian: {
+    listVaults: () => Promise<{ vaults: ObsidianVault[] }>
+    addVault: (args: {
+      path: string
+      name?: string
+      makeDefault?: boolean
+    }) => Promise<{ vault: ObsidianVault }>
+    removeVault: (args: { vault: string }) => Promise<{ vault: ObsidianVault }>
+    setDefaultVault: (args: { vault: string }) => Promise<{ vault: ObsidianVault }>
+    vaultInfo: (args?: { vault?: string }) => Promise<ObsidianVaultStats>
+    listNotes: (args?: { vault?: string } & ObsidianNoteFilter) => Promise<ObsidianNoteList>
+    readNote: (args: {
+      vault?: string
+      note: string
+      section?: string
+      includeContent?: boolean
+      includeBacklinks?: boolean
+    }) => Promise<ObsidianNote>
+    search: (args: {
+      vault?: string
+      query: string
+      regex?: boolean
+      caseSensitive?: boolean
+      folder?: string
+      tag?: string[]
+      limit?: number
+      titlesOnly?: boolean
+    }) => Promise<{ hits: ObsidianSearchHit[] }>
+    noteLinks: (args: { vault?: string; note: string }) => Promise<ObsidianLinkReport>
+    unresolvedLinks: (args?: {
+      vault?: string
+      limit?: number
+    }) => Promise<{ links: { path: string; target: string; line: number }[] }>
+    tags: (args?: {
+      vault?: string
+      prefix?: string
+      limit?: number
+    }) => Promise<{ tags: ObsidianTagCount[] }>
+    tree: (args?: {
+      vault?: string
+      folder?: string
+      depth?: number
+      includeNotes?: boolean
+    }) => Promise<ObsidianTreeEntry>
+    dailyNote: (args?: {
+      vault?: string
+      date?: string
+      create?: boolean
+    }) => Promise<ObsidianDailyNote>
+    createNote: (args: {
+      vault?: string
+      path: string
+      content?: string
+      property?: string[]
+      overwrite?: boolean
+      template?: string
+    }) => Promise<ObsidianNoteWriteResult>
+    editNote: (args: {
+      vault?: string
+      note: string
+      content: string
+      mode: 'append' | 'prepend' | 'replace'
+      heading?: string
+    }) => Promise<ObsidianNoteWriteResult>
+    setProperty: (args: {
+      vault?: string
+      note: string
+      key: string
+      value: string
+      type?: 'text' | 'number' | 'checkbox' | 'list' | 'date'
+    }) => Promise<ObsidianNoteWriteResult>
+    removeProperty: (args: {
+      vault?: string
+      note: string
+      key: string
+    }) => Promise<ObsidianNoteWriteResult>
+    renameNote: (args: {
+      vault?: string
+      note: string
+      to: string
+      asFolder?: boolean
+      updateLinks?: boolean
+      overwrite?: boolean
+    }) => Promise<ObsidianRenameResult>
+    deleteNote: (args: {
+      vault?: string
+      note: string
+      permanent?: boolean
+    }) => Promise<ObsidianDeleteResult>
+    openNote: (args?: { vault?: string; note?: string }) => Promise<ObsidianOpenResult>
+    pickVault: () => Promise<{ vault: ObsidianVault | null }>
   }
   linear: {
     connect: (args: {

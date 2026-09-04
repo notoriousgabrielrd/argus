@@ -12,6 +12,7 @@ import type { AppState } from '@/store/types'
 import { getIndexedWorktreeMap } from '@/store/worktree-repo-index'
 import { translate } from '@/i18n/i18n'
 import { parseWorkspaceKey } from '../../../../shared/workspace-scope'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
 import {
   canJumpToAiVaultSessionWorktree,
   type AiVaultSessionWorktreeInfo
@@ -137,6 +138,11 @@ export function isKnownAiVaultResumeWorkspaceTarget(
   if (!workspaceId) {
     return false
   }
+  // Why: the global terminal has no repo/worktree record to look up — it's
+  // always a valid resume target on its own (see FLOATING_TERMINAL_WORKTREE_ID).
+  if (workspaceId === FLOATING_TERMINAL_WORKTREE_ID) {
+    return true
+  }
 
   const workspaceKey = parseWorkspaceKey(workspaceId)
   if (workspaceKey?.type === 'folder') {
@@ -218,8 +224,14 @@ export function aiVaultSessionRowResumeGating(
 }
 
 export function aiVaultSessionResumeLabel(
-  state: Pick<AiVaultSessionResumeState, 'usesSessionWorktree'>
+  state: Pick<AiVaultSessionResumeState, 'usesSessionWorktree' | 'worktreeId'>
 ): string {
+  if (state.usesSessionWorktree && state.worktreeId === FLOATING_TERMINAL_WORKTREE_ID) {
+    return translate(
+      'auto.components.right.sidebar.AiVaultSessionDetails.resumeInGlobalTerminal',
+      'Resume in Global Terminal'
+    )
+  }
   if (state.usesSessionWorktree) {
     return translate(
       'auto.components.right.sidebar.AiVaultSessionDetails.resumeInWorktree',

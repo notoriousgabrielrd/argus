@@ -110,6 +110,7 @@ import { createSparsePresetsSlice } from './sparse-presets'
 import { createWorktreeSlice } from './worktrees'
 import { createTerminalSlice } from './terminals'
 import { createTabsSlice } from './tabs'
+import { createObsidianSlice } from './obsidian'
 import { createUISlice } from './ui'
 import { createSettingsSlice } from './settings'
 import { createKeybindingsSlice } from './keybindings'
@@ -158,6 +159,7 @@ function createTestStore() {
     ...createTerminalSlice(...a),
     ...createTabsSlice(...a),
     ...createUISlice(...a),
+    ...createObsidianSlice(...a),
     ...createSettingsSlice(...a),
     ...createKeybindingsSlice(...a),
     ...createGitHubSlice(...a),

@@ -613,6 +613,8 @@ export type UISlice = {
   previousViewBeforeTasks:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'activity'
     | 'automations'
     | 'space'
@@ -621,6 +623,8 @@ export type UISlice = {
     | 'mobile'
   previousViewBeforeSettings:
     | 'terminal'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'activity'
     | 'automations'
@@ -631,6 +635,8 @@ export type UISlice = {
   previousViewBeforeActivity:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'automations'
     | 'space'
@@ -640,6 +646,8 @@ export type UISlice = {
   previousViewBeforeAutomations:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'activity'
     | 'space'
@@ -649,6 +657,8 @@ export type UISlice = {
   previousViewBeforeSpace:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'activity'
     | 'automations'
@@ -658,6 +668,8 @@ export type UISlice = {
   previousViewBeforeSkills:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'activity'
     | 'automations'
@@ -667,6 +679,8 @@ export type UISlice = {
   previousViewBeforeMobile:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'activity'
     | 'automations'
@@ -676,11 +690,24 @@ export type UISlice = {
   previousViewBeforeArtifacts:
     | 'terminal'
     | 'settings'
+    | 'obsidian'
+    | 'global-terminal'
     | 'tasks'
     | 'activity'
     | 'automations'
     | 'space'
     | 'skills'
+    | 'mobile'
+  previousViewBeforeGlobalTerminal:
+    | 'terminal'
+    | 'settings'
+    | 'obsidian'
+    | 'tasks'
+    | 'activity'
+    | 'automations'
+    | 'space'
+    | 'skills'
+    | 'artifacts'
     | 'mobile'
   setActiveView: (view: UISlice['activeView']) => void
   taskPageData: {
@@ -766,6 +793,13 @@ export type UISlice = {
   closeArtifactsPage: () => void
   openMobilePage: () => void
   closeMobilePage: () => void
+  openGlobalTerminalPage: () => void
+  closeGlobalTerminalPage: () => void
+  /** Tab id the global terminal page should focus next (e.g. jumping to a
+   *  session from the Agents vault); the page consumes and clears it. */
+  pendingGlobalTerminalTabId: string | null
+  requestGlobalTerminalTabFocus: (tabId: string) => void
+  clearPendingGlobalTerminalTabFocus: () => void
   setNewWorkspaceDraft: (draft: NonNullable<UISlice['newWorkspaceDraft']>) => void
   clearNewWorkspaceDraft: () => void
   openSettingsPage: () => void
@@ -1260,6 +1294,7 @@ export const createUISlice: StateCreator<AppState, [], [], UISlice> = (set, get)
   previousViewBeforeSkills: 'terminal',
   previousViewBeforeMobile: 'terminal',
   previousViewBeforeArtifacts: 'terminal',
+  previousViewBeforeGlobalTerminal: 'terminal',
   setActiveView: (view) => set({ activeView: view }),
   taskPageData: {},
   taskResumeState: undefined,
@@ -1527,6 +1562,21 @@ export const createUISlice: StateCreator<AppState, [], [], UISlice> = (set, get)
     set((state) => ({
       activeView: state.previousViewBeforeMobile
     })),
+  openGlobalTerminalPage: () =>
+    set((state) => ({
+      activeView: 'global-terminal',
+      previousViewBeforeGlobalTerminal:
+        state.activeView === 'global-terminal'
+          ? state.previousViewBeforeGlobalTerminal
+          : state.activeView
+    })),
+  closeGlobalTerminalPage: () =>
+    set((state) => ({
+      activeView: state.previousViewBeforeGlobalTerminal
+    })),
+  pendingGlobalTerminalTabId: null,
+  requestGlobalTerminalTabFocus: (tabId) => set({ pendingGlobalTerminalTabId: tabId }),
+  clearPendingGlobalTerminalTabFocus: () => set({ pendingGlobalTerminalTabId: null }),
   setNewWorkspaceDraft: (draft) => set({ newWorkspaceDraft: draft }),
   clearNewWorkspaceDraft: () => set({ newWorkspaceDraft: null }),
   openSettingsPage: () => {

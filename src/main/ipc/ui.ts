@@ -51,9 +51,15 @@ export function registerUIHandlers(
   // Why: UI view-state is shared between the desktop renderer and mobile (ui.set
   // RPC). Broadcast every change so the desktop re-hydrates when mobile (or
   // another window) updates it — bi-directional sync, mirroring settings:changed.
-  store.onUIChanged((ui) => {
+  // The origin window is skipped: it already applied the change locally, and
+  // echoing a getUI() snapshot back can carry other fields that are still
+  // mid-flight on that window's own debounced writers (e.g. a just-changed
+  // rightSidebarTab not yet flushed), which would otherwise clobber them.
+  store.onUIChanged((ui, originWebContentsId) => {
     for (const window of BrowserWindow.getAllWindows()) {
-      if (!window.isDestroyed()) {
+      const isOrigin =
+        originWebContentsId !== undefined && window.webContents.id === originWebContentsId
+      if (!window.isDestroyed() && !isOrigin) {
         window.webContents.send('ui:stateChanged', ui)
       }
     }
@@ -63,8 +69,8 @@ export function registerUIHandlers(
     return store.getUI()
   })
 
-  ipcMain.handle('ui:set', (_event, args: Partial<PersistedUIState>) => {
-    store.updateUI(args)
+  ipcMain.handle('ui:set', (event, args: Partial<PersistedUIState>) => {
+    store.updateUI(args, { originWebContentsId: event.sender.id })
   })
 
   ipcMain.handle('ui:recordFeatureInteraction', (_event, id: unknown) => {

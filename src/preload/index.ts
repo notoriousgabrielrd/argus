@@ -1742,6 +1742,32 @@ const api = {
     status: (): Promise<unknown> => ipcRenderer.invoke('bitbucket:status')
   },
 
+  // Why: one thin passthrough per channel keeps the vault panel and the CLI on
+  // the same command surface in the main process.
+  obsidian: {
+    listVaults: () => ipcRenderer.invoke('obsidian:listVaults'),
+    addVault: (args) => ipcRenderer.invoke('obsidian:addVault', args),
+    removeVault: (args) => ipcRenderer.invoke('obsidian:removeVault', args),
+    setDefaultVault: (args) => ipcRenderer.invoke('obsidian:setDefaultVault', args),
+    vaultInfo: (args) => ipcRenderer.invoke('obsidian:vaultInfo', args),
+    listNotes: (args) => ipcRenderer.invoke('obsidian:listNotes', args),
+    readNote: (args) => ipcRenderer.invoke('obsidian:readNote', args),
+    search: (args) => ipcRenderer.invoke('obsidian:search', args),
+    noteLinks: (args) => ipcRenderer.invoke('obsidian:noteLinks', args),
+    unresolvedLinks: (args) => ipcRenderer.invoke('obsidian:unresolvedLinks', args),
+    tags: (args) => ipcRenderer.invoke('obsidian:tags', args),
+    tree: (args) => ipcRenderer.invoke('obsidian:tree', args),
+    dailyNote: (args) => ipcRenderer.invoke('obsidian:dailyNote', args),
+    createNote: (args) => ipcRenderer.invoke('obsidian:createNote', args),
+    editNote: (args) => ipcRenderer.invoke('obsidian:editNote', args),
+    setProperty: (args) => ipcRenderer.invoke('obsidian:setProperty', args),
+    removeProperty: (args) => ipcRenderer.invoke('obsidian:removeProperty', args),
+    renameNote: (args) => ipcRenderer.invoke('obsidian:renameNote', args),
+    deleteNote: (args) => ipcRenderer.invoke('obsidian:deleteNote', args),
+    openNote: (args) => ipcRenderer.invoke('obsidian:openNote', args),
+    pickVault: () => ipcRenderer.invoke('obsidian:pickVault')
+  } satisfies PreloadApi['obsidian'],
+
   linear: {
     connect: (args: {
       apiKey: string

@@ -7,6 +7,7 @@ import { useAppStore } from '@/store'
 import type { AgentStatusState } from '../../../../shared/agent-status-types'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import { translate } from '@/i18n/i18n'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
 import { findOriginalAiVaultSessionPane } from './ai-vault-original-pane'
 import {
   createLazyAiVaultOriginalPaneIndex,
@@ -59,6 +60,16 @@ export function useAiVaultOriginalPaneActions(): {
           'Original pane is no longer available.'
         )
       )
+      return
+    }
+
+    // Why: the global terminal's tabs live outside the per-worktree workspace
+    // model — activateAndRevealWorktree has no real worktree/tab/pane to
+    // find for this sentinel id, so route there directly instead.
+    if (target.worktreeId === FLOATING_TERMINAL_WORKTREE_ID) {
+      const state = useAppStore.getState()
+      state.requestGlobalTerminalTabFocus(target.tabId)
+      state.openGlobalTerminalPage()
       return
     }
 

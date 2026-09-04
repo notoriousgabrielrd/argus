@@ -9,10 +9,12 @@ import {
   extractWorktreePathFromSessionTitle,
   resolveAiVaultSessionWorktreeDisplay,
   resolveAiVaultSessionWorktreeInfo,
+  resolveGlobalTerminalWorktreeInfo,
   shouldShowAiVaultWorktreeStatusBadge,
   shouldShowAiVaultSessionWorktreeLine,
   type AiVaultSessionWorktreeInfo
 } from './ai-vault-session-worktree'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
 
 const baseSession: AiVaultSession = {
   id: 'codex:session-1',
@@ -326,3 +328,31 @@ function makeWorktreeInfo(
     ...(status === 'unavailable' ? {} : { worktreeId: 'repo-1::/repo/orca' })
   }
 }
+
+describe('resolveGlobalTerminalWorktreeInfo', () => {
+  it('matches a closed session whose cwd equals the resolved global terminal cwd', () => {
+    const session = { ...baseSession, cwd: '/Users/ada', executionHostId: 'local' as const }
+    const info = resolveGlobalTerminalWorktreeInfo(session, '/Users/ada')
+    expect(info).toEqual({
+      status: 'active',
+      label: 'Global Terminal',
+      path: '/Users/ada',
+      worktreeId: FLOATING_TERMINAL_WORKTREE_ID
+    })
+  })
+
+  it('does not match when the cwds differ', () => {
+    const session = { ...baseSession, cwd: '/repo/orca/src' }
+    expect(resolveGlobalTerminalWorktreeInfo(session, '/Users/ada')).toBeNull()
+  })
+
+  it('does not match a remote session even with a matching cwd', () => {
+    const session = { ...baseSession, cwd: '/Users/ada', executionHostId: 'ssh:host-1' as const }
+    expect(resolveGlobalTerminalWorktreeInfo(session, '/Users/ada')).toBeNull()
+  })
+
+  it('is a no-op without a resolved global terminal cwd', () => {
+    const session = { ...baseSession, cwd: '/Users/ada' }
+    expect(resolveGlobalTerminalWorktreeInfo(session, null)).toBeNull()
+  })
+})

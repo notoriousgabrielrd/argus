@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   openActivityPage: vi.fn(),
   openMobilePage: vi.fn(),
   openArtifactsPage: vi.fn(),
+  openGlobalTerminalPage: vi.fn(),
   openModal: vi.fn(),
   updateSettings: vi.fn(),
   refreshPreflightStatus: vi.fn(),
@@ -92,6 +93,7 @@ import SidebarNav, {
   shouldShowAgentsButton,
   shouldShowAutomationsButton,
   shouldShowArtifactsButton,
+  shouldShowGlobalTerminalButton,
   shouldShowMobileButton,
   shouldShowSetupGuideEntry
 } from './SidebarNav'
@@ -134,6 +136,7 @@ function setSidebarState({
     openActivityPage: mocks.openActivityPage,
     openMobilePage: mocks.openMobilePage,
     openArtifactsPage: mocks.openArtifactsPage,
+    openGlobalTerminalPage: mocks.openGlobalTerminalPage,
     openModal: mocks.openModal,
     updateSettings: mocks.updateSettings,
     preflightStatus: { glab: { installed: false } },
@@ -413,6 +416,49 @@ describe('SidebarNav', () => {
     await clickButton(getHideButton(automationsMenu as HTMLElement))
 
     expect(mocks.updateSettings).toHaveBeenCalledWith({ showAutomationsButton: false })
+  })
+
+  it('shows the global terminal entry by default for older settings', () => {
+    expect(shouldShowGlobalTerminalButton(null)).toBe(true)
+    expect(shouldShowGlobalTerminalButton({})).toBe(true)
+  })
+
+  it('hides the global terminal entry when the sidebar setting is off', () => {
+    expect(shouldShowGlobalTerminalButton({ showGlobalTerminalButton: false })).toBe(false)
+  })
+
+  it('omits the global terminal row when the sidebar setting is off', async () => {
+    setSidebarState({
+      settings: {
+        ...getDefaultSettings('/tmp'),
+        showGlobalTerminalButton: false
+      }
+    })
+
+    const container = await renderSidebarNav()
+
+    expect(queryButtonByText(container, 'Terminal')).toBeNull()
+  })
+
+  it('opens the global terminal page when its sidebar entry is clicked', async () => {
+    const container = await renderSidebarNav()
+
+    await clickButton(getButtonByText(container, 'Terminal'))
+
+    expect(mocks.openGlobalTerminalPage).toHaveBeenCalledTimes(1)
+  })
+
+  it('hides the global terminal entry from its sidebar context menu', async () => {
+    const container = await renderSidebarNav()
+
+    const globalTerminalMenu = getButtonByText(container, 'Terminal').closest(
+      '[data-testid="context-menu"]'
+    )
+    expect(globalTerminalMenu).not.toBeNull()
+
+    await clickButton(getHideButton(globalTerminalMenu as HTMLElement))
+
+    expect(mocks.updateSettings).toHaveBeenCalledWith({ showGlobalTerminalButton: false })
   })
 
   it('hides Mobile from its sidebar context menu', async () => {

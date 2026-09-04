@@ -53,6 +53,7 @@ function buildMenuOptions() {
       showTasksButton: true,
       showAutomationsButton: true,
       showMobileButton: true,
+      showGlobalTerminalButton: true,
       showTitlebarAppName: true,
       statusBarVisible: true
     }))
@@ -471,6 +472,7 @@ describe('registerAppMenu', () => {
       showTasksButton: false,
       showAutomationsButton: false,
       showMobileButton: true,
+      showGlobalTerminalButton: true,
       showTitlebarAppName: true,
       statusBarVisible: true
     })
@@ -495,6 +497,12 @@ describe('registerAppMenu', () => {
     const mobileItem = appearanceSubmenu.find((item) => item.label === 'Show Argus Mobile Button')
     expect(mobileItem?.type).toBe('checkbox')
     expect(mobileItem?.checked).toBe(true)
+
+    const globalTerminalItem = appearanceSubmenu.find(
+      (item) => item.label === 'Show Global Terminal Button'
+    )
+    expect(globalTerminalItem?.type).toBe('checkbox')
+    expect(globalTerminalItem?.checked).toBe(true)
 
     const titlebarItem = appearanceSubmenu.find((item) => item.label === 'Show Titlebar App Name')
     expect(titlebarItem?.checked).toBe(true)
@@ -521,12 +529,16 @@ describe('registerAppMenu', () => {
       .find((item) => item.label === 'Show Argus Mobile Button')
       ?.click?.({} as never, {} as never, {} as never)
     appearanceSubmenu
+      .find((item) => item.label === 'Show Global Terminal Button')
+      ?.click?.({} as never, {} as never, {} as never)
+    appearanceSubmenu
       .find((item) => item.label === 'Show Titlebar App Name')
       ?.click?.({} as never, {} as never, {} as never)
 
     expect(options.onToggleAppearance).toHaveBeenCalledWith('showTasksButton')
     expect(options.onToggleAppearance).toHaveBeenCalledWith('showAutomationsButton')
     expect(options.onToggleAppearance).toHaveBeenCalledWith('showMobileButton')
+    expect(options.onToggleAppearance).toHaveBeenCalledWith('showGlobalTerminalButton')
     expect(options.onToggleAppearance).toHaveBeenCalledWith('showTitlebarAppName')
   })
 

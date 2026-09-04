@@ -1892,6 +1892,24 @@
           }
         ]
       }
+    ],
+    "argus-obsidian": [
+      {
+        "releaseRevision": 1,
+        "packageDigest": "2bdbdd5324783cbc1025bcf64353f519cca6c0bfbcfa47e78c26e16a57db8038",
+        "gitTreeSha": "ceb90344c5a2095f24ebeaab3c7db76de4924896",
+        "files": [
+          {
+            "path": "SKILL.md",
+            "size": 3938,
+            "executable": false,
+            "classification": "text",
+            "exactSha256": "1871985eb8c50133cbe2784b45c9c900a500a214dfd24583414c9feeaa701412",
+            "textNormalizedSha256": "1871985eb8c50133cbe2784b45c9c900a500a214dfd24583414c9feeaa701412",
+            "identitySha256": "1871985eb8c50133cbe2784b45c9c900a500a214dfd24583414c9feeaa701412"
+          }
+        ]
+      }
     ]
   }
 }

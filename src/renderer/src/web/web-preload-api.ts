@@ -850,6 +850,7 @@ function createWebPreloadApi(): Partial<PreloadApi> {
     gl: createGitLabApi(),
     hostedReview: createRuntimeNamespaceApi('hostedReview'),
     linear: createRuntimeNamespaceApi('linear'),
+    obsidian: createRuntimeNamespaceApi('obsidian'),
     hooks: createHooksApi(),
     stats: {
       getSummary: async () =>

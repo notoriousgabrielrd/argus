@@ -340,6 +340,8 @@ const ActivityPrototypePage = lazy(() => import('./components/activity/ActivityP
 const Settings = lazy(() => import('./components/settings/Settings'))
 const SkillsPage = lazy(() => import('./components/skills/SkillsPage'))
 const ArtifactsPage = lazy(() => import('./components/artifacts/ArtifactsPage'))
+const ObsidianNotesPage = lazy(() => import('./components/obsidian/ObsidianNotesPage'))
+const GlobalTerminalPage = lazy(() => import('./components/GlobalTerminalPage'))
 const WorkspaceSpacePage = lazy(() => import('./components/workspace-space/WorkspaceSpacePage'))
 const MobilePage = lazy(() => import('./components/mobile/MobilePage'))
 const QuickOpen = lazy(() => import('./components/QuickOpen'))
@@ -577,6 +579,16 @@ function App(): React.JSX.Element {
     activeView === 'terminal' && activeWorktreeId !== null && !creationLayoutActive
   const terminalWorkbenchVisible =
     activeView === 'terminal' && activeWorktreeId !== null && !creationLayoutActive
+  const hasMountedGlobalTerminalPageRef = useRef(false)
+  if (activeView === 'global-terminal') {
+    hasMountedGlobalTerminalPageRef.current = true
+  }
+  // Why: unmounting on navigate-away would tear down every live PTY pane it
+  // hosts, so returning to the sidebar entry always spawned a fresh terminal
+  // instead of reattaching to the one still running — mirror the terminal
+  // workbench's mount-once-then-hide lifecycle instead.
+  const shouldMountGlobalTerminalPage = hasMountedGlobalTerminalPageRef.current
+  const globalTerminalPageVisible = activeView === 'global-terminal'
   // Why: once the floating workspace owns tabs, keep it mounted while closed so hidden terminal/browser/editor panes retain local state.
   const shouldMountFloatingTerminalPanel =
     floatingTerminalEnabled && (floatingTerminalOpen || floatingVisibleTabCount > 0)
@@ -2390,6 +2402,33 @@ function App(): React.JSX.Element {
                               </Suspense>
                             </div>
                           ) : null}
+                          {shouldMountGlobalTerminalPage ? (
+                            <div
+                              className={
+                                !globalTerminalPageVisible
+                                  ? 'hidden flex-1 min-w-0 min-h-0'
+                                  : 'flex flex-1 min-w-0 min-h-0'
+                              }
+                            >
+                              <Suspense fallback={null}>
+                                <RecoverableRenderErrorBoundary
+                                  boundaryId="global-terminal"
+                                  surface="page"
+                                  resetKey="global-terminal"
+                                  title={translate(
+                                    'auto.App.b7a714db1e',
+                                    'This page hit an error.'
+                                  )}
+                                  description={translate(
+                                    'auto.App.03a14f6b5b',
+                                    'Retry the page or navigate to another Argus surface.'
+                                  )}
+                                >
+                                  <GlobalTerminalPage />
+                                </RecoverableRenderErrorBoundary>
+                              </Suspense>
+                            </div>
+                          ) : null}
                           <Suspense fallback={null}>
                             <RecoverableRenderErrorBoundary
                               boundaryId={`page.${activeView}`}
@@ -2404,6 +2443,7 @@ function App(): React.JSX.Element {
                               {activeView === 'settings' ? <Settings /> : null}
                               {activeView === 'skills' ? <SkillsPage /> : null}
                               {activeView === 'artifacts' ? <ArtifactsPage /> : null}
+                              {activeView === 'obsidian' ? <ObsidianNotesPage /> : null}
                               {activeView === 'tasks' ? <TaskPage /> : null}
                               {activeView === 'automations' ? <AutomationsPage /> : null}
                               {activeView === 'activity' ? <ActivityPrototypePage /> : null}

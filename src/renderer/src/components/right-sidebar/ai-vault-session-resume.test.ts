@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { Repo, Worktree } from '../../../../shared/types'
 import type { AiVaultSessionWorktreeInfo } from './ai-vault-session-worktree'
 import { folderWorkspaceKey } from '../../../../shared/workspace-scope'
-import { resolveAiVaultSessionLaunchTarget } from './ai-vault-session-launch-actions'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
+import { resolveAiVaultSessionLaunchTarget } from './ai-vault-session-launch-target'
 import {
   aiVaultSessionResumeLabel,
   aiVaultSessionRowResumeGating,
@@ -563,8 +564,21 @@ describe('resolveAiVaultSessionLaunchTarget', () => {
 
 describe('aiVaultSessionResumeLabel', () => {
   it('names the session worktree action distinctly from the active-workspace fallback', () => {
-    expect(aiVaultSessionResumeLabel({ usesSessionWorktree: true })).toBe('Resume in Worktree')
-    expect(aiVaultSessionResumeLabel({ usesSessionWorktree: false })).toBe('Resume in New Tab')
+    expect(
+      aiVaultSessionResumeLabel({ usesSessionWorktree: true, worktreeId: 'repo1::worktree1' })
+    ).toBe('Resume in Worktree')
+    expect(aiVaultSessionResumeLabel({ usesSessionWorktree: false, worktreeId: null })).toBe(
+      'Resume in New Tab'
+    )
+  })
+
+  it('names the global terminal action distinctly from a real worktree', () => {
+    expect(
+      aiVaultSessionResumeLabel({
+        usesSessionWorktree: true,
+        worktreeId: FLOATING_TERMINAL_WORKTREE_ID
+      })
+    ).toBe('Resume in Global Terminal')
   })
 })
 
