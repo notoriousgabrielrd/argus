@@ -221,5 +221,29 @@ export const getIntegrationsPaneSearchEntries = createLocalizedCatalog(() => [
         'disconnect'
       )
     ]
+  },
+  {
+    title: translate(
+      'auto.components.settings.integrations.search.obsidianTitle',
+      'Obsidian Integration'
+    ),
+    description: translate(
+      'auto.components.settings.integrations.search.obsidianDescription',
+      'Obsidian vaults Argus can read, search, and write.'
+    ),
+    keywords: [
+      ...translateSearchKeyword(
+        'auto.components.settings.integrations.search.obsidianKeyword',
+        'obsidian'
+      ),
+      ...translateSearchKeyword(
+        'auto.components.settings.integrations.search.vaultKeyword',
+        'vault'
+      ),
+      ...translateSearchKeyword(
+        'auto.components.settings.integrations.search.notesKeyword',
+        'notes'
+      )
+    ]
   }
 ])

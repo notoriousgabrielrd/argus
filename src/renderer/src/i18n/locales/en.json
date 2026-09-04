@@ -84,6 +84,7 @@
     "showTasksButton": "Show Tasks Button",
     "showAutomationsButton": "Show Automations Button",
     "showMobileButton": "Show Argus Mobile Button",
+    "showGlobalTerminalButton": "Show Global Terminal Button",
     "showTitlebarAppName": "Show Titlebar App Name",
     "view": "View",
     "reload": "Reload",
@@ -1266,6 +1267,10 @@
         "693be070d0": "transition",
         "ef21405c6d": "Jira issue",
         "commentTooLarge": "Comment is too large to submit safely."
+      },
+      "GlobalTerminalPage": {
+        "newTab": "New terminal",
+        "close": "Close global terminal"
       },
       "Landing": {
         "76a95f7f47": "Create",
@@ -4534,7 +4539,8 @@
           "0ccba862b8": "Open GitHub tasks",
           "fee535205b": "Tasks",
           "d599269755": "Hide from sidebar",
-          "artifacts": "Artifacts"
+          "artifacts": "Artifacts",
+          "globalTerminal": "Terminal"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "Clear",
@@ -6507,7 +6513,9 @@
           "3ba07f933b": "Connect issue trackers Argus can use to browse tasks and start workspaces with linked context.",
           "70e885705b": "Task providers",
           "1683acbac4": "Connect the source hosts Argus can use for pull requests, merge requests, checks, and review status.",
-          "298c65ecac": "Review providers"
+          "298c65ecac": "Review providers",
+          "knowledgeBases": "Knowledge bases",
+          "knowledgeBasesDescription": "Connect the note vaults Argus and its agents can read, search, and write."
         },
         "KagiSessionLinkForm": {
           "92f0b4e472": "Clear",
@@ -8803,7 +8811,12 @@
             "7166b9090c": "GitHub authentication via the gh CLI.",
             "f16e41cc72": "GitHub Integration",
             "760e2446e0": "Bitbucket Cloud authentication with a saved API token or environment variables.",
-            "af5ae87847": "access token"
+            "af5ae87847": "access token",
+            "obsidianTitle": "Obsidian Integration",
+            "obsidianDescription": "Obsidian vaults Argus can read, search, and write.",
+            "obsidianKeyword": "obsidian",
+            "vaultKeyword": "vault",
+            "notesKeyword": "notes"
           }
         },
         "jira": {
@@ -10701,6 +10714,21 @@
               "disconnectFailed": "Could not remove the saved Bitbucket credential."
             }
           }
+        },
+        "obsidian": {
+          "name": "Obsidian",
+          "description": "Read, search, and write the notes in your Obsidian vaults, from the sidebar and from agents.",
+          "statusConnected": "{{value0}} vault(s)",
+          "statusNone": "No vault",
+          "refresh": "Refresh",
+          "addVault": "Add vault folder…",
+          "empty": "Vaults the Obsidian desktop app has opened on this machine are detected automatically. Add a folder to register one it has not opened.",
+          "defaultHint": "The default vault is the one the sidebar panel and `argus obsidian` commands use when no vault is named.",
+          "defaultTag": "default",
+          "missing": "Folder missing",
+          "makeDefault": "Use by default",
+          "forget": "Forget",
+          "editorHint": "Opening a note from the sidebar registers its vault folder as an Argus project so the note can open in the center editor."
         }
       },
       "right": {
@@ -11584,7 +11612,8 @@
             "fc3095d2ed": "explorer",
             "aiVaultSessionHistory": "Agents",
             "folderWorkspaces": "Attached worktrees",
-            "parentPrChecks": "PR Checks"
+            "parentPrChecks": "PR Checks",
+            "obsidianVault": "Obsidian"
           },
           "right": {
             "panel": {
@@ -11905,6 +11934,7 @@
             "sessionActions": "{{value0}} session actions",
             "resumeInNewTab": "Resume in New Tab",
             "resumeInWorktree": "Resume in Worktree",
+            "resumeInGlobalTerminal": "Resume in Global Terminal",
             "viewLog": "View Log",
             "copyResumeCommand": "Copy Resume Command",
             "openLog": "Open Log",
@@ -12036,7 +12066,8 @@
             "noRecordedWorktree": "No worktree was recorded for this session.",
             "archivedJumpUnavailable": "This session is in an archived worktree.",
             "noActiveWorktreeMatch": "No active worktree matches this session.",
-            "noActiveWorktreeTarget": "No active worktree is available."
+            "noActiveWorktreeTarget": "No active worktree is available.",
+            "globalTerminal": "Global Terminal"
           },
           "AiVaultSessionSubagents": {
             "subagentsCount": "Subagents ({{value0}})",
@@ -12138,6 +12169,24 @@
             "90cabf6cfc": "Stack this PR above #{{value0}}",
             "ff81473a57": "Creates a GitHub Stack or extends the parent's existing stack.",
             "29732f2fb0": "new PR"
+          },
+          "ObsidianPanel": {
+            "noVault": "No vault",
+            "addVault": "Add vault folder…",
+            "vaultSummary": "{{value0}} notes · {{value1}} tags",
+            "subtitle": "Obsidian vault",
+            "refresh": "Refresh",
+            "searchPlaceholder": "Search notes",
+            "emptyState": "No Obsidian vault found on this machine.",
+            "noResults": "No notes matched.",
+            "openInObsidian": "Open in Obsidian",
+            "closePreview": "Close",
+            "backlinks": "Backlinks",
+            "save": "Save",
+            "cancel": "Cancel",
+            "edit": "Edit note",
+            "projectRegisterFailed": "Could not open \"{{value0}}\" as an Argus project.",
+            "workspaceMissing": "No workspace is available for \"{{value0}}\"."
           }
         }
       },
@@ -15106,6 +15155,17 @@
           "openLink": "Open link",
           "updating": "Updating…",
           "update": "Update shared content"
+        }
+      },
+      "obsidian": {
+        "ObsidianNotesPage": {
+          "empty": "Pick a note in the Obsidian sidebar to read or edit it here.",
+          "save": "Save",
+          "cancel": "Cancel",
+          "edit": "Edit",
+          "openInObsidian": "Open in Obsidian",
+          "close": "Close note",
+          "backlinks": "Backlinks"
         }
       }
     },

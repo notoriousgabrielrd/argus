@@ -13,6 +13,7 @@ import { registerGitHubHandlers } from './github'
 import { registerGitLabHandlers } from './gitlab'
 import { registerHostedReviewHandlers } from './hosted-review'
 import { registerLinearHandlers } from './linear'
+import { registerObsidianHandlers } from './obsidian'
 import { registerJiraHandlers } from './jira'
 import { registerBitbucketHandlers } from './bitbucket'
 import { registerFeedbackHandlers } from './feedback'
@@ -156,6 +157,7 @@ export function registerCoreHandlers(
   registerGitLabHandlers(store)
   registerHostedReviewHandlers(store, stats)
   registerLinearHandlers()
+  registerObsidianHandlers()
   registerJiraHandlers()
   registerBitbucketHandlers()
   registerFeedbackHandlers()

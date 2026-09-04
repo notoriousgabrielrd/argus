@@ -96,6 +96,37 @@ describe('UI IPC', () => {
     vi.unstubAllEnvs()
   })
 
+  it('forwards ui:set with the sending webContents id as the broadcast origin', () => {
+    const store = makeStore()
+    registerUIHandlers(store as never)
+
+    const uiSetHandler = handleMock.mock.calls.find(([channel]) => channel === 'ui:set')?.[1]
+    uiSetHandler?.(makeUIEvent({ id: 17 }), { rightSidebarTab: 'obsidian' })
+
+    expect(store.updateUI).toHaveBeenCalledWith(
+      { rightSidebarTab: 'obsidian' },
+      { originWebContentsId: 17 }
+    )
+  })
+
+  it('broadcasts ui:stateChanged to every window except the change origin', () => {
+    const store = makeStore()
+    const originSend = vi.fn()
+    const otherSend = vi.fn()
+    getAllWindowsMock.mockReturnValue([
+      { webContents: { id: 17, send: originSend }, isDestroyed: () => false },
+      { webContents: { id: 42, send: otherSend }, isDestroyed: () => false }
+    ] as never)
+
+    registerUIHandlers(store as never)
+
+    const onUIChangedListener = store.onUIChanged.mock.calls[0][0]
+    onUIChangedListener({ rightSidebarTab: 'explorer' }, 17)
+
+    expect(originSend).not.toHaveBeenCalled()
+    expect(otherSend).toHaveBeenCalledWith('ui:stateChanged', { rightSidebarTab: 'explorer' })
+  })
+
   it('sends app events once to the trusted renderer without waking 100 browser guests', () => {
     const rendererSend = vi.fn()
     const guestSends = Array.from({ length: 100 }, () => vi.fn())

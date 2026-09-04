@@ -14,6 +14,8 @@ import {
 } from '../../../../shared/cross-platform-path'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import type { Repo, Worktree } from '../../../../shared/types'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
+import { translate } from '@/i18n/i18n'
 import { aiVaultWorktreeCompactPath } from './ai-vault-session-worktree-affordances'
 
 export {
@@ -178,11 +180,13 @@ function resolveWorktreeDisplayFromCandidates(
 export function useAiVaultSessionWorktreeMap({
   sessions,
   repos = [],
-  worktrees
+  worktrees,
+  globalTerminalCwd
 }: {
   sessions: readonly AiVaultSession[]
   repos?: readonly Pick<Repo, 'id' | 'connectionId' | 'executionHostId'>[]
   worktrees: readonly Worktree[]
+  globalTerminalCwd?: string | null
 }): ReadonlyMap<string, AiVaultSessionWorktreeInfo> {
   return useMemo(() => {
     // Hoisted out of the per-session loop: candidates and their normalized
@@ -191,10 +195,15 @@ export function useAiVaultSessionWorktreeMap({
     return new Map(
       sessions.flatMap((session) => {
         const worktreeInfo = resolveWorktreeDisplayFromCandidates(session, candidates)
-        return worktreeInfo ? [[session.id, worktreeInfo] as const] : []
+        // Why not `??`: a real worktree match always wins; only fall back to
+        // the global terminal when nothing concrete matched the session's cwd.
+        const resolved = worktreeInfo?.worktreeId
+          ? worktreeInfo
+          : (resolveGlobalTerminalWorktreeInfo(session, globalTerminalCwd) ?? worktreeInfo)
+        return resolved ? [[session.id, resolved] as const] : []
       })
     )
-  }, [repos, sessions, worktrees])
+  }, [repos, sessions, worktrees, globalTerminalCwd])
 }
 
 function buildWorktreeCandidates(
@@ -260,6 +269,41 @@ function compareWorktreeCandidates(left: WorktreeCandidate, right: WorktreeCandi
     return 0
   }
   return left.source === 'current-path' ? -1 : 1
+}
+
+// Why: vault sessions only record a cwd, never which Argus surface launched
+// them — a session closed and no longer live has no other trace. The global
+// terminal always resolves to one fixed local cwd (main process special-cases
+// FLOATING_TERMINAL_WORKTREE_ID to $HOME/the trusted path), so a session
+// whose cwd matches it, with no real worktree candidate covering that path,
+// is treated as belonging there — letting a closed session still be resumed
+// back into the global terminal instead of "no worktree recorded".
+export function resolveGlobalTerminalWorktreeInfo(
+  session: Pick<AiVaultSession, 'cwd' | 'executionHostId'>,
+  globalTerminalCwd: string | null | undefined
+): AiVaultSessionWorktreeInfo | null {
+  if (!globalTerminalCwd || !session.cwd) {
+    return null
+  }
+  if (
+    normalizeRuntimePathForComparison(session.cwd) !==
+    normalizeRuntimePathForComparison(globalTerminalCwd)
+  ) {
+    return null
+  }
+  const sessionHostId = normalizeExecutionHostId(session.executionHostId)
+  if (sessionHostId && sessionHostId !== LOCAL_EXECUTION_HOST_ID) {
+    return null
+  }
+  return {
+    status: 'active',
+    label: translate(
+      'auto.components.right.sidebar.AiVaultSessionWorktree.globalTerminal',
+      'Global Terminal'
+    ),
+    path: session.cwd,
+    worktreeId: FLOATING_TERMINAL_WORKTREE_ID
+  }
 }
 
 function unavailableWorktreeInfo(pathValue: string): AiVaultSessionWorktreeInfo {

@@ -71,6 +71,23 @@ export default function AiVaultPanel(): React.JSX.Element {
   const agentCmdOverrides = settings?.agentCmdOverrides
   const { getOriginalPaneTarget, getSessionLiveState, jumpToOriginalPane, jumpToWorktree } =
     useAiVaultOriginalPaneActions()
+  const floatingTerminalCwd = settings?.floatingTerminalCwd ?? ''
+  // Why: lets a session whose cwd matches the global terminal resolve to it
+  // (see resolveGlobalTerminalWorktreeInfo) even after its tab is closed —
+  // that's the only trace left, since vault sessions record cwd, not which
+  // Argus surface launched them.
+  const [globalTerminalCwd, setGlobalTerminalCwd] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    void window.api.app.getFloatingTerminalCwd({ path: floatingTerminalCwd }).then((nextCwd) => {
+      if (!cancelled) {
+        setGlobalTerminalCwd(nextCwd)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [floatingTerminalCwd])
   const [query, setQuery] = useState('')
   // Why: scope depends on current workspace/project availability, so only stable view options persist.
   const [scope, setScope] = useState<AiVaultScope>(DEFAULT_AI_VAULT_SCOPE)
@@ -163,7 +180,8 @@ export default function AiVaultPanel(): React.JSX.Element {
   const sessionWorktreeById = useAiVaultSessionWorktreeMap({
     sessions,
     repos,
-    worktrees: allWorktrees
+    worktrees: allWorktrees,
+    globalTerminalCwd
   })
   const effectiveActiveWorktreeId = activeWorktreeId ?? activeWorktree?.id ?? null
   // `current` is stamped per row at read time so the map above stays cached.

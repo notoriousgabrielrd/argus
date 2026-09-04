@@ -10,6 +10,7 @@ import type { Repo } from '../../../shared/types'
 import { getRepoIdFromWorktreeId } from '../../../shared/worktree-id'
 import { parseWorkspaceKey } from '../../../shared/workspace-scope'
 import { isWslUncPath } from '../../../shared/wsl-paths'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../shared/constants'
 import type { AppState } from '@/store/types'
 import { getIndexedWorktreeMap } from '@/store/worktree-repo-index'
 import { getFolderWorkspaceCandidateRepos } from './folder-workspace-connection'
@@ -126,6 +127,11 @@ export function getAiVaultResumeWorkspaceExecutionHostId(
   if (!workspaceId) {
     return null
   }
+  // Why: the main process always resolves the global terminal locally
+  // (no repo/connection to look up), so it is always the local host.
+  if (workspaceId === FLOATING_TERMINAL_WORKTREE_ID) {
+    return LOCAL_EXECUTION_HOST_ID
+  }
 
   const workspaceKey = parseWorkspaceKey(workspaceId)
   if (workspaceKey?.type === 'folder') {
@@ -149,6 +155,11 @@ export function getAiVaultResumeWorkspaceTargetStatus(
 ): AiVaultResumeTargetStatus {
   if (!workspaceId) {
     return 'unknown'
+  }
+  // Why: same reasoning as getAiVaultResumeWorkspaceExecutionHostId — the
+  // global terminal is always a supported, local resume target.
+  if (workspaceId === FLOATING_TERMINAL_WORKTREE_ID) {
+    return 'local'
   }
 
   const workspaceKey = parseWorkspaceKey(workspaceId)

@@ -15,35 +15,47 @@ export const GLOBAL_FLAGS = ['help', 'json', 'pairing-code', 'environment']
 const GLOBAL_VALUE_FLAGS = new Set(['pairing-code', 'environment'])
 export const BOOLEAN_FLAGS = new Set([
   'all',
+  'as-folder',
   'attachments',
+  'case-sensitive',
   'children',
   'comments',
   'connect',
+  'create',
   'current',
+  'desc',
   'dry-run',
   'enter',
   'focus',
   'force',
   'full',
   'help',
-  'inject',
   'include-archived',
+  'include-notes',
   'include-visual-layouts',
+  'inject',
   'interrupt',
   'json',
   'local',
-  'messages',
+  'make-default',
   'me',
+  'messages',
   'mobile',
   'mobile-pairing',
+  'no-backlinks',
+  'no-content',
   'no-auto-restart',
   'no-pairing',
+  'no-update-links',
+  'overwrite',
   'parent-current',
+  'permanent',
   'provision',
   'ready',
   'recipe-json',
-  'relations',
+  'regex',
   'reinstall',
+  'relations',
   'restore-window',
   'return-preamble',
   'run-hooks',
@@ -52,13 +64,15 @@ export const BOOLEAN_FLAGS = new Set([
   'tab',
   'tasks',
   'text-stdin',
+  'titles-only',
   'unread',
+  'unresolved',
   'value-stdin',
   'wait'
 ])
 
 export const REPEATED_FLAG_SEPARATOR = '\u0000'
-const REPEATABLE_STRING_FLAGS = new Set(['label', 'skill'])
+const REPEATABLE_STRING_FLAGS = new Set(['has-property', 'label', 'property', 'skill', 'tag'])
 
 function setFlagValue(flags: Map<string, string | boolean>, name: string, value: string): void {
   const existing = flags.get(name)
@@ -168,6 +182,7 @@ export function supportsBrowserPageFlag(commandPath: string[]): boolean {
       'note',
       'diagnostics',
       'linear',
+      'obsidian',
       'skills',
       'agent-context'
     ].includes(commandPath[0])
@@ -226,6 +241,7 @@ export function isCommandGroup(commandPath: string[]): boolean {
         'environment',
         'diagnostics',
         'linear',
+        'obsidian',
         'skills',
         'vm'
       ].includes(commandPath[0])) ||

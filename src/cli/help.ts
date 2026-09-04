@@ -140,6 +140,9 @@ Computer Use:
 Linear:
   linear                    Read Linear ticket context for agents
 
+Obsidian:
+  obsidian                  Read, search, and write notes in an Obsidian vault
+
 Mobile Emulator (iOS Simulator):
   emulator list             List available/running emulators (Orca-managed + raw serve-sim)
   emulator attach <device>  Attach/start helper and make active for the worktree
@@ -427,6 +430,12 @@ export function formatGroupHelp(specs: CommandSpec[], group: string): string {
 
 function formatCommandFlagHelp(flag: string, commandPath: string[]): string {
   const command = commandPath.join(' ')
+  if (command.startsWith('obsidian ')) {
+    const obsidianFlagHelp = formatObsidianFlagHelp(flag)
+    if (obsidianFlagHelp) {
+      return obsidianFlagHelp
+    }
+  }
   if (command === 'skills install' && flag === 'agent') {
     return '--agent <names>        Comma-separated install targets; default is detected agents'
   }
@@ -517,6 +526,50 @@ function formatCommandFlagHelp(flag: string, commandPath: string[]): string {
     return '--key <key>            Single key, e.g. Return, Escape, Tab, Left, or PageUp'
   }
   return formatFlagHelp(flag)
+}
+
+// Why: several Obsidian flags share a name with a Linear or worktree flag whose
+// generic description would be actively misleading inside a vault command.
+function formatObsidianFlagHelp(flag: string): string | null {
+  const helpByFlag: Record<string, string> = {
+    vault: '--vault <id|name|path> Vault to act on; defaults to the default vault',
+    note: '--note <path|name>     Note by vault-relative path, filename, or title',
+    query: '--query <text>         Text to search for across the vault',
+    folder: '--folder <folder>      Restrict to a vault folder and its children',
+    tag: '--tag <tag>            Restrict to a tag; repeat to require several',
+    property: '--property <key=value> Require a frontmatter property value; repeatable',
+    'has-property': '--has-property <key>   Require the frontmatter property to be present',
+    'modified-since': '--modified-since <7d|iso> Only notes edited since then',
+    name: '--name <text>          Match part of a note name, title, or new vault name',
+    sort: '--sort <field>         modified, created, name, path, or size',
+    desc: '--desc                 Sort descending',
+    prefix: '--prefix <text>        Only tags starting with this prefix',
+    depth: '--depth <n>            Folder depth to render in the tree',
+    'include-notes': '--include-notes        List notes inside each folder',
+    date: '--date <today|yyyy-mm-dd> Daily note date, or a relative offset like -7d',
+    create: '--create               Create the daily note when it does not exist',
+    content: '--content <text>       Note content written inline',
+    'content-file': '--content-file <path|-> Read note content from a file or stdin',
+    heading: '--heading <heading>    Scope the edit to one heading section',
+    section: '--section <heading>    Read only this heading section',
+    template: '--template <note>      Seed the new note from a template note',
+    overwrite: '--overwrite            Replace an existing note instead of failing',
+    key: '--key <key>            Frontmatter property name',
+    value: '--value <value>        Frontmatter property value',
+    type: '--type <type>          text, number, checkbox, list, or date',
+    to: '--to <path|folder>     Destination path for rename, or folder for move',
+    'no-update-links': '--no-update-links      Leave links to the moved note dangling',
+    'no-content': '--no-content           Return metadata without the note body',
+    'no-backlinks': '--no-backlinks         Skip backlink resolution',
+    unresolved: '--unresolved           Report every dangling link in the vault',
+    regex: '--regex                Treat the query as a regular expression',
+    'case-sensitive': '--case-sensitive       Match case exactly',
+    'titles-only': '--titles-only          Match titles and paths, not note bodies',
+    permanent: '--permanent            Delete outright instead of moving to the vault trash',
+    'make-default': '--make-default         Use this vault when --vault is omitted',
+    path: '--path <path>          Vault folder to register'
+  }
+  return helpByFlag[flag] ?? null
 }
 
 export function formatFlagHelp(flag: string): string {

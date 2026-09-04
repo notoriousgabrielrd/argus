@@ -562,6 +562,7 @@ import {
   hasHostAuthoritativeTerminalMembership
 } from './workspace-session-terminal-membership-authority'
 import { RuntimeEmulatorCommands } from './orca-runtime-emulator'
+import { RuntimeObsidianCommands } from './orca-runtime-obsidian'
 import type { EmulatorBridge } from '../emulator/emulator-bridge'
 import { getRuntimeFileTargetExecutionHostId, RuntimeFileCommands } from './orca-runtime-files'
 import { RuntimeGitCommands } from './orca-runtime-git'
@@ -617,7 +618,7 @@ import {
 } from '../argus/agent-roster-loader'
 import { mergeSeatRoster } from '../../shared/argus/seat-roster'
 import { collectMemorySnapshot } from '../memory/collector'
-import { app, BrowserWindow, ipcMain, Notification } from 'electron'
+import { app, BrowserWindow, ipcMain, Notification, shell } from 'electron'
 import { RendererPublicationThrottle } from '../window/renderer-publication-throttle'
 import type { AgentBrowserBridge } from '../browser/agent-browser-bridge'
 import type { BrowserBackend } from '../browser/browser-backend'
@@ -35656,6 +35657,73 @@ export class OrcaRuntimeService {
     getAuthoritativeWindow: () => this.getAuthoritativeWindow(),
     getSettings: () => this.requireStore().getSettings()
   })
+
+  private readonly obsidianCommands = new RuntimeObsidianCommands({
+    getUserDataPath: () => app.getPath('userData'),
+    openExternalUrl: (url) => shell.openExternal(url)
+  })
+
+  obsidianListVaults: RuntimeObsidianCommands['obsidianListVaults'] =
+    this.obsidianCommands.obsidianListVaults.bind(this.obsidianCommands)
+
+  obsidianAddVault: RuntimeObsidianCommands['obsidianAddVault'] =
+    this.obsidianCommands.obsidianAddVault.bind(this.obsidianCommands)
+
+  obsidianRemoveVault: RuntimeObsidianCommands['obsidianRemoveVault'] =
+    this.obsidianCommands.obsidianRemoveVault.bind(this.obsidianCommands)
+
+  obsidianSetDefaultVault: RuntimeObsidianCommands['obsidianSetDefaultVault'] =
+    this.obsidianCommands.obsidianSetDefaultVault.bind(this.obsidianCommands)
+
+  obsidianVaultInfo: RuntimeObsidianCommands['obsidianVaultInfo'] =
+    this.obsidianCommands.obsidianVaultInfo.bind(this.obsidianCommands)
+
+  obsidianListNotes: RuntimeObsidianCommands['obsidianListNotes'] =
+    this.obsidianCommands.obsidianListNotes.bind(this.obsidianCommands)
+
+  obsidianReadNote: RuntimeObsidianCommands['obsidianReadNote'] =
+    this.obsidianCommands.obsidianReadNote.bind(this.obsidianCommands)
+
+  obsidianSearchNotes: RuntimeObsidianCommands['obsidianSearchNotes'] =
+    this.obsidianCommands.obsidianSearchNotes.bind(this.obsidianCommands)
+
+  obsidianNoteLinks: RuntimeObsidianCommands['obsidianNoteLinks'] =
+    this.obsidianCommands.obsidianNoteLinks.bind(this.obsidianCommands)
+
+  obsidianUnresolvedLinks: RuntimeObsidianCommands['obsidianUnresolvedLinks'] =
+    this.obsidianCommands.obsidianUnresolvedLinks.bind(this.obsidianCommands)
+
+  obsidianTags: RuntimeObsidianCommands['obsidianTags'] = this.obsidianCommands.obsidianTags.bind(
+    this.obsidianCommands
+  )
+
+  obsidianTree: RuntimeObsidianCommands['obsidianTree'] = this.obsidianCommands.obsidianTree.bind(
+    this.obsidianCommands
+  )
+
+  obsidianDailyNote: RuntimeObsidianCommands['obsidianDailyNote'] =
+    this.obsidianCommands.obsidianDailyNote.bind(this.obsidianCommands)
+
+  obsidianCreateNote: RuntimeObsidianCommands['obsidianCreateNote'] =
+    this.obsidianCommands.obsidianCreateNote.bind(this.obsidianCommands)
+
+  obsidianEditNote: RuntimeObsidianCommands['obsidianEditNote'] =
+    this.obsidianCommands.obsidianEditNote.bind(this.obsidianCommands)
+
+  obsidianSetProperty: RuntimeObsidianCommands['obsidianSetProperty'] =
+    this.obsidianCommands.obsidianSetProperty.bind(this.obsidianCommands)
+
+  obsidianRemoveProperty: RuntimeObsidianCommands['obsidianRemoveProperty'] =
+    this.obsidianCommands.obsidianRemoveProperty.bind(this.obsidianCommands)
+
+  obsidianRenameNote: RuntimeObsidianCommands['obsidianRenameNote'] =
+    this.obsidianCommands.obsidianRenameNote.bind(this.obsidianCommands)
+
+  obsidianDeleteNote: RuntimeObsidianCommands['obsidianDeleteNote'] =
+    this.obsidianCommands.obsidianDeleteNote.bind(this.obsidianCommands)
+
+  obsidianOpenNote: RuntimeObsidianCommands['obsidianOpenNote'] =
+    this.obsidianCommands.obsidianOpenNote.bind(this.obsidianCommands)
 
   browserSnapshot: RuntimeBrowserCommands['browserSnapshot'] =
     this.browserCommands.browserSnapshot.bind(this.browserCommands)

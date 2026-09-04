@@ -42,6 +42,7 @@ const STATIC_RIGHT_SIDEBAR_TABS = [
   'explorer',
   'search',
   'vault',
+  'obsidian',
   'workspaces',
   'pr-checks',
   'source-control',
@@ -180,6 +181,8 @@ export const SettingsUpdate = z
 const TopLevelViewSchema = z.enum([
   'terminal',
   'settings',
+  'obsidian',
+  'global-terminal',
   'tasks',
   'activity',
   'automations',

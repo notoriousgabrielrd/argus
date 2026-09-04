@@ -103,6 +103,14 @@ Orca targets macOS, Linux, and Windows. Keep all platform-dependent behavior beh
 - **Windows setup scripts**: the setup/issue-command runner is a `.cmd` batch file unless the script starts with a `#!` line — never derive that from the user's terminal-shell preference, and never launch a `.cmd` runner with a bare `cmd.exe /c` from a Git Bash pane (MSYS rewrites the `/c`). See [`docs/reference/windows-setup-shell.md`](./docs/reference/windows-setup-shell.md).
 - **Linux native modules**: keep the glibc floor at Ubuntu 20.04 / glibc 2.31. A module compiled from source on a newer runner can reference symbol versions absent on the floor and crash the app on startup. See [`docs/reference/linux-glibc-compatibility.md`](./docs/reference/linux-glibc-compatibility.md); packaging fails if a bundled native binary needs newer glibc.
 
+## Obsidian Vaults
+
+Argus reads and writes Obsidian vaults as plain Markdown on the host, with no plugin and no
+running Obsidian. Before changing anything under `src/main/obsidian/`, the `obsidian.*` RPC
+methods, or the `argus obsidian` CLI, read
+[`docs/reference/obsidian-integration.md`](./docs/reference/obsidian-integration.md). It owns the
+vault-path safety rules, the index freshness contract, and the checklist for adding a command
+across the CLI, RPC, IPC, and skill surfaces.
 ## Shared tmux Sessions
 
 Panes whose shell attaches to a shared tmux session would mirror each other: one tmux session has a

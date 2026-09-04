@@ -5,6 +5,8 @@ import type { TopLevelView } from './types'
 const TOP_LEVEL_VIEW_LOOKUP: Record<TopLevelView, true> = {
   terminal: true,
   settings: true,
+  obsidian: true,
+  'global-terminal': true,
   tasks: true,
   activity: true,
   automations: true,
