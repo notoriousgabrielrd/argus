@@ -6,6 +6,35 @@ All UI work — layout, color, typography, spacing, component selection, UX beha
 
 Use the `$electron` skill and Playwright CDP for rendered Orca UI checks. Do not use computer-use for Orca UI validation.
 
+# Project Agents: Dispatch by Seat, Not by Subagent
+
+`ENGINEER`, `DESIGNER`, and `AUDITOR` are **seats** — Argus terminal panes, each running its
+own Claude process. Hand work to a seat with `/seat <NAME> <prompt>`, or directly:
+
+```
+argus terminal seats --json                       # handle: null means the seat is vacant
+argus terminal send --terminal seat:ENGINEER --text "<request>" --enter --json
+argus terminal read --terminal seat:ENGINEER --json
+```
+
+Address the seat, never the handle — handles are runtime-scoped and go stale.
+
+`.claude/agents/*.md` serves two consumers: Argus reads the frontmatter to know a seat
+exists (`src/main/argus/project-agent-definitions.ts`), and Claude Code registers the same
+file as a subagent type. That makes the `Agent` tool the path of least resistance, and it is
+the wrong one for real work: a subagent runs inside the caller's session, so the caller pays
+for its context, its report inflates the caller on every later turn, and a run that goes off
+the rails is invisible until it returns. A seat is a separate process in a visible pane —
+watchable, interruptible, resumable.
+
+Subagents stay fine for one thing: broad, throwaway, read-only search where you want the
+conclusion and not the file dumps. Anything with an owner and a completion criterion goes to
+a seat.
+
+Every agent definition carries an explicit `model:`. Keep the reasoning seats on the
+inherited model and the executor seats on `sonnet` — an unset `model:` silently inherits
+Opus for the whole run.
+
 # Style
 ## Concise/Brief Non-obviosu comments ONLY
   * DO NOT: be verbose, explain the obvious, walk through the code ("WHY not HOW")
@@ -26,6 +55,44 @@ Never use vague names like `helpers`, `utils`, `common`, `misc`, or `shared-stuf
 
 Always use the primary working directory (the worktree) for all file reads and edits. Never follow absolute paths from subagent results that point to the main repo.
 
+## Delegating Parallel Work
+
+Parallel work stays in the **current** worktree — everyone shares one checkout, one branch, one set of edits. Never spin up a child worktree just to get a second agent.
+
+Seat the agent in a new pane of this worktree, then address it by seat:
+
+```text
+argus terminal seats --json
+argus terminal create --worktree active --command "claude" --json
+argus terminal assign --terminal <handle> --seat ENGINEER --json
+argus terminal send --terminal seat:ENGINEER --text "<brief>" --enter --json
+```
+
+`.claude/agents/` (AUDITOR, DESIGNER, ENGINEER) defines the seats. A seat is exclusive per worktree, so `seat:<NAME>` resolves without a handle and survives restarts — never store handles across turns.
+
+Because the seats share a checkout, coordinate writes: give each seat a disjoint set of files, or let only one write at a time. Two seats editing the same file is a lost edit, not a merge conflict.
+
+### Input Token Economy
+
+A seat is a long-lived session whose context stays warm; a sub-agent is one-shot and re-pays the system prompt plus this file on every spawn. Prefer re-prompting an existing seat over spawning anything new.
+
+- **Never paste file content into a prompt.** Same worktree means the seat can read it — pass `path:line-range` and let it fetch only what it needs.
+- **Don't fan out readers over the same files.** One agent reads, then hands the others the conclusion.
+- **Keep CLI payloads narrow:** `--json` on every call, no `--include-visual-layouts` unless pane topology is the actual question, and page `terminal read --cursor` instead of dumping scrollback.
+- **Sub-agents are for read-only fan-out you throw away** — sweeping many files for a symbol or call site, where the answer is small relative to what was read. That, not parallelism, is what keeps their output off your context.
+
+### Messages Carry Pointers, Not Payloads
+
+Two agent sessions cannot share a context window: everything one sends the other becomes tokens in the receiver's prompt, and stays there for the rest of its run. The sender pays output rates to write it, the receiver pays input rates on every later turn. So a message says *where*, never *what*.
+
+- **A message body is ids, one line of meaning, and a path.** Long-form output goes to a file; the message carries `--report-path`. Changed files go in `--files-modified`, not in prose.
+- **Never put file contents, diffs, logs, or command output in a body.** The agents share a checkout — a path is enough.
+- **Structured over narrative:** `--payload <json>` with ids and paths beats a paragraph the receiver has to parse.
+- **Pull, don't push:** `check --types`, `--peek`, `task-list --brief`, `worker-read --limit`, `terminal read --cursor`. Read the narrowest thing that answers the question.
+- **The cheapest handoff moves the task, not the context.** If the work needs a live agent's context, re-prompt that agent (`worker-start --terminal <handle>`) instead of briefing a new one.
+
+The dispatch preamble states this rule to every worker (`src/main/runtime/orchestration/preamble.ts`). Keep the two in sync: a rule that lives only here is a rule the workers never see.
+
 ## Cross-Platform Support
 
 Orca targets macOS, Linux, and Windows. Keep all platform-dependent behavior behind runtime checks:
@@ -44,6 +111,12 @@ methods, or the `argus obsidian` CLI, read
 [`docs/reference/obsidian-integration.md`](./docs/reference/obsidian-integration.md). It owns the
 vault-path safety rules, the index freshness contract, and the checklist for adding a command
 across the CLI, RPC, IPC, and skill surfaces.
+## Shared tmux Sessions
+
+Panes whose shell attaches to a shared tmux session would mirror each other: one tmux session has a
+single current window, shared by every client. Argus prevents this with a `tmux` PATH shim that puts
+each pane on its own grouped session. Before touching pane env, PATH shims, or anything that runs
+tmux, read [`docs/reference/tmux-session-isolation.md`](./docs/reference/tmux-session-isolation.md).
 
 ## SSH Use Case
 

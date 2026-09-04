@@ -151,6 +151,37 @@ describe('createMainWindow', () => {
     expect(browserWindowInstance.loadURL).not.toHaveBeenCalled()
   })
 
+  it('raises the main window listener cap so per-service closed hooks do not warn', () => {
+    const setMaxListeners = vi.fn()
+    browserWindowMock.mockImplementation(function () {
+      return {
+        webContents: {
+          on: vi.fn(),
+          once: vi.fn(),
+          setZoomLevel: vi.fn(),
+          setBackgroundThrottling: vi.fn(),
+          setWindowOpenHandler: vi.fn(),
+          send: vi.fn()
+        },
+        on: vi.fn(),
+        setMaxListeners,
+        isDestroyed: vi.fn(() => false),
+        isMaximized: vi.fn(() => false),
+        isFullScreen: vi.fn(() => false),
+        getSize: vi.fn(() => [1200, 800]),
+        setSize: vi.fn(),
+        show: vi.fn(),
+        loadFile: vi.fn(),
+        loadURL: vi.fn()
+      }
+    })
+
+    createMainWindow(null, { deferLoad: true })
+
+    expect(setMaxListeners).toHaveBeenCalledTimes(1)
+    expect(setMaxListeners.mock.calls[0]?.[0]).toBeGreaterThan(11)
+  })
+
   it('enables renderer sandboxing and opens external links safely', () => {
     const windowHandlers: Record<string, (...args: any[]) => void> = {}
     const webContents = {

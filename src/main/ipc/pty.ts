@@ -114,6 +114,7 @@ import {
   applyTerminalAttributionEnv,
   resolveAttributionShellFamily
 } from '../attribution/terminal-attribution'
+import { applyTmuxSessionIsolationEnv } from '../tmux/tmux-session-isolation'
 import { ensureLinuxTerminalOrcaCliShimDir } from '../cli/linux-terminal-argus-cli-shim'
 import { registerPty, unregisterPty } from '../memory/pty-registry'
 import { advertisedUrlWatcher } from '../ports/advertised-url-watcher'
@@ -1908,6 +1909,9 @@ export function buildPtyHostEnv(
       isWsl: opts.isWsl
     })
   })
+  // Why: panes sharing one tmux session share its current window, so without this
+  // two panes on the same project mirror each other keystroke for keystroke.
+  applyTmuxSessionIsolationEnv(baseEnv, { userDataPath: opts.userDataPath })
 
   return baseEnv
 }

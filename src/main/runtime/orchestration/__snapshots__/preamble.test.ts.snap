@@ -15,8 +15,13 @@ Slack, GitHub comments, or any other channel to reach a human during the run.
   # RULE: --body must be a 3-sentence executive summary (what you did,
   # what you found, what's left). Never send an empty body; the coordinator
   # reads the body first and only opens artifacts if it needs more detail.
-  # If you produced a long-form artifact, include its path as
-  # payload.reportPath so the coordinator can find it without a file search.
+  #
+  # RULE: --body carries pointers, never payloads. Do not paste file
+  # contents, diffs, logs, or command output into it. Anything longer than
+  # the summary goes to a file whose path you pass as --report-path; changed
+  # files go in --files-modified. You share this worktree with the
+  # coordinator, so a path is enough for it to read what you wrote — and it
+  # pays for every byte of --body in its own context window.
   #
   # RULE: send worker_done exactly once. Use --outcome succeeded when the
   # requested work is done, or replace it with --outcome failed when it is not.

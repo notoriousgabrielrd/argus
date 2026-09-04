@@ -4437,7 +4437,12 @@ describe('registerPtyHandlers', () => {
         })
         try {
           const env = await daemonSpawnAndGetEnv({ PATH: '/usr/bin' })
-          expect(env.PATH.split(delimiter)[0]).toBe(join('/tmp/orca-resources', 'bin'))
+          // The tmux isolation shim dir carries only `tmux`, so it cannot shadow the
+          // bundled CLI; the mocked fs here reports tmux in whatever dir comes first.
+          const searchPath = env.PATH.split(delimiter).filter(
+            (dir) => dir !== env.ORCA_TMUX_SHIM_DIR
+          )
+          expect(searchPath[0]).toBe(join('/tmp/orca-resources', 'bin'))
         } finally {
           if (resourcesPathDescriptor) {
             Object.defineProperty(process, 'resourcesPath', resourcesPathDescriptor)

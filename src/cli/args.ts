@@ -44,6 +44,7 @@ export const BOOLEAN_FLAGS = new Set([
   'mobile-pairing',
   'no-backlinks',
   'no-content',
+  'no-auto-restart',
   'no-pairing',
   'no-update-links',
   'overwrite',

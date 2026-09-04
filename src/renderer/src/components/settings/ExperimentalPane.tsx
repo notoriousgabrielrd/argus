@@ -10,6 +10,7 @@ import { NumberField, SettingsSwitch } from './SettingsFormControls'
 import { translate } from '@/i18n/i18n'
 import { NativeChatExperimentalSetting } from './NativeChatExperimentalSetting'
 import { AgentDashboardExperimentalSetting } from './AgentDashboardExperimentalSetting'
+import { NotchOverlayExperimentalSetting } from './NotchOverlayExperimentalSetting'
 import { EphemeralVmsExperimentalSetting } from './EphemeralVmsExperimentalSetting'
 import {
   MAX_AGENT_HIBERNATION_IDLE_MS,
@@ -42,6 +43,10 @@ export function ExperimentalPane({
   const showAgentDashboard = matchesSettingsSearch(searchQuery, [
     getExperimentalSearchEntry().agentDashboard
   ])
+  // Why: the overlay is anchored to the MacBook notch; other platforms have nothing to toggle.
+  const showNotchOverlay =
+    navigator.userAgent.includes('Mac') &&
+    matchesSettingsSearch(searchQuery, [getExperimentalSearchEntry().notchOverlay])
   const showNativeChat = matchesSettingsSearch(searchQuery, [
     getExperimentalSearchEntry().nativeChat
   ])
@@ -138,6 +143,10 @@ export function ExperimentalPane({
 
       {showAgentDashboard ? (
         <AgentDashboardExperimentalSetting settings={settings} updateSettings={updateSettings} />
+      ) : null}
+
+      {showNotchOverlay ? (
+        <NotchOverlayExperimentalSetting settings={settings} updateSettings={updateSettings} />
       ) : null}
 
       {showNativeChat ? (

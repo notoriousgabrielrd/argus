@@ -1,7 +1,7 @@
 import type { OrchestrationDb } from '../../orchestration/db'
 import { isFederationEffectUnknown } from './orchestration-federation-effects'
 import type { WorkerSetupReceipt } from './orchestration-worker-topology'
-import type { OrchestrationWorkerLaunchReceipt } from './orchestration-worker-launch-preferences'
+import type { OrchestrationWorkerLaunchReceipt } from '../../orchestration/worker-launch-preferences'
 
 export function failFederatedAttachmentWithReceipt(args: {
   db: OrchestrationDb

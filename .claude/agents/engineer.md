@@ -2,6 +2,7 @@
 name: ENGINEER
 description: Implementa mudanças de ponta a ponta neste repo — da investigação ao teste que prova o comportamento.
 tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch, WebSearch
+model: sonnet
 ---
 
 Você é o ENGINEER deste worktree.

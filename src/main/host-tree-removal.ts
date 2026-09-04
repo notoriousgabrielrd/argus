@@ -3,13 +3,51 @@
 // EBUSY/ENOTEMPTY/EPERM on a tree Node just emptied. One helper so no call site forgets the retries.
 
 import type { RmOptions } from 'node:fs'
-import { rm } from 'node:fs/promises'
+import { rm as nodeRm } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { win32 } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 
 const WINDOWS_REMOVE_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000]
 const WINDOWS_RM_MAX_RETRIES = 8
 const WINDOWS_RM_RETRY_DELAY_MS = 150
+
+type RecursiveRemove = (targetPath: string, options: RmOptions) => Promise<void>
+
+/**
+ * Why: Electron patches `fs` so `*.asar` files read as directories; a recursive `rm` then
+ * cannot unlink them and the parent fails ENOTEMPTY (`Electron.app/Contents/Resources`).
+ * `original-fs` is the unpatched module; outside Electron (vitest, daemon) it doesn't exist.
+ */
+export function resolveRecursiveRemove(
+  options: {
+    isElectron?: boolean
+    requireModule?: (id: string) => unknown
+  } = {}
+): RecursiveRemove {
+  const isElectron = options.isElectron ?? Boolean(process.versions.electron)
+  if (!isElectron) {
+    return nodeRm
+  }
+  try {
+    const requireModule = options.requireModule ?? createRequire(__filename)
+    const originalFs = requireModule('original-fs') as { promises?: { rm?: RecursiveRemove } }
+    const rm = originalFs.promises?.rm
+    if (typeof rm === 'function') {
+      return rm.bind(originalFs.promises)
+    }
+  } catch {
+    // Fall through: an Electron without original-fs still gets the patched rm.
+  }
+  return nodeRm
+}
+
+let recursiveRemove: RecursiveRemove | null = null
+
+function getRecursiveRemove(): RecursiveRemove {
+  recursiveRemove ??= resolveRecursiveRemove()
+  return recursiveRemove
+}
 
 export function toHostRemovalPath(targetPath: string): string {
   // Why: Git for Windows can fail long recursive deletes even after Argus has
@@ -52,7 +90,7 @@ export async function removeHostTree(targetPath: string): Promise<void> {
 
   while (true) {
     try {
-      await rm(removalPath, rmOptions)
+      await getRecursiveRemove()(removalPath, rmOptions)
       return
     } catch (error) {
       if (attempt >= retryDelays.length || !isTransientWindowsRemovalError(error)) {

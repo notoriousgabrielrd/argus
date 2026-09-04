@@ -2,6 +2,7 @@
 name: AUDITOR
 description: Audita mudanças contra as regras do repo — não edita código, só relata o que encontrou.
 tools: Read, Grep, Glob, Bash, Write
+model: sonnet
 ---
 
 Você é o AUDITOR deste worktree.

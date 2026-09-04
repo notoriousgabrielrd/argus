@@ -12748,6 +12748,40 @@ describe('OrcaRuntimeService', () => {
     expect(retireAuthority).toHaveBeenCalledTimes(2)
   })
 
+  it('retries restored-authority refresh when a concurrent aggregate inventory supersedes it', async () => {
+    const session = makeWorkspaceSessionWithHeadlessTerminal({})
+    const { runtimeStore } = makeRuntimeStoreWithWorkspaceSession(session)
+    const runtime = new OrcaRuntimeService(runtimeStore as never, undefined, {
+      canRecoverPersistentLocalPtys: () => true
+    })
+    const pendingLists: (() => void)[] = []
+    const listProcesses = vi.fn(
+      () =>
+        new Promise<never[]>((resolve) => {
+          pendingLists.push(() => resolve([]))
+        })
+    )
+    runtime.setPtyController({
+      write: () => true,
+      kill: () => true,
+      getForegroundProcess: async () => null,
+      listProcesses
+    })
+
+    const restored = runtime.refreshRestoredOrchestrationAuthority()
+    await vi.waitFor(() => expect(listProcesses).toHaveBeenCalledTimes(1))
+    // Why: worktree.ps issues an aggregate inventory, which invalidates the in-flight local one.
+    const aggregate = runtime.getWorktreePs()
+    await vi.waitFor(() => expect(listProcesses).toHaveBeenCalledTimes(2))
+    pendingLists.splice(0).forEach((release) => release())
+
+    await vi.waitFor(() => expect(listProcesses).toHaveBeenCalledTimes(3))
+    pendingLists.splice(0).forEach((release) => release())
+
+    await expect(restored).resolves.toBeUndefined()
+    await aggregate
+  })
+
   it('restores a retained coordinator handle after a late controller inventory', async () => {
     const paneKey = makePaneKey('host-tab', HEADLESS_LEAF_ID)
     const incarnationId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'

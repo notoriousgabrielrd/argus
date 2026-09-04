@@ -929,6 +929,24 @@
       }
     },
     "components": {
+      "notchOverlay": {
+        "NotchOverlayRoot": {
+          "noAgents": "No open seats",
+          "needYou": "{{count}} need you",
+          "working": "{{count}} working",
+          "idle": "Idle",
+          "open": "Open in Argus",
+          "agents": "Agents",
+          "summary": "Activity",
+          "summaryNeedYou": "Need you",
+          "summaryWorking": "Working",
+          "summaryDone": "Done",
+          "summaryIdle": "Idle",
+          "online": "{{count}} online",
+          "markSeen": "Mark seen",
+          "sleep": "Sleep workspace"
+        }
+      },
       "BrowserCookieImportDisclosure": {
         "title": "Google logins aren't imported",
         "description": "Sign in to Google directly in Argus."
@@ -4878,6 +4896,10 @@
           "61d6f612cf": "Saving...",
           "a0d191b7a7": "Edit issue links, pull request links, and notes for this workspace."
         },
+        "WorktreeOpenHereMenuItems": {
+          "openHereClaude": "Claude",
+          "openHereTerminal": "Terminal"
+        },
         "WorktreeOpenInMenu": {
           "localOnly": "Local only",
           "remoteSsh": "Remote SSH",
@@ -6104,6 +6126,12 @@
           "connectionTestAction": "Test Connection"
         },
         "ExperimentalPane": {
+          "notchOverlay": {
+            "title": "Notch Overlay",
+            "description": "Live agent status around the MacBook notch.",
+            "copy": "Shows how many agents need you or are working beside the notch. Hover it to list them and jump to one.",
+            "toggleLabel": "Toggle Notch Overlay"
+          },
           "9762364929": "Uses APFS clone-copy on macOS when possible, otherwise symlinks configured folders or files into created worktrees.",
           "24416f42cd": "Shared paths on worktrees",
           "fb82ea1d7a": "Automatically materialize configured files or folders into newly created worktrees.",
@@ -8418,6 +8446,13 @@
         },
         "experimental": {
           "search": {
+            "notchOverlay": {
+              "title": "Notch Overlay",
+              "description": "Live agent status around the MacBook notch.",
+              "notch": "notch",
+              "overlay": "overlay",
+              "macos": "macos"
+            },
             "44c7f209d5": "node_modules",
             "4ad605f222": "env",
             "3021571c30": "shared",
@@ -15366,6 +15401,12 @@
       "sent": "Session context sent to {{agent}} in a new session.",
       "deliveryFailed": "The new {{agent}} session started, but its context could not be sent.",
       "launchFailed": "Could not start a new {{agent}} session."
+    }
+  },
+  "notchOverlay": {
+    "recoverableError": {
+      "title": "Argus notch overlay hit an error.",
+      "description": "The overlay could not finish rendering. Retry to remount it."
     }
   },
   "dashboardPopout": {

@@ -313,6 +313,7 @@ export const electronViteConfig: UserConfig = {
         input: {
           index: resolve('src/renderer/index.html'),
           popout: resolve('src/renderer/popout.html'),
+          notch: resolve('src/renderer/notch.html'),
           web: resolve('src/renderer/web-index.html')
         }
       }

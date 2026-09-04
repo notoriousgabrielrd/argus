@@ -124,6 +124,8 @@ import {
   parseWorkerTerminalHostScope,
   type WorkerTerminalHostScope
 } from './orchestration/worker-terminal-process-liveness'
+import { sweepOrchestrationQueue, type QueueWatchdogSweep } from './orchestration/queue-watchdog'
+import { restartReclaimedWorker } from './orchestration/worker-restart'
 import { rollbackWorkspaceSessionAfterFailedAsyncWrite } from './workspace-session-failed-write-rollback'
 import { OrchestrationError } from './orchestration/orchestration-error'
 import {
@@ -2729,6 +2731,8 @@ export class OrcaRuntimeService {
     { db: OrchestrationDb; promise: Promise<void> }
   >()
   private readonly orchestrationFederationWarnings = new Set<string>()
+  private orchestrationQueueWatchdogTimer: ReturnType<typeof setInterval> | null = null
+  private orchestrationQueueWatchdogTail: Promise<unknown> = Promise.resolve()
   private rendererGraphEpoch = 0
   private graphStatus: RuntimeGraphStatus = 'unavailable'
   private authoritativeWindowId: number | null = null
@@ -3982,14 +3986,24 @@ export class OrcaRuntimeService {
     if (connectionId === null && !this.canRecoverPersistentLocalPtysFn()) {
       return
     }
-    const inventory = await this.refreshPtyWorktreeRecordsWithControllerInventory(
-      [...(await this.getResolvedWorktreeMap()).values()],
-      null,
-      undefined,
-      connectionId
-    )
-    if (!inventory) {
-      throw new Error('terminal_liveness_unavailable')
+    const resolvedWorktrees = [...(await this.getResolvedWorktreeMap()).values()]
+    for (let attempt = 0; ; attempt += 1) {
+      const issuedGeneration = this.ptyControllerInventorySequence + 1
+      const inventory = await this.refreshPtyWorktreeRecordsWithControllerInventory(
+        resolvedWorktrees,
+        null,
+        undefined,
+        connectionId
+      )
+      if (inventory) {
+        return
+      }
+      // Why: a null inventory also means "a newer inventory superseded this one" (renderer startup fires
+      // aggregate liveness refreshes concurrently). That is fresh liveness, not an unavailable controller.
+      const superseded = this.ptyControllerInventorySequence > issuedGeneration
+      if (!superseded || attempt >= RESTORED_AUTHORITY_SUPERSEDED_RETRY_LIMIT) {
+        throw new Error('terminal_liveness_unavailable')
+      }
     }
   }
 
@@ -4759,6 +4773,80 @@ export class OrcaRuntimeService {
       this.orchestrationFederationTimers.set(dispatch.dispatch_id, timer)
       tick()
     }
+  }
+
+  /**
+   * Arms the orchestration queue watchdog, once per runtime.
+   *
+   * Called from the paths that create supervised work rather than at boot, so an install
+   * that never dispatches a worker never arms a timer.
+   */
+  ensureOrchestrationQueueWatchdog(): void {
+    if (this.orchestrationQueueWatchdogTimer) {
+      return
+    }
+    const timer = setInterval(() => {
+      void this.sweepOrchestrationQueueOnce().catch(() => undefined)
+    }, ORCHESTRATION_QUEUE_WATCHDOG_INTERVAL_MS)
+    timer.unref?.()
+    this.orchestrationQueueWatchdogTimer = timer
+  }
+
+  stopOrchestrationQueueWatchdog(): void {
+    if (!this.orchestrationQueueWatchdogTimer) {
+      return
+    }
+    clearInterval(this.orchestrationQueueWatchdogTimer)
+    this.orchestrationQueueWatchdogTimer = null
+  }
+
+  /**
+   * Runs one watchdog pass and reports what it did.
+   *
+   * Public so a test or a diagnostic can sweep deterministically instead of waiting out the
+   * interval. Passes are serialized: a slow SSH liveness probe must not let the next tick
+   * reach the same dispatch, because `failDispatch` increments a failure count that drives
+   * the circuit breaker.
+   */
+  async sweepOrchestrationQueueOnce(now: Date = new Date()): Promise<QueueWatchdogSweep> {
+    const sweep = this.orchestrationQueueWatchdogTail.then(
+      () => this.runOrchestrationQueueSweep(now),
+      () => this.runOrchestrationQueueSweep(now)
+    )
+    this.orchestrationQueueWatchdogTail = sweep.catch(() => undefined)
+    return sweep
+  }
+
+  private async runOrchestrationQueueSweep(now: Date): Promise<QueueWatchdogSweep> {
+    const db = this.getOrchestrationDb()
+    return sweepOrchestrationQueue(
+      {
+        promotePendingTasks: () => db.promotePendingTasks(),
+        listStaleDispatches: (thresholdIso) => db.getStaleDispatches(thresholdIso),
+        getWorkerTerminalIdentity: (dispatchId) => {
+          // Why the owned resource and not the dispatch row: the resource carries the host
+          // scope, and a terminal handed to a follow-up Dispatch moves its ownership row
+          // with it, so a transferred worker is never mistaken for a dead one.
+          const resource = db.getWorkerTerminalResourceByOwner(dispatchId)
+          if (!resource?.process_incarnation) {
+            return null
+          }
+          return {
+            processIncarnation: resource.process_incarnation,
+            hostScope: resource.host_scope ?? null
+          }
+        },
+        inspectLiveness: (identity) =>
+          this.inspectTerminalProcessIncarnationLiveness(
+            identity.processIncarnation,
+            identity.hostScope
+          ),
+        reclaimDispatch: (dispatchId, reason) => db.failDispatch(dispatchId, reason) ?? null,
+        restartWorker: ({ dispatchId, taskId }) =>
+          restartReclaimedWorker({ db, runtime: this, deadDispatchId: dispatchId, taskId })
+      },
+      { now }
+    )
   }
 
   stopOrchestrationFederationRelay(): void {
@@ -25227,6 +25315,42 @@ export class OrcaRuntimeService {
     return await this.resolveWorktreeSelector(selector)
   }
 
+  /**
+   * Seats available in the worktree hosting a terminal, plus that terminal's own seat.
+   *
+   * Feeds the dispatch preamble's routing roster, and reads the same layered definitions
+   * `terminal seats` does — project, Argus store, bundled baseline, minus the seats the
+   * project disabled — so a worker is never told to route work to a seat the user cannot
+   * see. Every failure answers with an empty roster instead of throwing: a worker must
+   * still receive its task when its pane left the graph or the workspace is gone.
+   */
+  async resolveDispatchRosterForTerminal(
+    handle: string
+  ): Promise<{ teammates: { seat: string; description: string }[]; selfSeat?: string }> {
+    try {
+      const pane = this.resolveSeatPaneForHandle(handle)
+      const worktree = await this.resolveSeatWorkspaceById(pane.worktreeId)
+      if (!worktree) {
+        return { teammates: [] }
+      }
+      const roster = await this.loadSeatRosterForWorktree(worktree)
+      const { definitions } = await this.resolveSeatDefinitionsForWorktree(
+        worktree,
+        roster?.disabledSeats
+      )
+      const selfSeat = this.seatForLeaf(pane.worktreeId, pane.leafId)
+      return {
+        teammates: definitions.map((definition) => ({
+          seat: definition.seat,
+          description: definition.description
+        })),
+        ...(selfSeat ? { selfSeat } : {})
+      }
+    } catch {
+      return { teammates: [] }
+    }
+  }
+
   private async assertSeatDefinedByProject(worktreeId: string, seat: string): Promise<void> {
     const worktree = await this.resolveSeatWorkspaceById(worktreeId)
     if (!worktree) {
@@ -36108,6 +36232,11 @@ export function resolveWorktreeScanCacheTtlMs(repo: Pick<Repo, 'path' | 'connect
     : WORKTREE_SCAN_CACHE_TTL_MS
 }
 const PTY_CONTROLLER_LIST_TIMEOUT_MS = 3000
+const RESTORED_AUTHORITY_SUPERSEDED_RETRY_LIMIT = 3
+// Why 30s: the watchdog only reclaims workers already silent for ten minutes, so the tick
+// decides how fast a reclaim lands, not whether it happens. Frequent enough that a human
+// coming back to the app finds the queue already healed, cheap enough to leave armed.
+const ORCHESTRATION_QUEUE_WATCHDOG_INTERVAL_MS = 30_000
 // Why: the renderer waits 15s; leave room for the verified failure response and release the spawn fence before its caller times out.
 const WORKTREE_TERMINAL_SLEEP_TIMEOUT_MS = 12_000
 

@@ -2260,7 +2260,8 @@ function App(): React.JSX.Element {
             {/* Why: leaf-mounted retention sync keeps agent-status subscriptions out of the App render tree. */}
             <RetainedAgentsSyncGate />
             <AiVaultTabTitleSyncGate />
-            {settings?.experimentalAgentDashboardPopout === true ? (
+            {settings?.experimentalAgentDashboardPopout === true ||
+            settings?.experimentalMacNotchOverlay === true ? (
               <Suspense fallback={null}>
                 <DashboardPopoutBridge />
               </Suspense>

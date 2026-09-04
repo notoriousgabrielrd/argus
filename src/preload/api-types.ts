@@ -2613,6 +2613,11 @@ export type PreloadApi = {
     spawnAgent: (args: DashboardSpawnAgentArgs) => Promise<void>
     sleepWorkspace: (args: DashboardSleepWorkspaceArgs) => Promise<void>
   }
+  notchOverlay: {
+    setExpanded: (args: { expanded: boolean }) => Promise<void>
+    onExpandedChanged: (callback: (expanded: boolean) => void) => () => void
+    revealAgent: (args: DashboardRevealAgentArgs) => Promise<void>
+  }
   terminalPreview: {
     connect: (
       ptyId: string,

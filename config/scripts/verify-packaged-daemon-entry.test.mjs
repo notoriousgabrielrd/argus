@@ -18,6 +18,7 @@ describe('verify-packaged-daemon-entry', () => {
   })
 
   afterEach(() => {
+    delete process.env.ORCA_DAEMON_ENTRY_BOOT_TIMEOUT_MS
     rmSync(resourcesDir, { recursive: true, force: true })
   })
 
@@ -48,6 +49,30 @@ describe('verify-packaged-daemon-entry', () => {
     expect(() => verifyPackagedDaemonEntryBoots(resourcesDir)).toThrow(
       /failed to load under plain Node/
     )
+  })
+
+  // Why: afterPack cold-starts Node off a tree XProtect/Spotlight is still
+  // sweeping, so a stalled boot must retry rather than read as a load failure.
+  it('retries once when the first boot exceeds the timeout', () => {
+    const stampPath = join(resourcesDir, 'boot-attempted')
+    writePackagedEntry(
+      `const { existsSync, writeFileSync } = require('node:fs')\n` +
+        `const stamp = ${JSON.stringify(stampPath)}\n` +
+        `if (existsSync(stamp)) {\n` +
+        `  console.error('Usage: daemon-entry <socket>')\n` +
+        `  process.exit(1)\n` +
+        `}\n` +
+        `writeFileSync(stamp, '1')\n` +
+        `setTimeout(() => {}, 60_000)\n`
+    )
+    process.env.ORCA_DAEMON_ENTRY_BOOT_TIMEOUT_MS = '750'
+    expect(() => verifyPackagedDaemonEntryBoots(resourcesDir)).not.toThrow()
+  })
+
+  it('fails when every boot attempt exceeds the timeout', () => {
+    writePackagedEntry('setTimeout(() => {}, 60_000)\n')
+    process.env.ORCA_DAEMON_ENTRY_BOOT_TIMEOUT_MS = '750'
+    expect(() => verifyPackagedDaemonEntryBoots(resourcesDir)).toThrow(/ETIMEDOUT/)
   })
 
   it('fails when the packaged entry never reaches argv parsing', () => {

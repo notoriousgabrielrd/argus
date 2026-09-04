@@ -1,0 +1,138 @@
+/* Visual language ported from DailyNotch (temps-to-clone/daily-notch-tracker): black pill,
+   system accent, dark panels; the window frame animates 240ms ease-in-out and content
+   crossfades — the view never animates its own size on a different curve. */
+.notch-surface {
+  /* Theme.accent follows the macOS accent color; Theme.danger is the pause red. */
+  --notch-accent: rgb(10 132 255);
+  --notch-accent: AccentColor;
+  --notch-danger: rgb(242 59 59);
+  --notch-panel: rgb(26 26 26);
+  --notch-panel-hover: rgb(41 41 41);
+  --notch-text-secondary: rgb(158 158 158);
+  --notch-ease: cubic-bezier(0.42, 0, 0.58, 1);
+  --notch-duration: 240ms;
+  transform: translateX(-50%);
+  transition:
+    width var(--notch-duration) var(--notch-ease),
+    height var(--notch-duration) var(--notch-ease);
+}
+
+.notch-surface[data-notch-accent='attention'] {
+  --notch-accent: var(--notch-danger);
+}
+
+.notch-pill {
+  /* Why: `hidden` makes the pill a scroll container and the taller dashboard layer let it
+     scroll the ears out of view; `clip` clips without ever scrolling. */
+  overflow: clip;
+  transition: clip-path var(--notch-duration) var(--notch-ease);
+}
+
+.notch-collapsed,
+.notch-dashboard {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--notch-duration) var(--notch-ease);
+}
+
+.notch-collapsed[data-visible='true'],
+.notch-dashboard[data-visible='true'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notch-panel-row {
+  background: var(--notch-panel);
+  border-radius: 10px;
+  transition: background-color 120ms ease-out;
+}
+
+.notch-panel-row:hover {
+  background: var(--notch-panel-hover);
+}
+
+.notch-scroll {
+  scrollbar-width: none;
+}
+
+.notch-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notch-surface,
+  .notch-pill,
+  .notch-collapsed,
+  .notch-dashboard {
+    transition-duration: 1ms;
+  }
+  .notch-breathe {
+    animation: none;
+  }
+}
+
+/* Breathe: amber radial hanging just under the notch, pulsing to flag idle agents waiting for
+   the user. The transparent window is always full-size, so the halo has room below the pill.
+   Why: anchored at the pill's bottom edge (top: 100%) — at top: 0 the gradient's core sat behind
+   the opaque pill and only a <10% alpha tail escaped, invisible over a real desktop. */
+.notch-breathe {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 180px;
+  height: 64px;
+  margin-top: -4px;
+  transform: translateX(-50%);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    58% 62% at 50% 0%,
+    var(--notch-breathe-color, rgba(251, 191, 36, 0.38)),
+    transparent 70%
+  );
+}
+
+/* Attention is more urgent than idle: the pill's danger red, slightly wider, a touch faster.
+   Kept translucent and short — a solid 400px halo read as a screen-wide alarm. */
+.notch-surface[data-notch-breathe-tone='attention'] .notch-breathe {
+  --notch-breathe-color: rgba(242, 59, 59, 0.5);
+  width: 220px;
+  height: 80px;
+  margin-top: -5px;
+  background: radial-gradient(62% 68% at 50% 0%, var(--notch-breathe-color), transparent 76%);
+}
+
+.notch-surface[data-notch-breathe='true'] .notch-breathe {
+  animation: notch-breathe 2.6s ease-in-out infinite;
+}
+
+.notch-surface[data-notch-breathe='true'][data-notch-breathe-tone='attention'] .notch-breathe {
+  animation-name: notch-breathe-attention;
+  animation-duration: 1.9s;
+}
+
+/* Attention floors higher so the glow never fades out of view mid-cycle. */
+@keyframes notch-breathe-attention {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(0.97);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1.06);
+  }
+}
+
+@keyframes notch-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateX(-50%) scale(0.96);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translateX(-50%) scale(1.04);
+  }
+}
