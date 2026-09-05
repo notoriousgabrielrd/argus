@@ -143,3 +143,6 @@ tests/tools/benchmarks/results/terminal-pipeline-*.json
 
 # Old release trees the cross-version wire harness extracts on demand
 tests/e2e/.cross-version-checkouts/
+
+# Bundle gerado na raiz pelo empacotamento (9 MB). Nunca deve ser versionado.
+/index.js
