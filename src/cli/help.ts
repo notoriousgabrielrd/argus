@@ -140,6 +140,12 @@ Computer Use:
 Linear:
   linear                    Read Linear ticket context for agents
 
+Jira:
+  jira status               Show the connected Jira site and account
+  jira project list         List Jira projects on the connected site
+  jira type list            List issue types available in a Jira project
+  jira create               Create a Jira issue
+
 Obsidian:
   obsidian                  Read, search, and write notes in an Obsidian vault
 
